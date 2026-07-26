@@ -202,10 +202,12 @@ document.addEventListener('DOMContentLoaded', () => {
       window.location.href = 'get-started.html';
     });
   }
-  loginLink.addEventListener('click', (e) => {
-    e.preventDefault();
-    openModal('login');
-  });
+  if (loginLink) {
+    loginLink.addEventListener('click', (e) => {
+      // Direct navigation to login.html
+      window.location.href = 'login.html';
+    });
+  }
   modalClose.addEventListener('click', closeModal);
 
   authModal.addEventListener('click', (e) => {

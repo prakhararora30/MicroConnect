@@ -42,6 +42,19 @@ body {
   z-index: 1;
 }
 
+/* Right Split Backdrop */
+.right-split-backdrop {
+  position: fixed;
+  top: 0;
+  right: 0;
+  width: 23vw;
+  height: 100vh;
+  background: #060810;
+  z-index: 2;
+  pointer-events: none;
+  border-left: 1px solid rgba(255, 255, 255, 0.03);
+}
+
 /* Back Link Button */
 .back-link {
   position: absolute;
@@ -315,7 +328,7 @@ body {
    Role Selection Page Styles (get-started.html)
    ====================================================== */
 
-.role-selection-container {
+.role-selection-container, .login-selection-container {
   position: relative;
   z-index: 10;
   display: flex;
@@ -329,7 +342,7 @@ body {
   animation: fadeIn 1s cubic-bezier(0.16, 1, 0.3, 1) forwards;
 }
 
-.role-hero-left {
+.role-hero-left, .login-hero-left {
   flex: 1;
   text-align: left;
   display: flex;
@@ -337,7 +350,7 @@ body {
   gap: 0.5rem;
 }
 
-.role-main-title {
+.role-main-title, .login-main-title {
   font-size: 4rem;
   font-weight: 700;
   color: #ffffff;
@@ -345,14 +358,14 @@ body {
   line-height: 1.1;
 }
 
-.role-main-subtitle {
+.role-main-subtitle, .login-main-subtitle {
   font-size: 2.4rem;
   font-weight: 400;
   color: #8b9bb4;
   letter-spacing: 0.2px;
 }
 
-.role-card-wrapper {
+.role-card-wrapper, .login-card-wrapper {
   flex: 1;
   display: flex;
   justify-content: flex-end;
@@ -453,6 +466,136 @@ body {
   display: none;
 }
 
+/* ======================================================
+   Login Page Styles (login.html)
+   ====================================================== */
+
+.login-card-outer {
+  position: relative;
+  width: 100%;
+  max-width: 440px;
+}
+
+.login-card-outer::after {
+  content: '';
+  position: absolute;
+  bottom: -10px;
+  left: 2%;
+  width: 96%;
+  height: 24px;
+  background: #151a2b;
+  border-radius: 0 0 20px 20px;
+  z-index: 1;
+  box-shadow: 0 15px 30px rgba(0, 0, 0, 0.4);
+}
+
+.login-card {
+  position: relative;
+  z-index: 2;
+  background: #ffffff;
+  border-radius: 22px;
+  padding: 3.2rem 2.4rem;
+  width: 100%;
+  box-shadow: 0 35px 80px rgba(0, 0, 0, 0.65), 0 0 25px rgba(246, 120, 50, 0.12);
+  animation: slideUp 0.8s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+.login-form {
+  display: flex;
+  flex-direction: column;
+  gap: 1.6rem;
+}
+
+.form-group {
+  display: flex;
+  flex-direction: column;
+  gap: 0.45rem;
+  text-align: left;
+}
+
+.form-label {
+  font-size: 1rem;
+  font-weight: 500;
+  color: #4b5563;
+}
+
+.form-input {
+  width: 100%;
+  background: #ffffff;
+  border: 1.5px solid #d1d5db;
+  border-radius: 10px;
+  padding: 0.9rem 1.1rem;
+  font-family: 'Outfit', sans-serif;
+  font-size: 1.05rem;
+  color: #111827;
+  outline: none;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.form-input:focus {
+  border-color: #f59e38;
+  box-shadow: 0 0 0 3px rgba(245, 158, 56, 0.2);
+}
+
+.password-input-wrapper {
+  position: relative;
+  width: 100%;
+  display: flex;
+  align-items: center;
+}
+
+.password-field {
+  padding-right: 3.2rem;
+}
+
+.toggle-password-btn {
+  position: absolute;
+  right: 0.9rem;
+  background: none;
+  border: none;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0.3rem;
+  transition: opacity 0.2s ease;
+}
+
+.toggle-password-btn:hover {
+  opacity: 0.7;
+}
+
+.login-btn-text {
+  letter-spacing: 1.5px;
+  font-weight: 700;
+  font-size: 1.15rem;
+  margin-top: 0.8rem;
+  margin-bottom: 0.8rem;
+  border-radius: 999px;
+  padding: 1.05rem 2rem;
+}
+
+.register-prompt {
+  font-size: 0.92rem;
+  color: #4b5563;
+  text-align: center;
+  margin-top: 0.2rem;
+}
+
+.register-link {
+  color: #e0812b;
+  text-decoration: none;
+  font-weight: 700;
+  letter-spacing: 0.5px;
+  margin-left: 0.2rem;
+  transition: color 0.2s ease;
+}
+
+.register-link:hover {
+  color: #c46d1e;
+  text-decoration: underline;
+}
+
 /* Animations */
 @keyframes fadeIn {
   from {
@@ -478,7 +621,7 @@ body {
 
 /* Mobile Responsiveness */
 @media (max-width: 900px) {
-  .role-selection-container {
+  .role-selection-container, .login-selection-container {
     flex-direction: column;
     justify-content: center;
     align-items: center;
@@ -487,21 +630,25 @@ body {
     padding-top: 4rem;
   }
 
-  .role-hero-left {
+  .right-split-backdrop {
+    display: none;
+  }
+
+  .role-hero-left, .login-hero-left {
     text-align: center;
     align-items: center;
   }
 
-  .role-card-wrapper {
+  .role-card-wrapper, .login-card-wrapper {
     justify-content: center;
     width: 100%;
   }
 
-  .role-main-title {
+  .role-main-title, .login-main-title {
     font-size: 3rem;
   }
 
-  .role-main-subtitle {
+  .role-main-subtitle, .login-main-subtitle {
     font-size: 1.8rem;
   }
 }
@@ -525,7 +672,7 @@ body {
     left: 1.2rem;
   }
 
-  .role-card {
+  .role-card, .login-card {
     padding: 2rem 1.5rem;
   }
 

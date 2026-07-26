@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Login - Connect</title>
+  <meta name="description" content="Login to your Connect account to stay connected.">
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <!-- Canvas for Constellation Background -->
+  <canvas id="particle-canvas"></canvas>
+
+  <!-- Right Split Backdrop Overlay -->
+  <div class="right-split-backdrop"></div>
+
+  <!-- Navigation Back Link -->
+  <a href="index.html" class="back-link" aria-label="Go Back">
+    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+      <line x1="19" y1="12" x2="5" y2="12"></line>
+      <polyline points="12 19 5 12 12 5"></polyline>
+    </svg>
+    <span>Back</span>
+  </a>
+
+  <!-- Main Login Layout Container -->
+  <main class="login-selection-container">
+    <!-- Left Hero Text -->
+    <div class="login-hero-left">
+      <h1 class="login-main-title">Welcome Back!</h1>
+      <p class="login-main-subtitle">Login to your account</p>
+    </div>
+
+    <!-- Right Login Card -->
+    <div class="login-card-wrapper">
+      <div class="login-card-outer">
+        <div class="login-card">
+          <form class="login-form" onsubmit="event.preventDefault(); alert('Logged in successfully!');">
+            
+            <!-- Email Input Field -->
+            <div class="form-group">
+              <label for="login-email" class="form-label">Email</label>
+              <input 
+                type="email" 
+                id="login-email" 
+                class="form-input" 
+                placeholder="Email" 
+                required 
+              />
+            </div>
+
+            <!-- Password Input Field with Toggle -->
+            <div class="form-group">
+              <label for="login-password" class="form-label">Password</label>
+              <div class="password-input-wrapper">
+                <input 
+                  type="password" 
+                  id="login-password" 
+                  class="form-input password-field" 
+                  placeholder="••••••••" 
+                  required 
+                />
+                <button type="button" id="toggle-password" class="toggle-password-btn" aria-label="Toggle password visibility">
+                  <!-- Eye Slash Icon (Default hidden state) -->
+                  <svg id="eye-icon" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#6b7280" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"></path>
+                    <line x1="1" y1="1" x2="23" y2="23"></line>
+                  </svg>
+                </button>
+              </div>
+            </div>
+
+            <!-- Submit Button -->
+            <button type="submit" class="btn-primary full-width login-btn-text">
+              LOGIN
+            </button>
+
+            <!-- Register Link Prompt -->
+            <p class="register-prompt">
+              Don't have an account? <a href="get-started.html" class="register-link">REGISTER</a>
+            </p>
+          </form>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <script src="script.js"></script>
+  <script>
+    // Password Visibility Toggle Logic
+    document.addEventListener('DOMContentLoaded', () => {
+      const passwordInput = document.getElementById('login-password');
+      const toggleBtn = document.getElementById('toggle-password');
+      const eyeIcon = document.getElementById('eye-icon');
+
+      const eyeOpenSvg = `
+        <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
+        <circle cx="12" cy="12" r="3"></circle>
+      `;
+
+      const eyeSlashSvg = `
+        <path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"></path>
+        <line x1="1" y1="1" x2="23" y2="23"></line>
+      `;
+
+      toggleBtn.addEventListener('click', () => {
+        const isPassword = passwordInput.type === 'password';
+        passwordInput.type = isPassword ? 'text' : 'password';
+        eyeIcon.innerHTML = isPassword ? eyeOpenSvg : eyeSlashSvg;
+      });
+    });
+  </script>
+</body>
+</html>
