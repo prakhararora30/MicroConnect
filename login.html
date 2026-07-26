@@ -39,8 +39,10 @@
     <div class="login-card-wrapper">
       <div class="login-card-outer">
         <div class="login-card">
-          <form class="login-form" onsubmit="event.preventDefault(); alert('Logged in successfully!');">
-            
+          <!-- Error Notification Alert Box -->
+          <div id="auth-error-msg" class="auth-error-banner hidden"></div>
+
+          <form id="login-form" class="login-form">
             <!-- Email Input Field -->
             <div class="form-group">
               <label for="login-email" class="form-label">Email</label>
@@ -65,7 +67,6 @@
                   required 
                 />
                 <button type="button" id="toggle-password" class="toggle-password-btn" aria-label="Toggle password visibility">
-                  <!-- Eye Slash Icon (Default hidden state) -->
                   <svg id="eye-icon" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#6b7280" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                     <path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"></path>
                     <line x1="1" y1="1" x2="23" y2="23"></line>
@@ -75,7 +76,7 @@
             </div>
 
             <!-- Submit Button -->
-            <button type="submit" class="btn-primary full-width login-btn-text">
+            <button type="submit" id="login-submit-btn" class="btn-primary full-width login-btn-text">
               LOGIN
             </button>
 
@@ -90,28 +91,74 @@
   </main>
 
   <script src="script.js"></script>
-  <script>
-    // Password Visibility Toggle Logic
+  
+  <!-- Firebase Login Integration Module -->
+  <script type="module">
+    import { auth, signInWithEmailAndPassword, onAuthStateChanged } from './firebase-config.js';
+
     document.addEventListener('DOMContentLoaded', () => {
+      const loginForm = document.getElementById('login-form');
+      const emailInput = document.getElementById('login-email');
       const passwordInput = document.getElementById('login-password');
+      const submitBtn = document.getElementById('login-submit-btn');
+      const errorBanner = document.getElementById('auth-error-msg');
       const toggleBtn = document.getElementById('toggle-password');
       const eyeIcon = document.getElementById('eye-icon');
 
-      const eyeOpenSvg = `
-        <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
-        <circle cx="12" cy="12" r="3"></circle>
-      `;
-
-      const eyeSlashSvg = `
-        <path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"></path>
-        <line x1="1" y1="1" x2="23" y2="23"></line>
-      `;
+      // Password Eye Toggle
+      const eyeOpenSvg = `<path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle>`;
+      const eyeSlashSvg = `<path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"></path><line x1="1" y1="1" x2="23" y2="23"></line>`;
 
       toggleBtn.addEventListener('click', () => {
         const isPassword = passwordInput.type === 'password';
         passwordInput.type = isPassword ? 'text' : 'password';
         eyeIcon.innerHTML = isPassword ? eyeOpenSvg : eyeSlashSvg;
       });
+
+      // Redirect if already logged in
+      onAuthStateChanged(auth, (user) => {
+        if (user) {
+          window.location.href = 'dashboard.html';
+        }
+      });
+
+      // Handle Firebase Sign In
+      loginForm.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        errorBanner.classList.add('hidden');
+        submitBtn.disabled = true;
+        submitBtn.textContent = 'LOGGING IN...';
+
+        const email = emailInput.value.trim();
+        const password = passwordInput.value;
+
+        try {
+          // Attempt Firebase Auth sign-in
+          await signInWithEmailAndPassword(auth, email, password);
+          window.location.href = 'dashboard.html';
+        } catch (error) {
+          console.error('Firebase Auth Error:', error);
+          errorBanner.textContent = getFriendlyErrorMessage(error.code);
+          errorBanner.classList.remove('hidden');
+          submitBtn.disabled = false;
+          submitBtn.textContent = 'LOGIN';
+        }
+      });
+
+      function getFriendlyErrorMessage(code) {
+        switch (code) {
+          case 'auth/user-not-found':
+          case 'auth/wrong-password':
+          case 'auth/invalid-credential':
+            return 'Invalid email or password. Please try again.';
+          case 'auth/invalid-email':
+            return 'Please enter a valid email address.';
+          case 'auth/too-many-requests':
+            return 'Too many failed attempts. Please reset password or try later.';
+          default:
+            return 'Failed to login. Please verify your Firebase Config or network connection.';
+        }
+      }
     });
   </script>
 </body>
