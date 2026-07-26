@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Connect - Welcome</title>
+  <meta name="description" content="Connect with people around the world. Join Connect today.">
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <!-- Canvas for Constellation Background -->
+  <canvas id="particle-canvas"></canvas>
+
+  <!-- Hero Content -->
+  <main class="hero-container">
+    <div class="logo-wrapper">
+      <div class="logo-icon">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 120 100" fill="none">
+          <defs>
+            <linearGradient id="userGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+              <stop offset="0%" stop-color="#ff5e36" />
+              <stop offset="50%" stop-color="#ffa034" />
+              <stop offset="100%" stop-color="#ffd24c" />
+            </linearGradient>
+          </defs>
+          <!-- Primary User (Front Left) -->
+          <circle cx="48" cy="30" r="16" fill="url(#userGrad)" />
+          <path d="M 22 75 C 22 52, 34 46, 52 46 C 66 46, 78 52, 78 75 Z" fill="url(#userGrad)" />
+          
+          <!-- Secondary User (Back Right) -->
+          <circle cx="72" cy="36" r="13" fill="url(#userGrad)" opacity="0.9" />
+          <path d="M 52 75 C 52 60, 62 53, 78 53 C 90 53, 98 60, 98 75 Z" fill="url(#userGrad)" opacity="0.9" />
+        </svg>
+      </div>
+      <h1 class="logo-text">connect</h1>
+    </div>
+
+    <h2 class="welcome-heading">Welcome</h2>
+
+    <button id="get-started-btn" class="btn-primary" type="button">
+      <span>Get Started</span>
+    </button>
+
+    <p class="login-prompt">
+      Already have an account? <a href="#" id="login-link" class="login-link">Login</a>
+    </p>
+  </main>
+
+  <!-- Auth Modal -->
+  <div id="auth-modal" class="modal-backdrop hidden" aria-hidden="true">
+    <div class="modal-card">
+      <button id="modal-close" class="modal-close" aria-label="Close">&times;</button>
+      
+      <!-- Sign Up View -->
+      <div id="signup-view" class="modal-view">
+        <h3 class="modal-title">Get Started</h3>
+        <p class="modal-subtitle">Create your account to connect</p>
+        <form class="auth-form" onsubmit="event.preventDefault(); alert('Account created successfully!');">
+          <div class="input-group">
+            <label for="reg-name">Full Name</label>
+            <input type="text" id="reg-name" placeholder="John Doe" required />
+          </div>
+          <div class="input-group">
+            <label for="reg-email">Email Address</label>
+            <input type="email" id="reg-email" placeholder="alex@example.com" required />
+          </div>
+          <div class="input-group">
+            <label for="reg-pass">Password</label>
+            <input type="password" id="reg-pass" placeholder="••••••••" required />
+          </div>
+          <button type="submit" class="btn-primary full-width">Create Account</button>
+        </form>
+        <p class="switch-prompt">Already a member? <a href="#" id="switch-to-login">Sign in</a></p>
+      </div>
+
+      <!-- Login View -->
+      <div id="login-view" class="modal-view hidden">
+        <h3 class="modal-title">Welcome Back</h3>
+        <p class="modal-subtitle">Sign in to continue</p>
+        <form class="auth-form" onsubmit="event.preventDefault(); alert('Logged in successfully!');">
+          <div class="input-group">
+            <label for="login-email">Email Address</label>
+            <input type="email" id="login-email" placeholder="alex@example.com" required />
+          </div>
+          <div class="input-group">
+            <label for="login-pass">Password</label>
+            <input type="password" id="login-pass" placeholder="••••••••" required />
+          </div>
+          <button type="submit" class="btn-primary full-width">Sign In</button>
+        </form>
+        <p class="switch-prompt">New here? <a href="#" id="switch-to-signup">Create account</a></p>
+      </div>
+    </div>
+  </div>
+
+  <script src="script.js"></script>
+</body>
+</html>
