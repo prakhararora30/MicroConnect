@@ -40,12 +40,16 @@
         <circle cx="11" cy="11" r="8"></circle>
         <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
       </svg>
-      <input type="text" placeholder="Search" class="search-input" aria-label="Search" />
+      <input type="text" placeholder="Search alumni, jobs, posts..." class="search-input" aria-label="Search" />
     </div>
 
     <!-- Right Profile User Header -->
     <div class="header-right-user">
       <button id="toggle-diag-btn" class="diag-toggle-btn" type="button" style="cursor: pointer; z-index: 100;">🔍 Debug Data</button>
+      
+      <!-- Current Logged In Role Badge -->
+      <span id="header-user-role-badge" class="user-role-pill alumni-pill">🎓 Alumni</span>
+
       <img id="header-user-avatar" src="data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='100' height='100' viewBox='0 0 100 100'><circle cx='50' cy='50' r='50' fill='%23e0812b'/><path d='M50 28 a 14 14 0 1 0 0.001 0 M32 74 a 18 18 0 0 1 36 0' stroke='%23ffffff' stroke-width='6' fill='none' stroke-linecap='round'/></svg>" alt="Profile Photo" class="header-profile-photo" />
       <button id="signout-btn" class="signout-btn" title="Sign Out">Sign Out</button>
     </div>
@@ -58,32 +62,30 @@
     <aside class="left-sidebar">
       <!-- Navigation Menu Card -->
       <nav class="sidebar-card nav-card">
-        <a href="#" class="nav-item active">
+        <a href="#" id="filter-all-btn" class="nav-item active">
           <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
             <rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect>
             <line x1="7" y1="8" x2="17" y2="8"></line>
             <line x1="7" y1="12" x2="17" y2="12"></line>
             <line x1="7" y1="16" x2="13" y2="16"></line>
           </svg>
-          <span>Feed</span>
+          <span>All Updates</span>
         </a>
 
-        <a href="#" class="nav-item">
+        <a href="#" id="filter-alumni-btn" class="nav-item">
           <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-            <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
-            <circle cx="9" cy="7" r="4"></circle>
-            <path d="M23 21v-2a4 4 0 0 0-3-3.87"></path>
-            <path d="M16 3.13a4 4 0 0 1 0 7.75"></path>
+            <path d="M22 10v6M2 10l10-5 10 5-10 5z"></path>
+            <path d="M6 12v5c3 3 9 3 12 0v-5"></path>
           </svg>
-          <span>My Network</span>
+          <span>Alumni Posts</span>
         </a>
 
-        <a href="#" class="nav-item">
+        <a href="#" id="filter-student-btn" class="nav-item">
           <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-            <rect x="2" y="7" width="20" height="14" rx="2" ry="2"></rect>
-            <path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"></path>
+            <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"></path>
+            <path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"></path>
           </svg>
-          <span>Job Board</span>
+          <span>Student Posts</span>
         </a>
 
         <a href="#" class="nav-item">
@@ -103,8 +105,11 @@
       <div class="sidebar-card student-profile-widget">
         <img id="widget-avatar-img" src="data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='100' height='100' viewBox='0 0 100 100'><circle cx='50' cy='50' r='50' fill='%23e0812b'/><path d='M50 28 a 14 14 0 1 0 0.001 0 M32 74 a 18 18 0 0 1 36 0' stroke='%23ffffff' stroke-width='6' fill='none' stroke-linecap='round'/></svg>" alt="Profile Photo" class="widget-avatar" />
         <div class="widget-info">
-          <span id="widget-name-txt" class="widget-name">User Profile</span>
-          <span id="widget-points-txt" class="widget-points">✨ 0 pts</span>
+          <div class="widget-name-row">
+            <span id="widget-name-txt" class="widget-name">User Profile</span>
+          </div>
+          <span id="widget-role-txt" class="sidebar-role-badge alumni-badge">🎓 Alumni</span>
+          <span id="widget-points-txt" class="widget-points">✨ 350 pts</span>
         </div>
       </div>
     </aside>
@@ -113,7 +118,11 @@
     <section class="main-feed-column">
       <!-- Create Post Box -->
       <div class="feed-card create-post-card">
-        <textarea id="post-input" placeholder="Share an update..." rows="2"></textarea>
+        <!-- <div class="create-post-header">
+          <span class="posting-as-label">Posting as:</span>
+          <span id="create-post-role-badge" class="user-role-pill alumni-pill">🎓 Alumni</span>
+        </div> -->
+        <textarea id="post-input" placeholder="Share a career update, job referral, or mentorship tip..." rows="2"></textarea>
         
         <!-- Attached Image Preview Container -->
         <div id="image-preview-container" class="image-preview-box hidden">
@@ -148,7 +157,7 @@
               </svg>
             </button>
           </div>
-          <button type="button" id="publish-post-btn" class="btn-publish">Post</button>
+          <button type="button" id="publish-post-btn" class="btn-publish">Post Update</button>
         </div>
       </div>
 
@@ -220,6 +229,12 @@
     let currentUserDoc = null;
     let authUser = null;
     let currentBase64Image = null;
+    let activeRoleFilter = 'All';
+
+    // Global Maps
+    const globalUserProfilePhotos = {};
+    const globalUserNames = {};
+    const globalUserRoles = {};
 
     // Format URLs & Prepend Base64 Headers
     function formatImageSrc(src) {
@@ -227,29 +242,21 @@
       src = src.trim();
       if (src === '') return '';
 
-      // Already formatted HTTP URL or Data URI
       if (src.startsWith('http://') || src.startsWith('https://') || src.startsWith('data:image/')) {
         return src;
       }
-
-      // Raw Base64 string without data:image/ header
       if (src.startsWith('/9j/') || src.startsWith('iVBOR') || src.startsWith('R0lGOD') || (src.length > 80 && !src.includes('://'))) {
         return `data:image/jpeg;base64,${src}`;
       }
-
-      // Firebase Storage gs:// protocol
       if (src.startsWith('gs://')) {
         const parts = src.replace('gs://', '').split('/');
         const bucket = parts.shift();
         const filePath = parts.join('/');
         return `https://firebasestorage.googleapis.com/v0/b/${bucket}/o/${encodeURIComponent(filePath)}?alt=media`;
       }
-
-      // Relative path
       if (!src.includes('://') && (src.includes('/') || src.includes('.'))) {
         return `https://firebasestorage.googleapis.com/v0/b/connect-firebase2005.firebasestorage.app/o/${encodeURIComponent(src)}?alt=media`;
       }
-
       return src;
     }
 
@@ -268,33 +275,10 @@
             return formatImageSrc(val);
           }
         }
-
-        // Deep property scan
-        for (const [key, val] of Object.entries(data)) {
-          if (typeof val === 'string' && val.trim().length > 0) {
-            const lower = val.toLowerCase();
-            if (
-              lower.startsWith('http://') || 
-              lower.startsWith('https://') || 
-              lower.startsWith('gs://') || 
-              lower.startsWith('data:image/') ||
-              lower.startsWith('/9j/') ||
-              lower.startsWith('ivbor') ||
-              lower.includes('.jpg') || 
-              lower.includes('.jpeg') || 
-              lower.includes('.png') || 
-              lower.includes('firebasestorage')
-            ) {
-              return formatImageSrc(val);
-            }
-          }
-        }
       }
-
       if (user && user.photoURL && user.photoURL.trim().length > 0) {
         return formatImageSrc(user.photoURL);
       }
-
       return defaultProfilePhoto;
     }
 
@@ -313,6 +297,20 @@
         return user.displayName;
       }
       return 'User Profile';
+    }
+
+    // Universal User Role Detector
+    function findUserRole(data, user) {
+      if (data && typeof data === 'object') {
+        const role = data.role || data.authorRole || data.userRole;
+        if (role && typeof role === 'string' && role.trim().length > 0) {
+          const rLower = role.toLowerCase();
+          if (rLower.includes('alumni')) return 'Alumni';
+          if (rLower.includes('student')) return 'Student';
+          return role;
+        }
+      }
+      return 'Student';
     }
 
     // Universal Post Text Extractor
@@ -350,45 +348,42 @@
           if (nested) return formatImageSrc(nested);
         }
       }
-
-      for (const [key, val] of Object.entries(post)) {
-        if (typeof val === 'string' && val.trim().length > 0) {
-          const lower = val.toLowerCase();
-          if (
-            lower.startsWith('http://') || 
-            lower.startsWith('https://') || 
-            lower.startsWith('gs://') || 
-            lower.startsWith('data:image/') ||
-            lower.startsWith('/9j/') ||
-            lower.startsWith('ivbor') ||
-            lower.includes('.jpg') || 
-            lower.includes('.jpeg') || 
-            lower.includes('.png') || 
-            lower.includes('.webp') ||
-            lower.includes('firebasestorage')
-          ) {
-            const kLower = key.toLowerCase();
-            if (!kLower.includes('avatar') && !kLower.includes('authorphoto') && !kLower.includes('userphoto') && !kLower.includes('profile')) {
-              return formatImageSrc(val);
-            }
-          }
-        }
-      }
-
       return '';
     }
 
     function getPostAuthorName(post) {
-      return post.authorName || post.username || post.name || post.user_name || post.userName || 'Member';
+      const directName = post.authorName || post.username || post.name || post.user_name || post.userName;
+      if (directName && directName.trim().length > 0) return directName;
+      const uid = post.uid || post.authorUid;
+      if (uid && globalUserNames[uid]) return globalUserNames[uid];
+      return 'Member';
     }
 
     function getPostAuthorPhoto(post) {
+      const uid = post.uid || post.authorUid;
       const photo = post.authorPhotoBase64 || post.userPhotoBase64 || post.profilePhotoBase64 || post.authorAvatar || post.profilePic || post.userImage || post.photoURL || post.photo || post.avatar;
-      return photo && typeof photo === 'string' && photo.trim() !== '' ? formatImageSrc(photo) : defaultProfilePhoto;
+      
+      if (photo && typeof photo === 'string' && photo.trim() !== '') {
+        const formatted = formatImageSrc(photo);
+        if (uid && formatted !== defaultProfilePhoto) {
+          globalUserProfilePhotos[uid] = formatted;
+        }
+        return formatted;
+      }
+      if (uid && globalUserProfilePhotos[uid]) {
+        return globalUserProfilePhotos[uid];
+      }
+      return defaultProfilePhoto;
     }
 
     function getPostAuthorRole(post) {
-      return post.authorRole || post.role || post.userRole || 'Student';
+      const role = post.authorRole || post.role || post.userRole;
+      if (role && typeof role === 'string' && role.trim().length > 0) {
+        return role;
+      }
+      const uid = post.uid || post.authorUid;
+      if (uid && globalUserRoles[uid]) return globalUserRoles[uid];
+      return 'Student';
     }
 
     function getTimestampMs(ts) {
@@ -404,12 +399,20 @@
       const headerPhoto = document.getElementById('header-user-avatar');
       const widgetPhoto = document.getElementById('widget-avatar-img');
       const widgetName = document.getElementById('widget-name-txt');
+      const widgetRoleTxt = document.getElementById('widget-role-txt');
       const widgetPoints = document.getElementById('widget-points-txt');
+      const headerRoleBadge = document.getElementById('header-user-role-badge');
+      const createPostRoleBadge = document.getElementById('create-post-role-badge');
+      const postInput = document.getElementById('post-input');
       const signoutBtn = document.getElementById('signout-btn');
       const postsWrapper = document.getElementById('feed-posts-wrapper');
       const leaderboardContainer = document.getElementById('leaderboard-list-container');
-      const postInput = document.getElementById('post-input');
       const publishBtn = document.getElementById('publish-post-btn');
+
+      // Filter Buttons
+      const filterAllBtn = document.getElementById('filter-all-btn');
+      const filterAlumniBtn = document.getElementById('filter-alumni-btn');
+      const filterStudentBtn = document.getElementById('filter-student-btn');
 
       // Diagnostic Elements
       const diagAuthInfo = document.getElementById('diag-auth-info');
@@ -446,6 +449,59 @@
         previewContainer.classList.add('hidden');
       });
 
+      // Filter Navigation Handlers
+      if (filterAllBtn) {
+        filterAllBtn.addEventListener('click', (e) => {
+          e.preventDefault();
+          setFilter('All', filterAllBtn);
+        });
+      }
+      if (filterAlumniBtn) {
+        filterAlumniBtn.addEventListener('click', (e) => {
+          e.preventDefault();
+          setFilter('Alumni', filterAlumniBtn);
+        });
+      }
+      if (filterStudentBtn) {
+        filterStudentBtn.addEventListener('click', (e) => {
+          e.preventDefault();
+          setFilter('Student', filterStudentBtn);
+        });
+      }
+
+      function setFilter(role, btnEl) {
+        activeRoleFilter = role;
+        [filterAllBtn, filterAlumniBtn, filterStudentBtn].forEach(b => b.classList.remove('active'));
+        btnEl.classList.add('active');
+        initLiveFeed();
+      }
+
+      // Update UI for Role Badges
+      function updateUserRoleUI(role) {
+        const isAlumni = (role || '').toLowerCase().includes('alumni');
+        const roleLabel = isAlumni ? '🎓 Alumni' : '📚 Student';
+        const pillClass = isAlumni ? 'user-role-pill alumni-pill' : 'user-role-pill student-pill';
+        const badgeClass = isAlumni ? 'sidebar-role-badge alumni-badge' : 'sidebar-role-badge student-badge';
+
+        if (headerRoleBadge) {
+          headerRoleBadge.textContent = roleLabel;
+          headerRoleBadge.className = pillClass;
+        }
+        if (createPostRoleBadge) {
+          createPostRoleBadge.textContent = roleLabel;
+          createPostRoleBadge.className = pillClass;
+        }
+        if (widgetRoleTxt) {
+          widgetRoleTxt.textContent = roleLabel;
+          widgetRoleTxt.className = badgeClass;
+        }
+        if (postInput) {
+          postInput.placeholder = isAlumni 
+            ? "Share a career update, job referral, or mentorship tip..."
+            : "Ask a question to alumni, share a project update, or request guidance...";
+        }
+      }
+
       // 1. Auth Guard - Listen for logged in user
       onAuthStateChanged(auth, async (user) => {
         if (!user) {
@@ -476,12 +532,19 @@
 
         const name = findUserName(currentUserDoc, user);
         const photo = findProfilePhoto(currentUserDoc, user);
-        const points = currentUserDoc?.points || 350;
+        const role = findUserRole(currentUserDoc, user);
+        const points = currentUserDoc?.points || (role === 'Alumni' ? 500 : 350);
+
+        if (photo && photo !== defaultProfilePhoto) globalUserProfilePhotos[user.uid] = photo;
+        if (name && name !== 'User Profile') globalUserNames[user.uid] = name;
+        if (role) globalUserRoles[user.uid] = role;
 
         widgetName.textContent = name;
         widgetPoints.textContent = `✨ ${points} pts`;
         headerPhoto.src = photo;
         widgetPhoto.src = photo;
+
+        updateUserRoleUI(role);
 
         // Initialize Feed & Leaderboard
         initLiveFeed();
@@ -504,15 +567,16 @@
 
         const authorName = findUserName(currentUserDoc, authUser);
         const authorPhoto = findProfilePhoto(currentUserDoc, authUser);
-        const authorRole = currentUserDoc?.role || 'Student';
+        const authorRole = findUserRole(currentUserDoc, authUser);
 
         try {
           const newPostData = {
             uid: authUser.uid,
             authorUid: authUser.uid,
             authorName: authorName,
-            authorPhotoBase64: authorPhoto,
+            authorPhotoBase64: authorPhoto !== defaultProfilePhoto ? authorPhoto : (globalUserProfilePhotos[authUser.uid] || ''),
             authorRole: authorRole,
+            role: authorRole,
             content: text,
             text: text,
             postPhotoBase64: currentBase64Image || '',
@@ -532,7 +596,7 @@
           alert(`Could not publish post: ${err.message}`);
         } finally {
           publishBtn.disabled = false;
-          publishBtn.textContent = 'Post';
+          publishBtn.textContent = 'Post Update';
         }
       });
 
@@ -577,28 +641,55 @@
       function renderPostsFromSnapshot(snapshot) {
         postsWrapper.innerHTML = '';
 
-        const postsArray = [];
+        let postsArray = [];
         snapshot.forEach(docSnap => {
+          const postData = docSnap.data();
           postsArray.push({
             id: docSnap.id,
-            data: docSnap.data()
+            data: postData
           });
+
+          // Pre-populate global maps
+          const uid = postData.uid || postData.authorUid;
+          if (uid) {
+            const photo = findProfilePhoto(postData, null);
+            const name = findUserName(postData, null);
+            const role = findUserRole(postData, null);
+            if (photo && photo !== defaultProfilePhoto) globalUserProfilePhotos[uid] = photo;
+            if (name && name !== 'User Profile' && name !== 'Member') globalUserNames[uid] = name;
+            if (role) globalUserRoles[uid] = role;
+          }
         });
 
-        // Auto-extract logged-in user profile from posts if users collection read is blocked
-        if (authUser) {
-          const userPost = postsArray.find(p => (p.data.uid === authUser.uid || p.data.authorUid === authUser.uid) && p.data.authorPhotoBase64);
-          if (userPost && userPost.data) {
-            const postAuthorPhoto = getPostAuthorPhoto(userPost.data);
-            const postAuthorName = getPostAuthorName(userPost.data);
-            if (postAuthorPhoto && postAuthorPhoto !== defaultProfilePhoto) {
-              headerPhoto.src = postAuthorPhoto;
-              widgetPhoto.src = postAuthorPhoto;
-            }
-            if (postAuthorName && postAuthorName !== 'Member' && postAuthorName !== 'User Profile') {
-              widgetName.textContent = postAuthorName;
-            }
-          }
+        // Update current user UI if data discovered
+        if (authUser && globalUserProfilePhotos[authUser.uid]) {
+          const photo = globalUserProfilePhotos[authUser.uid];
+          headerPhoto.src = photo;
+          widgetPhoto.src = photo;
+        }
+        if (authUser && globalUserNames[authUser.uid]) {
+          widgetName.textContent = globalUserNames[authUser.uid];
+        }
+        if (authUser && globalUserRoles[authUser.uid]) {
+          updateUserRoleUI(globalUserRoles[authUser.uid]);
+        }
+
+        // Apply Role Filtering if active
+        if (activeRoleFilter !== 'All') {
+          postsArray = postsArray.filter(item => {
+            const r = getPostAuthorRole(item.data);
+            return r.toLowerCase().includes(activeRoleFilter.toLowerCase());
+          });
+        }
+
+        if (postsArray.length === 0) {
+          postsWrapper.innerHTML = `
+            <div class="empty-feed-card">
+              <p>No ${activeRoleFilter} posts found.</p>
+              <span>Switch tabs or post an update to start the discussion!</span>
+            </div>
+          `;
+          return;
         }
 
         // Sort posts by timestamp descending in JS
@@ -618,6 +709,11 @@
           const authorPhoto = getPostAuthorPhoto(post);
           const authorRole = getPostAuthorRole(post);
 
+          const isAlumni = authorRole.toLowerCase().includes('alumni');
+          const roleBadgeHTML = isAlumni 
+            ? `<span class="author-badge alumni-badge-tag">🎓 Alumni</span>`
+            : `<span class="author-badge student-badge-tag">📚 Student</span>`;
+
           const likesArray = post.likes || [];
           const isLiked = Array.isArray(likesArray) && likesArray.includes(authUser?.uid);
 
@@ -633,7 +729,7 @@
                 <div>
                   <div class="author-name-row">
                     <span class="author-name">${escapeHtml(authorName)}</span>
-                    <span class="author-badge">${escapeHtml(authorRole)}</span>
+                    ${roleBadgeHTML}
                   </div>
                   <span class="post-time">${timeStr}</span>
                 </div>
@@ -704,7 +800,16 @@
 
           const usersArray = [];
           snapshot.forEach(docSnap => {
-            usersArray.push(docSnap.data());
+            const data = docSnap.data();
+            const uid = docSnap.id;
+            usersArray.push(data);
+
+            const photo = findProfilePhoto(data, null);
+            const name = findUserName(data, null);
+            const role = findUserRole(data, null);
+            if (photo && photo !== defaultProfilePhoto) globalUserProfilePhotos[uid] = photo;
+            if (name && name !== 'User Profile') globalUserNames[uid] = name;
+            if (role) globalUserRoles[uid] = role;
           });
 
           usersArray.sort((a, b) => (b.points || 0) - (a.points || 0));
@@ -715,7 +820,11 @@
           usersArray.slice(0, 10).forEach(u => {
             const photo = findProfilePhoto(u, null);
             const name = findUserName(u, null);
+            const role = findUserRole(u, null);
             const points = u.points || 0;
+
+            const isAlumni = role.toLowerCase().includes('alumni');
+            const badgeIcon = isAlumni ? '🎓' : '📚';
 
             const li = document.createElement('li');
             li.className = 'leaderboard-item';
@@ -723,8 +832,8 @@
               <span class="rank-num">${rank++}</span>
               <img src="${photo}" alt="${escapeHtml(name)}" class="rank-avatar" onerror="this.src='${defaultProfilePhoto}';" />
               <div class="rank-details">
-                <span class="rank-name">${escapeHtml(name)}</span>
-                <span class="rank-points">${points} pts</span>
+                <span class="rank-name">${escapeHtml(name)} ${badgeIcon}</span>
+                <span class="rank-points">${points} pts • ${role}</span>
               </div>
             `;
             leaderboardContainer.appendChild(li);
@@ -751,7 +860,7 @@
 
         const seconds = Math.floor((new Date() - date) / 1000);
         if (seconds < 60) return 'Just now';
-        if (seconds < 3600) return `${Math.floor(seconds / 3600)}m ago`;
+        if (seconds < 3600) return `${Math.floor(seconds / 60)}m ago`;
         if (seconds < 86400) return `${Math.floor(seconds / 3600)}h ago`;
         return `${Math.floor(seconds / 86400)}d ago`;
       }
