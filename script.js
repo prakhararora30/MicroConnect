@@ -197,7 +197,11 @@ document.addEventListener('DOMContentLoaded', () => {
     authModal.setAttribute('aria-hidden', 'true');
   }
 
-  getStartedBtn.addEventListener('click', () => openModal('signup'));
+  if (getStartedBtn && getStartedBtn.tagName === 'BUTTON') {
+    getStartedBtn.addEventListener('click', () => {
+      window.location.href = 'get-started.html';
+    });
+  }
   loginLink.addEventListener('click', (e) => {
     e.preventDefault();
     openModal('login');

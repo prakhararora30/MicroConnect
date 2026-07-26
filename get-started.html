@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Get Started - Choose Your Role | Connect</title>
+  <meta name="description" content="Choose your role to get started on Connect as an Alumni or Student.">
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <!-- Canvas for Constellation Background -->
+  <canvas id="particle-canvas"></canvas>
+
+  <!-- Navigation Back Button -->
+  <a href="index.html" class="back-link" aria-label="Go Back">
+    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+      <line x1="19" y1="12" x2="5" y2="12"></line>
+      <polyline points="12 19 5 12 12 5"></polyline>
+    </svg>
+    <span>Back</span>
+  </a>
+
+  <!-- Role Selection Split Container -->
+  <main class="role-selection-container">
+    <!-- Left Hero Text -->
+    <div class="role-hero-left">
+      <h1 class="role-main-title">Get Started!</h1>
+      <p class="role-main-subtitle">Who are you joining as?</p>
+    </div>
+
+    <!-- Right Selection Card -->
+    <div class="role-card-wrapper">
+      <div class="role-card">
+        <h2 class="card-title">Choose your role</h2>
+
+        <div class="role-options-group">
+          <!-- Alumni Option (Selected by default) -->
+          <div class="role-option selected" id="role-alumni" data-role="Alumni" tabindex="0" role="radio" aria-checked="true">
+            <div class="role-icon-box alumni-bg">
+              <!-- Mortarboard Graduation Cap SVG -->
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="38" height="38">
+                <path d="M32 10 L4 24 L32 38 L60 24 Z" fill="#2d221e" />
+                <path d="M32 10 L60 24 L32 38 L4 24 Z" fill="#3b2f29" opacity="0.4" />
+                <path d="M32 10 L58 23 L32 36 L6 23 Z" fill="#1c1614" opacity="0.6" />
+                <!-- Cap Top surface -->
+                <polygon points="32,12 56,24 32,36 8,24" fill="#2c2825" />
+                <!-- Cap Skull base -->
+                <path d="M16 31.5 V 45 C 16 52, 48 52, 48 45 V 31.5" fill="none" stroke="#221c1a" stroke-width="6" stroke-linecap="round" />
+                <!-- Tassel -->
+                <circle cx="32" cy="24" r="2.5" fill="#f5aa38" />
+                <path d="M32 24 C 42 26, 47 32, 47 40" fill="none" stroke="#f5aa38" stroke-width="2.5" stroke-linecap="round" />
+                <polygon points="44,39 50,39 47,48" fill="#f5aa38" />
+              </svg>
+            </div>
+            <span class="role-label">Start as an Alumni</span>
+            <div class="check-badge">
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="#ffffff" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
+                <polyline points="20 6 9 17 4 12"></polyline>
+              </svg>
+            </div>
+          </div>
+
+          <!-- Student Option -->
+          <div class="role-option" id="role-student" data-role="Student" tabindex="0" role="radio" aria-checked="false">
+            <div class="role-icon-box student-bg">
+              <!-- Stack of Books SVG -->
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="38" height="38">
+                <!-- Bottom Book (Blue) -->
+                <rect x="12" y="44" width="40" height="10" rx="3" fill="#3b82f6" />
+                <rect x="16" y="46" width="32" height="6" rx="1" fill="#eff6ff" />
+                <path d="M12 44 h8 v10 h-8 z" fill="#1d4ed8" />
+
+                <!-- Middle Book (Green) -->
+                <rect x="10" y="32" width="40" height="10" rx="3" fill="#10b981" />
+                <rect x="14" y="34" width="32" height="6" rx="1" fill="#ecfdf5" />
+                <path d="M10 32 h8 v10 h-8 z" fill="#047857" />
+
+                <!-- Top Book (Red/Orange) -->
+                <rect x="14" y="20" width="38" height="10" rx="3" fill="#ef4444" />
+                <rect x="18" y="22" width="30" height="6" rx="1" fill="#fef2f2" />
+                <path d="M14 20 h8 v10 h-8 z" fill="#b91c1c" />
+              </svg>
+            </div>
+            <span class="role-label">Start as a Student</span>
+            <div class="check-badge hidden">
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="#ffffff" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
+                <polyline points="20 6 9 17 4 12"></polyline>
+              </svg>
+            </div>
+          </div>
+        </div>
+
+        <button id="submit-role-btn" class="btn-primary full-width">Get Started</button>
+      </div>
+    </div>
+  </main>
+
+  <script src="script.js"></script>
+  <script>
+    // Specific Role Selection Script
+    document.addEventListener('DOMContentLoaded', () => {
+      const roleOptions = document.querySelectorAll('.role-option');
+      const submitBtn = document.getElementById('submit-role-btn');
+      let selectedRole = 'Alumni';
+
+      roleOptions.forEach(option => {
+        option.addEventListener('click', () => {
+          roleOptions.forEach(opt => {
+            opt.classList.remove('selected');
+            opt.setAttribute('aria-checked', 'false');
+            const badge = opt.querySelector('.check-badge');
+            if (badge) badge.classList.add('hidden');
+          });
+
+          option.classList.add('selected');
+          option.setAttribute('aria-checked', 'true');
+          const badge = option.querySelector('.check-badge');
+          if (badge) badge.classList.remove('hidden');
+
+          selectedRole = option.dataset.role;
+        });
+
+        option.addEventListener('keydown', (e) => {
+          if (e.key === 'Enter' || e.key === ' ') {
+            e.preventDefault();
+            option.click();
+          }
+        });
+      });
+
+      submitBtn.addEventListener('click', () => {
+        alert(`Welcome! Proceeding to setup your profile as a ${selectedRole}.`);
+      });
+    });
+  </script>
+</body>
+</html>
