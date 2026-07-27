@@ -357,8 +357,9 @@
     .message-row {
       display: flex;
       gap: 0.8rem;
-      max-width: 80%;
+      max-width: 75%;
       align-items: flex-start;
+      overflow: visible;
     }
 
     .message-row.incoming {
@@ -386,11 +387,17 @@
     }
 
     .message-bubble {
-      padding: 0.95rem 1.3rem;
+      padding: 0.75rem 1.1rem;
       border-radius: 18px;
-      font-size: 0.98rem;
-      line-height: 1.5;
+      font-size: 0.95rem;
+      line-height: 1.55;
       word-break: break-word;
+      overflow-wrap: break-word;
+      white-space: pre-wrap;
+      min-width: 52px;
+      max-width: 100%;
+      box-sizing: border-box;
+      display: inline-block;
     }
 
     .message-row.incoming .message-bubble {
@@ -515,7 +522,9 @@
       position: relative;
       display: flex;
       flex-direction: column;
-      max-width: 70%;
+      width: fit-content;
+      max-width: 100%;
+      min-width: 0;
     }
 
     .message-row.incoming .message-container-wrapper {
@@ -1218,8 +1227,12 @@
         // 1. Listen to nested subcollection chats/{chatDocId}/messages
         try {
           const unsubSub = onSnapshot(collection(db, 'chats', chatDocId, 'messages'), (snapshot) => {
-            snapshot.forEach(d => {
-              combinedMsgsMap[d.id] = d.data();
+            snapshot.docChanges().forEach(change => {
+              if (change.type === 'added' || change.type === 'modified') {
+                combinedMsgsMap[change.doc.id] = change.doc.data();
+              } else if (change.type === 'removed') {
+                delete combinedMsgsMap[change.doc.id];
+              }
             });
             renderCombined();
           }, (err) => {
@@ -1233,14 +1246,20 @@
         // 2. Listen to flat root messages collection (for web compatibility)
         try {
           const unsubRoot = onSnapshot(collection(db, 'messages'), (snapshot) => {
-            snapshot.forEach(d => {
-              const data = d.data();
-              const isMatch = data.chatId === chatDocId || 
-                              (data.participants && data.participants.includes(currentAuthUser.uid) && data.participants.includes(member.uid)) ||
-                              (data.senderUid === currentAuthUser.uid && data.receiverUid === member.uid) ||
-                              (data.senderUid === member.uid && data.receiverUid === currentAuthUser.uid);
-              if (isMatch) {
-                combinedMsgsMap[d.id] = data;
+            snapshot.docChanges().forEach(change => {
+              const data = change.doc.data();
+              if (change.type === 'removed') {
+                // Always remove from map when document is deleted
+                delete combinedMsgsMap[change.doc.id];
+              } else {
+                // added or modified — only keep messages that belong to this chat
+                const isMatch = data.chatId === chatDocId ||
+                                (data.participants && data.participants.includes(currentAuthUser.uid) && data.participants.includes(member.uid)) ||
+                                (data.senderUid === currentAuthUser.uid && data.receiverUid === member.uid) ||
+                                (data.senderUid === member.uid && data.receiverUid === currentAuthUser.uid);
+                if (isMatch) {
+                  combinedMsgsMap[change.doc.id] = data;
+                }
               }
             });
             renderCombined();
