@@ -428,10 +428,179 @@
       color: #9ca3af;
       cursor: pointer;
       font-size: 1.2rem;
+      padding: 0.3rem 0.5rem;
+      border-radius: 6px;
+      transition: background 0.15s ease, color 0.15s ease;
     }
+
+    .more-opts-btn:hover {
+      background: #f3f4f6;
+      color: #374151;
+    }
+
+    .conn-dropdown-menu {
+      position: absolute;
+      top: calc(100% + 6px);
+      right: 0;
+      background: #ffffff;
+      border: 1px solid #e5e7eb;
+      border-radius: 10px;
+      box-shadow: 0 8px 24px rgba(0,0,0,0.12);
+      min-width: 180px;
+      z-index: 100;
+      overflow: hidden;
+      animation: dropFadeIn 0.15s ease;
+    }
+
+    @keyframes dropFadeIn {
+      from { opacity: 0; transform: translateY(-6px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+
+    .conn-dropdown-item {
+      width: 100%;
+      display: flex;
+      align-items: center;
+      gap: 0.6rem;
+      padding: 0.7rem 1rem;
+      background: none;
+      border: none;
+      cursor: pointer;
+      font-size: 0.9rem;
+      font-weight: 500;
+      color: #ef4444;
+      text-align: left;
+      transition: background 0.15s ease;
+    }
+
+    .conn-dropdown-item:hover {
+      background: #fef2f2;
+    }
+
+    /* ── Filter Modal ─────────────────────────────────────── */
+    .filter-modal-overlay {
+      display: none; position: fixed; inset: 0;
+      background: rgba(0,0,0,0.45); z-index: 1000;
+      align-items: flex-end; justify-content: center;
+      backdrop-filter: blur(3px);
+    }
+    .filter-modal-overlay.open { display: flex; }
+    .filter-modal-sheet {
+      background: #fff; border-radius: 24px 24px 0 0;
+      padding: 2rem 1.8rem 2.5rem; width: 100%; max-width: 520px;
+      max-height: 90vh; overflow-y: auto;
+      animation: slideUp 0.3s cubic-bezier(0.34,1.2,0.64,1);
+      box-shadow: 0 -8px 40px rgba(0,0,0,0.15);
+    }
+    @keyframes slideUp {
+      from { transform: translateY(100%); opacity: 0; }
+      to   { transform: translateY(0);   opacity: 1; }
+    }
+    .filter-modal-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 1.6rem; }
+    .filter-modal-title { font-size: 1.4rem; font-weight: 700; color: #111827; }
+    .filter-close-btn {
+      background: #f3f4f6; border: none; border-radius: 50%;
+      width: 34px; height: 34px; display: flex; align-items: center;
+      justify-content: center; cursor: pointer; font-size: 1.2rem; color: #6b7280;
+      transition: background 0.15s;
+    }
+    .filter-close-btn:hover { background: #e5e7eb; }
+    .filter-section-label { font-size: 0.88rem; font-weight: 600; color: #374151; margin-bottom: 0.6rem; display: block; }
+    .filter-role-pills { display: flex; gap: 0.6rem; margin-bottom: 1.4rem; flex-wrap: wrap; }
+    .filter-role-pill {
+      padding: 0.45rem 1.2rem; border-radius: 999px;
+      border: 1.5px solid #e5e7eb; background: #fff;
+      font-size: 0.9rem; font-weight: 600; color: #374151;
+      cursor: pointer; transition: all 0.15s ease; font-family: 'Outfit', sans-serif;
+    }
+    .filter-role-pill.active { background: #111827; border-color: #111827; color: #fff; }
+    .filter-role-pill:hover:not(.active) { background: #f9fafb; }
+    .filter-field-group { margin-bottom: 1.2rem; }
+    .filter-input {
+      width: 100%; padding: 0.75rem 1rem;
+      border: 1.5px solid #e5e7eb; border-radius: 10px;
+      font-size: 0.95rem; font-family: 'Outfit', sans-serif;
+      color: #111827; outline: none; background: #f9fafb;
+      box-sizing: border-box; transition: border-color 0.15s ease;
+    }
+    .filter-input:focus { border-color: #111827; background: #fff; }
+    .filter-footer { display: flex; gap: 1rem; margin-top: 1.8rem; }
+    .filter-reset-btn {
+      flex: 1; padding: 0.85rem; border-radius: 999px;
+      border: 1.5px solid #e5e7eb; background: #fff;
+      font-size: 0.95rem; font-weight: 600; color: #374151;
+      cursor: pointer; transition: background 0.15s ease; font-family: 'Outfit', sans-serif;
+    }
+    .filter-reset-btn:hover { background: #f3f4f6; }
+    .filter-apply-btn {
+      flex: 2; padding: 0.85rem; border-radius: 999px; border: none;
+      background: #111827; color: #fff; font-size: 0.95rem;
+      font-weight: 700; cursor: pointer; transition: background 0.15s ease; font-family: 'Outfit', sans-serif;
+    }
+    .filter-apply-btn:hover { background: #1f2937; }
+    .filter-active-dot {
+      display: none; width: 8px; height: 8px; background: #f97316;
+      border-radius: 50%; position: absolute; top: 0px; right: 0px;
+    }
+    .filter-options-btn { position: relative; }
+    .filter-options-btn.has-filters .filter-active-dot { display: block; }
+    /* ── End Filter Modal ─────────────────────────────────── */
   </style>
 </head>
 <body class="network-body">
+
+  <!-- Filter Results Modal -->
+  <div class="filter-modal-overlay" id="filter-modal-overlay">
+    <div class="filter-modal-sheet" id="filter-modal-sheet">
+      <div class="filter-modal-header">
+        <span class="filter-modal-title">Filter Results</span>
+        <button type="button" class="filter-close-btn" id="filter-close-btn">&times;</button>
+      </div>
+
+      <!-- Role -->
+      <label class="filter-section-label">Role</label>
+      <div class="filter-role-pills">
+        <button type="button" class="filter-role-pill active" data-role="All">All</button>
+        <button type="button" class="filter-role-pill" data-role="Student">Student</button>
+        <button type="button" class="filter-role-pill" data-role="Alumni">Alumni</button>
+      </div>
+
+      <!-- College / University -->
+      <div class="filter-field-group">
+        <label class="filter-section-label">College / University</label>
+        <input type="text" class="filter-input" id="filter-college" placeholder="e.g. IIT Delhi" />
+      </div>
+
+      <!-- Company (Alumni) -->
+      <div class="filter-field-group">
+        <label class="filter-section-label">Company (Alumni)</label>
+        <input type="text" class="filter-input" id="filter-company" placeholder="e.g. Google, Infosys" />
+      </div>
+
+      <!-- Course / Degree -->
+      <div class="filter-field-group">
+        <label class="filter-section-label">Course / Degree</label>
+        <input type="text" class="filter-input" id="filter-course" placeholder="e.g. B.Tech, MBA" />
+      </div>
+
+      <!-- Passing / Graduation Year -->
+      <div class="filter-field-group">
+        <label class="filter-section-label">Passing / Graduation Year</label>
+        <input type="text" class="filter-input" id="filter-year" placeholder="e.g. 2024" />
+      </div>
+
+      <!-- Domain / Skills -->
+      <div class="filter-field-group">
+        <label class="filter-section-label">Domain / Skills</label>
+        <input type="text" class="filter-input" id="filter-skills" placeholder="e.g. Flutter, React, Design" />
+      </div>
+
+      <div class="filter-footer">
+        <button type="button" class="filter-reset-btn" id="filter-reset-btn">Reset</button>
+        <button type="button" class="filter-apply-btn" id="filter-apply-btn">Apply Filters</button>
+      </div>
+    </div>
+  </div>
 
   <!-- Top Navbar -->
   <nav class="network-navbar">
@@ -536,7 +705,7 @@
           <input type="text" id="network-search-input" placeholder="Search by name, college," class="network-search-input" aria-label="Search members" />
         </div>
 
-        <button type="button" class="filter-options-btn" title="Filter Options">
+        <button type="button" class="filter-options-btn" id="open-filter-btn" title="Filter Options">
           <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
             <line x1="4" y1="21" x2="4" y2="14"></line>
             <line x1="4" y1="10" x2="4" y2="3"></line>
@@ -586,6 +755,7 @@
       getDoc, 
       setDoc, 
       updateDoc, 
+      deleteDoc, 
       serverTimestamp 
     } from './firebase-config.js';
 
@@ -594,6 +764,16 @@
     let currentAuthUser = null;
     let currentUserDoc = null;
     let activeTab = 'Suggested';
+
+    // Filter State
+    let activeFilters = {
+      role: 'All', // 'All', 'Student', 'Alumni'
+      college: '',
+      company: '',
+      course: '',
+      year: '',
+      skills: ''
+    };
 
     // Pure Firebase Firestore Database Map (Zero dummy data)
     const firestoreUsersMap = {};
@@ -604,8 +784,19 @@
       src = src.trim();
       if (src === '') return null;
       if (src.startsWith('http://') || src.startsWith('https://') || src.startsWith('data:image/')) return src;
-      if (src.startsWith('/9j/') || src.startsWith('iVBOR') || (src.length > 80 && !src.includes('://'))) {
+      if (src.startsWith('/9j/') || src.startsWith('iVBOR') || src.startsWith('R0lGOD') || (src.length > 80 && !src.includes('://'))) {
         return `data:image/jpeg;base64,${src}`;
+      }
+      // Firebase Storage gs:// path
+      if (src.startsWith('gs://')) {
+        const parts = src.replace('gs://', '').split('/');
+        const bucket = parts.shift();
+        const filePath = parts.join('/');
+        return `https://firebasestorage.googleapis.com/v0/b/${bucket}/o/${encodeURIComponent(filePath)}?alt=media`;
+      }
+      // Bare storage path
+      if (!src.includes('://') && (src.includes('/') || src.includes('.'))) {
+        return `https://firebasestorage.googleapis.com/v0/b/connect-firebase2005.firebasestorage.app/o/${encodeURIComponent(src)}?alt=media`;
       }
       return null;
     }
@@ -627,6 +818,65 @@
       const suggestedBadge = document.getElementById('suggested-badge');
       const requestsBadge = document.getElementById('requests-badge');
       const connectionsBadge = document.getElementById('connections-badge');
+
+      // Filter Modal UI Logic
+      const openFilterBtn = document.getElementById('open-filter-btn');
+      const filterModal = document.getElementById('filter-modal-overlay');
+      const closeFilterBtn = document.getElementById('filter-close-btn');
+      const rolePills = document.querySelectorAll('.filter-role-pill');
+      const filterCollege = document.getElementById('filter-college');
+      const filterCompany = document.getElementById('filter-company');
+      const filterCourse = document.getElementById('filter-course');
+      const filterYear = document.getElementById('filter-year');
+      const filterSkills = document.getElementById('filter-skills');
+      const filterApplyBtn = document.getElementById('filter-apply-btn');
+      const filterResetBtn = document.getElementById('filter-reset-btn');
+
+      const closeFilter = () => filterModal.classList.remove('open');
+      openFilterBtn.addEventListener('click', () => filterModal.classList.add('open'));
+      closeFilterBtn.addEventListener('click', closeFilter);
+      filterModal.addEventListener('click', (e) => { if (e.target === filterModal) closeFilter(); });
+      document.addEventListener('keydown', (e) => { if (e.key === 'Escape' && filterModal.classList.contains('open')) closeFilter(); });
+
+      rolePills.forEach(pill => {
+        pill.addEventListener('click', () => {
+          rolePills.forEach(p => p.classList.remove('active'));
+          pill.classList.add('active');
+        });
+      });
+
+      filterResetBtn.addEventListener('click', () => {
+        rolePills.forEach(p => p.classList.remove('active'));
+        document.querySelector('.filter-role-pill[data-role="All"]').classList.add('active');
+        filterCollege.value = '';
+        filterCompany.value = '';
+        filterCourse.value = '';
+        filterYear.value = '';
+        filterSkills.value = '';
+        activeFilters = { role: 'All', college: '', company: '', course: '', year: '', skills: '' };
+        openFilterBtn.classList.remove('has-filters');
+        closeFilter();
+        renderMainView();
+      });
+
+      filterApplyBtn.addEventListener('click', () => {
+        activeFilters.role = document.querySelector('.filter-role-pill.active').dataset.role;
+        activeFilters.college = filterCollege.value.trim().toLowerCase();
+        activeFilters.company = filterCompany.value.trim().toLowerCase();
+        activeFilters.course = filterCourse.value.trim().toLowerCase();
+        activeFilters.year = filterYear.value.trim().toLowerCase();
+        activeFilters.skills = filterSkills.value.trim().toLowerCase();
+
+        const hasActive = activeFilters.role !== 'All' || activeFilters.college || activeFilters.company || activeFilters.course || activeFilters.year || activeFilters.skills;
+        if (hasActive) {
+          openFilterBtn.classList.add('has-filters');
+        } else {
+          openFilterBtn.classList.remove('has-filters');
+        }
+
+        closeFilter();
+        renderMainView();
+      });
 
       // Initial View
       renderMainView();
@@ -693,11 +943,29 @@
 
         const registerUser = (uid, data, defaultRole) => {
           if (uid && uid !== myUid) {
+            const photoRaw =
+              data.authorPhotoBase64 || data.userPhotoBase64 || data.profilePhotoBase64 ||
+              data.photoURL || data.photo_url ||
+              data.photoBase64 || data.profilePic || data.profile_pic ||
+              data.avatar || data.avatarUrl || data.avatar_url ||
+              data.photo || data.profile_image || data.profileImage ||
+              data.profilePhoto || data.profileImageUrl || data.profile_image_url ||
+              data.imageUrl || data.image_url || data.image ||
+              data.userImage || data.user_image || data.dpUrl || data.dp || data.pfp ||
+              data.thumbnailUrl || data.thumbnail;
+            if (!photoRaw) {
+              console.log(`[Network Photo Debug] User ${uid} (${data.name || 'unknown'}) - no photo found. Keys:`, Object.keys(data));
+            }
             firestoreUsersMap[uid] = {
               uid: uid,
               name: data.name || data.displayName || data.authorName || data.fullName || data.username || 'Network User',
               role: data.role || data.authorRole || data.userRole || defaultRole,
-              photo: formatImageSrc(data.authorPhotoBase64 || data.photoURL || data.photoBase64 || data.profilePic || data.avatar || data.profile_image)
+              photo: formatImageSrc(photoRaw),
+              college: data.college || data.university || '',
+              company: data.company || data.organization || data.workplace || '',
+              course: data.course || data.degree || data.major || '',
+              year: data.passingYear || data.graduationYear || data.year || '',
+              skills: Array.isArray(data.skills) ? data.skills.join(', ') : (data.skills || data.domain || data.expertise || '')
             };
           }
         };
@@ -803,7 +1071,19 @@
 
         const suggestedList = all.filter(m => {
           const st = getUserStatus(m.uid);
-          return st === 'none' || st === 'sent_pending';
+          if (st !== 'none' && st !== 'sent_pending') return false;
+
+          // Apply Advanced Filters
+          if (activeFilters.role !== 'All') {
+            if (!m.role || !m.role.toLowerCase().includes(activeFilters.role.toLowerCase())) return false;
+          }
+          if (activeFilters.college && !String(m.college).toLowerCase().includes(activeFilters.college)) return false;
+          if (activeFilters.company && !String(m.company).toLowerCase().includes(activeFilters.company)) return false;
+          if (activeFilters.course && !String(m.course).toLowerCase().includes(activeFilters.course)) return false;
+          if (activeFilters.year && !String(m.year).toLowerCase().includes(activeFilters.year)) return false;
+          if (activeFilters.skills && !String(m.skills).toLowerCase().includes(activeFilters.skills)) return false;
+
+          return true;
         });
 
         const requestsList = all.filter(m => getUserStatus(m.uid) === 'received_pending');
@@ -947,9 +1227,49 @@
                     <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path>
                   </svg>
                 </a>
-                <button type="button" class="more-opts-btn" title="More Options">⋮</button>
+                <div class="conn-more-wrapper" style="position:relative;">
+                  <button type="button" class="more-opts-btn conn-more-trigger" title="More Options" data-uid="${m.uid}">⋮</button>
+                  <div class="conn-dropdown-menu" style="display:none;">
+                    <button type="button" class="conn-dropdown-item remove-conn-btn" data-uid="${m.uid}">
+                      <svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6l-1 14H6L5 6"></path><path d="M10 11v6"></path><path d="M14 11v6"></path><path d="M9 6V4h6v2"></path></svg>
+                      Remove Connection
+                    </button>
+                  </div>
+                </div>
               </div>
             `;
+
+            // Three-dots toggle
+            const trigger = item.querySelector('.conn-more-trigger');
+            const dropdown = item.querySelector('.conn-dropdown-menu');
+            trigger.addEventListener('click', (e) => {
+              e.stopPropagation();
+              // Close all other open dropdowns first
+              document.querySelectorAll('.conn-dropdown-menu').forEach(d => {
+                if (d !== dropdown) d.style.display = 'none';
+              });
+              dropdown.style.display = dropdown.style.display === 'block' ? 'none' : 'block';
+            });
+
+            // Remove Connection
+            const removeBtn = item.querySelector('.remove-conn-btn');
+            removeBtn.addEventListener('click', async (e) => {
+              e.stopPropagation();
+              dropdown.style.display = 'none';
+              if (!confirm(`Remove connection with ${m.name}?`)) return;
+              try {
+                const connId = getConnId(currentAuthUser.uid, m.uid);
+                await deleteDoc(doc(db, 'connections', connId));
+                // Also try capitalized variant
+                try { await deleteDoc(doc(db, 'Connections', connId)); } catch (_) {}
+                item.style.transition = 'opacity 0.3s ease';
+                item.style.opacity = '0';
+                setTimeout(() => item.remove(), 320);
+              } catch (err) {
+                console.error('Failed to remove connection:', err);
+                alert('Could not remove connection: ' + err.message);
+              }
+            });
 
             listDiv.appendChild(item);
           });
@@ -969,6 +1289,11 @@
           });
         });
       }
+
+      // Close all connection dropdowns when clicking outside
+      document.addEventListener('click', () => {
+        document.querySelectorAll('.conn-dropdown-menu').forEach(d => d.style.display = 'none');
+      });
 
       function escapeHtml(str) {
         if (!str) return '';

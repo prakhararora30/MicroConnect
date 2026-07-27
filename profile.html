@@ -682,8 +682,19 @@
       if (src === '') return defaultProfilePhoto;
 
       if (src.startsWith('http://') || src.startsWith('https://') || src.startsWith('data:image/')) return src;
-      if (src.startsWith('/9j/') || src.startsWith('iVBOR') || (src.length > 80 && !src.includes('://'))) {
+      if (src.startsWith('/9j/') || src.startsWith('iVBOR') || src.startsWith('R0lGOD') || (src.length > 80 && !src.includes('://'))) {
         return `data:image/jpeg;base64,${src}`;
+      }
+      // Firebase Storage gs:// path
+      if (src.startsWith('gs://')) {
+        const parts = src.replace('gs://', '').split('/');
+        const bucket = parts.shift();
+        const filePath = parts.join('/');
+        return `https://firebasestorage.googleapis.com/v0/b/${bucket}/o/${encodeURIComponent(filePath)}?alt=media`;
+      }
+      // Bare storage path
+      if (!src.includes('://') && (src.includes('/') || src.includes('.'))) {
+        return `https://firebasestorage.googleapis.com/v0/b/connect-firebase2005.firebasestorage.app/o/${encodeURIComponent(src)}?alt=media`;
       }
       return defaultProfilePhoto;
     }
@@ -750,15 +761,33 @@
           const role = currentUserDoc.role || 'Alumni';
           const location = currentUserDoc.location || 'Delhi, India';
           const bio = currentUserDoc.bio || 'Passionate tech enthusiast connecting students and alumni.';
-          const photo = formatImageSrc(
+          const photoRaw =
             currentUserDoc.authorPhotoBase64 ||
             currentUserDoc.userPhotoBase64 ||
+            currentUserDoc.profilePhotoBase64 ||
             currentUserDoc.photoURL ||
+            currentUserDoc.photo_url ||
+            currentUserDoc.photoBase64 ||
             currentUserDoc.profilePic ||
+            currentUserDoc.profile_pic ||
             currentUserDoc.avatar ||
+            currentUserDoc.avatarUrl ||
             currentUserDoc.photo ||
-            currentAuthUser.photoURL
-          );
+            currentUserDoc.profile_image ||
+            currentUserDoc.profileImage ||
+            currentUserDoc.profilePhoto ||
+            currentUserDoc.profileImageUrl ||
+            currentUserDoc.imageUrl ||
+            currentUserDoc.image_url ||
+            currentUserDoc.image ||
+            currentUserDoc.userImage ||
+            currentUserDoc.dpUrl ||
+            currentUserDoc.dp ||
+            currentAuthUser.photoURL;
+          if (!photoRaw) {
+            console.log('[Profile Debug] No photo field found. Available keys:', Object.keys(currentUserDoc));
+          }
+          const photo = formatImageSrc(photoRaw);
           const skills = currentUserDoc.skills || ['Java', 'UX Design', 'Kotlin', 'Firebase', 'Web Development'];
 
           profileDisplayName.textContent = name;
