@@ -985,7 +985,9 @@
       }
 
       if (notificationBellBtn) {
-        notificationBellBtn.addEventListener('click', setupNotifications);
+        notificationBellBtn.addEventListener('click', () => {
+          window.location.href = 'notifications.html';
+        });
 
         // Check if permission already exists
         if (Notification.permission === 'granted') {

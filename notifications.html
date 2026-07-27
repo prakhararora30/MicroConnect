@@ -1,0 +1,516 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Notifications - Connect</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg-color: #f3f4f6;
+      --card-bg: #ffffff;
+      --text-main: #111827;
+      --text-muted: #6b7280;
+      --brand-orange: #f97316;
+      --brand-red: #ea4a36;
+      --border-color: #e5e7eb;
+      --unread-bg: #eff6ff; /* Light blue tint for unread */
+    }
+
+    * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Outfit', sans-serif; }
+    
+    body {
+      background-color: var(--bg-color);
+      color: var(--text-main);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+
+    /* Minimalist Navbar */
+    .notif-navbar {
+      background: var(--card-bg);
+      padding: 0.8rem 2rem;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      border-bottom: 1px solid var(--border-color);
+      position: sticky;
+      top: 0;
+      z-index: 50;
+    }
+
+    .brand-logo {
+      font-size: 2.3rem;
+      font-weight: 700;
+      letter-spacing: -1px;
+      text-decoration: none;
+      background: linear-gradient(90deg, #e53012 0%, #f46c05 38%, #f89d04 70%, #ffc107 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      display: inline-block;
+      font-family: 'Outfit', sans-serif;
+      line-height: 1;
+    }
+
+    .nav-links {
+      display: flex;
+      align-items: center;
+      gap: 2rem;
+    }
+
+    .nav-item {
+      text-decoration: none;
+      color: var(--text-main);
+      font-weight: 500;
+      font-size: 0.95rem;
+      transition: color 0.2s;
+    }
+    
+    .nav-item:hover { color: var(--brand-red); }
+
+    .nav-profile-container {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      cursor: pointer;
+    }
+
+    .nav-avatar {
+      width: 36px;
+      height: 36px;
+      border-radius: 50%;
+      object-fit: cover;
+    }
+
+    /* Main Container */
+    .notif-container {
+      flex: 1;
+      display: flex;
+      justify-content: center;
+      padding: 3rem 1rem;
+    }
+
+    .notif-card {
+      background: var(--card-bg);
+      border-radius: 12px;
+      box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -1px rgba(0, 0, 0, 0.03);
+      width: 100%;
+      max-width: 680px;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .notif-header {
+      padding: 1.5rem 1.5rem 1rem 1.5rem;
+      border-bottom: 1px solid var(--border-color);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .notif-header-left {
+      display: flex;
+      align-items: baseline;
+      gap: 1rem;
+    }
+
+    .notif-title {
+      font-size: 1.6rem;
+      font-weight: 700;
+    }
+
+    .notif-count {
+      color: #d97746;
+      font-weight: 500;
+      font-size: 1.05rem;
+    }
+
+    .notif-header-actions {
+      display: flex;
+      gap: 1.2rem;
+    }
+
+    .notif-action-btn {
+      background: none;
+      border: none;
+      color: var(--text-muted);
+      font-weight: 500;
+      font-size: 0.9rem;
+      cursor: pointer;
+      text-decoration: underline;
+      text-decoration-color: transparent;
+      transition: all 0.2s;
+    }
+
+    .notif-action-btn:hover {
+      color: var(--text-main);
+      text-decoration-color: var(--text-main);
+    }
+
+    /* Notification Items */
+    .notif-list {
+      display: flex;
+      flex-direction: column;
+    }
+
+    .notif-item {
+      padding: 1.25rem 1.5rem;
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+      border-bottom: 1px solid var(--border-color);
+      position: relative;
+    }
+
+    .notif-item:last-child {
+      border-bottom: none;
+    }
+
+    .notif-item.unread {
+      background-color: var(--unread-bg);
+    }
+
+    .unread-indicator {
+      width: 12px;
+      height: 12px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, #fb923c, #ea580c);
+      box-shadow: 0 0 10px rgba(234, 88, 12, 0.4);
+      flex-shrink: 0;
+      opacity: 0;
+    }
+
+    .notif-item.unread .unread-indicator {
+      opacity: 1;
+    }
+
+    .notif-avatar-wrapper {
+      position: relative;
+    }
+
+    .notif-avatar {
+      width: 48px;
+      height: 48px;
+      border-radius: 50%;
+      object-fit: cover;
+    }
+
+    .notif-icon-badge {
+      position: absolute;
+      bottom: -2px;
+      right: -2px;
+      width: 20px;
+      height: 20px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border: 2px solid var(--card-bg);
+    }
+
+    .badge-like { background: #ef4444; color: white; }
+    .badge-comment { background: #3b82f6; color: white; }
+    .badge-connection { background: #10b981; color: white; }
+
+    .notif-content {
+      flex: 1;
+      font-size: 0.95rem;
+      line-height: 1.4;
+    }
+
+    .notif-text {
+      color: var(--text-main);
+    }
+
+    .notif-text strong {
+      font-weight: 600;
+    }
+
+    .notif-time {
+      color: var(--text-muted);
+      font-size: 0.85rem;
+      margin-left: 0.5rem;
+    }
+
+    .notif-actions {
+      display: flex;
+      gap: 0.5rem;
+      margin-left: 1rem;
+    }
+
+    .btn-accept {
+      background: linear-gradient(135deg, #f97316, #ea580c);
+      color: white;
+      border: none;
+      padding: 0.5rem 1.2rem;
+      border-radius: 8px;
+      font-weight: 600;
+      font-size: 0.9rem;
+      cursor: pointer;
+      box-shadow: 0 2px 4px rgba(234, 88, 12, 0.2);
+    }
+
+    .btn-decline {
+      background: #e5e7eb;
+      color: var(--text-main);
+      border: none;
+      padding: 0.5rem 1.2rem;
+      border-radius: 8px;
+      font-weight: 600;
+      font-size: 0.9rem;
+      cursor: pointer;
+    }
+
+    .empty-state {
+      padding: 4rem 2rem;
+      text-align: center;
+      color: var(--text-muted);
+      font-size: 1.1rem;
+    }
+
+  </style>
+</head>
+<body>
+
+  <nav class="notif-navbar">
+    <a href="index.html" class="brand-logo" aria-label="Connect Home">
+      connect
+    </a>
+    <div class="nav-links">
+      <a href="dashboard.html" class="nav-item">Home</a>
+      <a href="network.html" class="nav-item">Network</a>
+      <a href="messages.html" class="nav-item">Messaging</a>
+      <div class="nav-profile-container">
+        <a href="profile.html">
+          <img id="nav-user-avatar" class="nav-avatar" src="data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='100' height='100' viewBox='0 0 100 100'><circle cx='50' cy='50' r='50' fill='%23e0812b'/><path d='M50 28 a 14 14 0 1 0 0.001 0 M32 74 a 18 18 0 0 1 36 0' stroke='%23ffffff' stroke-width='6' fill='none' stroke-linecap='round'/></svg>" alt="Profile">
+        </a>
+      </div>
+    </div>
+  </nav>
+
+  <main class="notif-container">
+    <div class="notif-card">
+      
+      <div class="notif-header">
+        <div class="notif-header-left">
+          <h1 class="notif-title">Notifications</h1>
+          <span class="notif-count" id="notif-count-text">0 new updates</span>
+        </div>
+        <div class="notif-header-actions">
+          <button id="mark-all-read-btn" class="notif-action-btn">Mark all read</button>
+          <button id="clear-all-btn" class="notif-action-btn">Clear all</button>
+        </div>
+      </div>
+
+      <div class="notif-list" id="notif-list-container">
+        <div class="empty-state">Loading notifications...</div>
+      </div>
+
+    </div>
+  </main>
+
+  <script type="module">
+    import { auth, onAuthStateChanged, db, collection, onSnapshot, doc, updateDoc, deleteDoc, getDoc } from './firebase-config.js';
+
+    const notifListContainer = document.getElementById('notif-list-container');
+    const notifCountText = document.getElementById('notif-count-text');
+    const navUserAvatar = document.getElementById('nav-user-avatar');
+    const markAllReadBtn = document.getElementById('mark-all-read-btn');
+    const clearAllBtn = document.getElementById('clear-all-btn');
+
+    let currentUserId = null;
+    let allNotifications = [];
+    const defaultAvatar = "data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='100' height='100' viewBox='0 0 100 100'><circle cx='50' cy='50' r='50' fill='%239ca3af'/><path d='M50 28 a 14 14 0 1 0 0.001 0 M32 74 a 18 18 0 0 1 36 0' stroke='%23ffffff' stroke-width='6' fill='none' stroke-linecap='round'/></svg>";
+
+    function escapeHtml(str) {
+      if (!str) return '';
+      return String(str).replace(/[&<>"']/g, m => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#039;' }[m]));
+    }
+
+    function getRelativeTime(timestamp) {
+      if (!timestamp) return 'Just now';
+      const date = timestamp.toDate ? timestamp.toDate() : new Date(timestamp);
+      const seconds = Math.floor((new Date() - date) / 1000);
+      
+      if (seconds < 60) return 'Just now';
+      const minutes = Math.floor(seconds / 60);
+      if (minutes < 60) return `${minutes}m ago`;
+      const hours = Math.floor(minutes / 60);
+      if (hours < 24) return `${hours}h ago`;
+      const days = Math.floor(hours / 24);
+      return `${days}d ago`;
+    }
+
+    let userType = null;
+
+    onAuthStateChanged(auth, async (user) => {
+      if (user) {
+        currentUserId = user.uid;
+        if (user.photoURL) navUserAvatar.src = user.photoURL;
+        
+        // Locate which collection the user profile is in (order matched with dashboard.html)
+        const collectionsToCheck = ['users', 'students', 'alumni'];
+        for (const col of collectionsToCheck) {
+          try {
+            const docSnap = await getDoc(doc(db, col, currentUserId));
+            if (docSnap.exists()) {
+              userType = col;
+              break;
+            }
+          } catch(e) {
+            console.warn(`Could not check collection ${col}`, e);
+          }
+        }
+
+        if (!userType) {
+          notifListContainer.innerHTML = `<div class="empty-state" style="color: #ef4444;">Could not find your user profile to load notifications.</div>`;
+          return;
+        }
+        
+        console.log(`[Notifications] Attempting to listen to path: ${userType}/${currentUserId}/notifications`);
+        
+        onSnapshot(collection(db, userType, currentUserId, 'notifications'), (snapshot) => {
+          allNotifications = [];
+          snapshot.forEach(docSnap => {
+            const data = docSnap.data();
+            allNotifications.push({ id: docSnap.id, ...data });
+          });
+          
+          allNotifications.sort((a, b) => {
+            const tA = a.timestamp?.toMillis ? a.timestamp.toMillis() : (a.timestamp || 0);
+            const tB = b.timestamp?.toMillis ? b.timestamp.toMillis() : (b.timestamp || 0);
+            return tB - tA;
+          });
+          
+          renderNotifications();
+        }, (err) => {
+          console.error("Error fetching notifications:", err);
+          notifListContainer.innerHTML = `<div class="empty-state" style="color: #ef4444;">Error: ${err.message}</div>`;
+        });
+      } else {
+        window.location.href = 'login.html';
+      }
+    });
+
+    function renderNotifications() {
+      notifListContainer.innerHTML = '';
+      
+      const unreadCount = allNotifications.filter(n => !n.isRead).length;
+      notifCountText.textContent = `${unreadCount} new update${unreadCount !== 1 ? 's' : ''}`;
+      
+      if (allNotifications.length === 0) {
+        notifListContainer.innerHTML = '<div class="empty-state">No new notifications</div>';
+        return;
+      }
+
+      allNotifications.forEach(notif => {
+        const item = document.createElement('div');
+        item.className = `notif-item ${!notif.isRead ? 'unread' : ''}`;
+        
+        const senderName = escapeHtml(notif.senderName || notif.authorName || 'Someone');
+        const text = escapeHtml(notif.text || notif.message || notif.title || 'sent you a notification');
+        const timeStr = getRelativeTime(notif.timestamp);
+        const rawPhoto = notif.senderPhoto || notif.authorPhotoBase64 || notif.profileImageUrl || notif.photoUrl;
+        
+        let avatarSrc = defaultAvatar;
+        if (rawPhoto) {
+          if (rawPhoto.startsWith('http') || rawPhoto.startsWith('data:image') || rawPhoto.startsWith('gs://')) {
+            avatarSrc = rawPhoto;
+          } else {
+            avatarSrc = `data:image/jpeg;base64,${rawPhoto}`;
+          }
+        }
+        
+        let badgeHtml = '';
+        const t = (notif.type || '').toLowerCase();
+        if (t === 'like') {
+          badgeHtml = `<div class="notif-icon-badge badge-like"><svg width="10" height="10" viewBox="0 0 24 24" fill="currentColor"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/></svg></div>`;
+        } else if (t === 'comment') {
+          badgeHtml = `<div class="notif-icon-badge badge-comment"><svg width="10" height="10" viewBox="0 0 24 24" fill="currentColor"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path></svg></div>`;
+        } else if (t === 'connection' || t === 'request') {
+          badgeHtml = `<div class="notif-icon-badge badge-connection"><svg width="10" height="10" viewBox="0 0 24 24" fill="currentColor"><path d="M16 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle><path d="M23 21v-2a4 4 0 0 0-3-3.87"></path><path d="M16 3.13a4 4 0 0 1 0 7.75"></path></svg></div>`;
+        }
+
+        let actionsHtml = '';
+        if (t === 'connection' || t === 'request') {
+          actionsHtml = `
+            <div class="notif-actions">
+              <button class="btn-accept" data-id="${notif.id}">Accept</button>
+              <button class="btn-decline" data-id="${notif.id}">Decline</button>
+            </div>
+          `;
+        }
+
+        item.innerHTML = `
+          <div class="unread-indicator"></div>
+          <div class="notif-avatar-wrapper">
+            <img src="${avatarSrc}" alt="Avatar" class="notif-avatar">
+            ${badgeHtml}
+          </div>
+          <div class="notif-content">
+            <span class="notif-text"><strong>${senderName}</strong> ${text}</span>
+            <span class="notif-time">${timeStr}</span>
+          </div>
+          ${actionsHtml}
+        `;
+        
+        item.addEventListener('click', async (e) => {
+          if (e.target.tagName.toLowerCase() === 'button') return; 
+          if (!notif.isRead) {
+            try {
+              await updateDoc(doc(db, userType, currentUserId, 'notifications', notif.id), { isRead: true });
+            } catch(e) { console.error('Error updating read status', e); }
+          }
+        });
+
+        notifListContainer.appendChild(item);
+      });
+
+      document.querySelectorAll('.btn-accept').forEach(btn => {
+        btn.addEventListener('click', async (e) => {
+          const id = e.target.getAttribute('data-id');
+          btn.textContent = 'Accepted';
+          btn.style.background = '#10b981';
+          try {
+            await updateDoc(doc(db, userType, currentUserId, 'notifications', id), { isRead: true, status: 'accepted' });
+          } catch(e) {}
+        });
+      });
+
+      document.querySelectorAll('.btn-decline').forEach(btn => {
+        btn.addEventListener('click', async (e) => {
+          const id = e.target.getAttribute('data-id');
+          btn.textContent = 'Declined';
+          try {
+            await updateDoc(doc(db, userType, currentUserId, 'notifications', id), { isRead: true, status: 'declined' });
+          } catch(e) {}
+        });
+      });
+    }
+
+    markAllReadBtn.addEventListener('click', async () => {
+      const unreadNotifs = allNotifications.filter(n => !n.isRead);
+      for (const n of unreadNotifs) {
+        try {
+          await updateDoc(doc(db, userType, currentUserId, 'notifications', n.id), { isRead: true });
+        } catch(e) { console.error('Error marking read', e); }
+      }
+    });
+
+    clearAllBtn.addEventListener('click', async () => {
+      if (confirm('Are you sure you want to clear all notifications?')) {
+        for (const n of allNotifications) {
+          try {
+            await deleteDoc(doc(db, userType, currentUserId, 'notifications', n.id));
+          } catch(e) { console.error('Error deleting', e); }
+        }
+      }
+    });
+
+  </script>
+</body>
+</html>
