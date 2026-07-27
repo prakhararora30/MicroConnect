@@ -357,7 +357,7 @@
     .message-row {
       display: flex;
       gap: 0.8rem;
-      max-width: 75%;
+      max-width: 65%;
       align-items: flex-start;
       overflow: visible;
     }
@@ -387,17 +387,12 @@
     }
 
     .message-bubble {
-      padding: 0.75rem 1.1rem;
+      padding: 0.6rem 1rem;
       border-radius: 18px;
       font-size: 0.95rem;
       line-height: 1.55;
       word-break: break-word;
       overflow-wrap: break-word;
-      white-space: pre-wrap;
-      min-width: 52px;
-      max-width: 100%;
-      box-sizing: border-box;
-      display: inline-block;
     }
 
     .message-row.incoming .message-bubble {
@@ -522,9 +517,8 @@
       position: relative;
       display: flex;
       flex-direction: column;
-      width: fit-content;
-      max-width: 100%;
       min-width: 0;
+      flex: 1;
     }
 
     .message-row.incoming .message-container-wrapper {
