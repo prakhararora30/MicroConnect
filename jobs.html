@@ -517,103 +517,9 @@
 
       <!-- Job Cards 2-Column Grid Matching Screenshot -->
       <div class="job-cards-grid" id="job-cards-grid">
-        
-        <!-- Job 1 -->
-        <article class="job-card" data-id="1" data-title="Software Engineer" data-company="Google" data-location="Colorado" data-logo="google" data-poster="Alex Morgan">
-          <div>
-            <div class="job-card-header">
-              <h3 class="job-card-title">Software Engineer at<br>Google</h3>
-              <span class="vacancy-badge">Vacancies</span>
-            </div>
-            <p class="job-company-name">Google</p>
-          </div>
-          <span class="job-location-tag">📍 Colorado</span>
-        </article>
-
-        <!-- Job 2 -->
-        <article class="job-card" data-id="2" data-title="Data Analyst at Stripe" data-company="Stripe" data-location="Washington, IN" data-logo="stripe" data-poster="Sarah Chen">
-          <div>
-            <div class="job-card-header">
-              <h3 class="job-card-title">Data Analyst at Stripe</h3>
-              <span class="vacancy-badge">Vacancies</span>
-            </div>
-            <p class="job-company-name">Stripe</p>
-          </div>
-          <span class="job-location-tag">📍 Washington, IN</span>
-        </article>
-
-        <!-- Job 3 (SELECTED matching Screenshot) -->
-        <article class="job-card selected" data-id="3" data-title="Software Engineer" data-company="Stripe" data-location="Washington, IN" data-logo="stripe" data-poster="Prakhar Arora">
-          <div>
-            <div class="job-card-header">
-              <h3 class="job-card-title">Data Analyst at Stripe</h3>
-              <span class="vacancy-badge">Vacancies</span>
-            </div>
-            <p class="job-company-name">Stripe</p>
-          </div>
-          <span class="job-location-tag">📍 Washington, IN</span>
-        </article>
-
-        <!-- Job 4 -->
-        <article class="job-card" data-id="4" data-title="Software Engineer" data-company="Google" data-location="Colorado" data-logo="google" data-poster="Daran Norn">
-          <div>
-            <div class="job-card-header">
-              <h3 class="job-card-title">Software Engineer</h3>
-              <span class="vacancy-badge">Vacancies</span>
-            </div>
-            <p class="job-company-name">Google</p>
-          </div>
-          <span class="job-location-tag">📍 Colorado</span>
-        </article>
-
-        <!-- Job 5 -->
-        <article class="job-card" data-id="5" data-title="Software Engineer" data-company="Stripe" data-location="Samington" data-logo="stripe" data-poster="Jian Ron">
-          <div>
-            <div class="job-card-header">
-              <h3 class="job-card-title">Software Engineer</h3>
-              <span class="vacancy-badge">Vacancies</span>
-            </div>
-            <p class="job-company-name">Stripe</p>
-          </div>
-          <span class="job-location-tag">📍 Samington</span>
-        </article>
-
-        <!-- Job 6 -->
-        <article class="job-card" data-id="6" data-title="Data Analyst at Stripe" data-company="Stripe" data-location="Samington" data-logo="stripe" data-poster="Naan Shom">
-          <div>
-            <div class="job-card-header">
-              <h3 class="job-card-title">Data Analyst at Stripe</h3>
-              <span class="vacancy-badge">Vacancies</span>
-            </div>
-            <p class="job-company-name">Stripe</p>
-          </div>
-          <span class="job-location-tag">📍 Samington</span>
-        </article>
-
-        <!-- Job 7 -->
-        <article class="job-card" data-id="7" data-title="Software Engineer at Google" data-company="Google" data-location="Samington" data-logo="google" data-poster="Karinamson">
-          <div>
-            <div class="job-card-header">
-              <h3 class="job-card-title">Software Engineer at<br>Google</h3>
-              <span class="vacancy-badge">Vacancies</span>
-            </div>
-            <p class="job-company-name">Google</p>
-          </div>
-          <span class="job-location-tag">📍 Samington</span>
-        </article>
-
-        <!-- Job 8 -->
-        <article class="job-card" data-id="8" data-title="Data Analyst at Stripe" data-company="Stripe" data-location="Samington" data-logo="stripe" data-poster="Sarah Chen">
-          <div>
-            <div class="job-card-header">
-              <h3 class="job-card-title">Data Analyst at Stripe</h3>
-              <span class="vacancy-badge">Vacancies</span>
-            </div>
-            <p class="job-company-name">Stripe</p>
-          </div>
-          <span class="job-location-tag">📍 Samington</span>
-        </article>
-
+        <div style="text-align: center; padding: 2rem; color: #6b7280; grid-column: span 2;">
+          Loading Jobs...
+        </div>
       </div>
     </section>
 
@@ -671,10 +577,15 @@
   <script type="module">
     import { auth, onAuthStateChanged, db, collection, onSnapshot } from './firebase-config.js';
 
-    const defaultProfilePhoto = "data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='100' height='100' viewBox='0 0 100 100'><circle cx='50' cy='50' r='50' fill='%23e0812b'/><path d='M50 28 a 14 14 0 1 0 0.001 0 M32 74 a 18 18 0 0 1 36 0' stroke='%23ffffff' stroke-width='6' fill='none' stroke-linecap='round'/></svg>";
+    function escapeHtml(str) {
+      if (!str) return '';
+      return String(str).replace(/[&<>"']/g, function(m) {
+        return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#039;' }[m];
+      });
+    }
 
     document.addEventListener('DOMContentLoaded', () => {
-      const jobCards = document.querySelectorAll('.job-card');
+      const jobCardsGrid = document.getElementById('job-cards-grid');
       const detailJobTitle = document.getElementById('detail-job-title');
       const detailCompanyName = document.getElementById('detail-company-name');
       const detailLocationName = document.getElementById('detail-location-name');
@@ -683,40 +594,131 @@
       const posterAvatarImg = document.getElementById('poster-avatar-img');
       const searchInput = document.getElementById('job-search-input');
       const navAvatarImg = document.getElementById('nav-user-avatar');
+      
+      const detailPanel = document.getElementById('job-detail-panel');
+      const reqList = document.querySelector('.requirements-list');
+      
+      // Default to hidden until a job is loaded/clicked
+      if(detailPanel) detailPanel.style.opacity = '0';
+
+      let allJobs = [];
 
       // Auth Listener to update navbar profile
       onAuthStateChanged(auth, (user) => {
-        if (user && user.photoURL) {
+        if (user && user.photoURL && navAvatarImg) {
           navAvatarImg.src = user.photoURL;
         }
       });
 
-      // Card Selection Handler
-      jobCards.forEach(card => {
-        card.addEventListener('click', () => {
-          jobCards.forEach(c => c.classList.remove('selected'));
-          card.classList.add('selected');
-
-          const title = card.dataset.title;
-          const company = card.dataset.company;
-          const location = card.dataset.location;
-          const logoType = card.dataset.logo;
-          const poster = card.dataset.poster;
-
-          detailJobTitle.innerHTML = title.replace(' at ', '<br>');
-          detailCompanyName.textContent = company;
-          detailLocationName.textContent = `📍 ${location}`;
-          posterNameTxt.textContent = `${poster} posted ${company}`;
-
-          if (logoType === 'google') {
-            companyLogoBox.className = 'google-logo-box';
-            companyLogoBox.textContent = 'G';
-          } else {
-            companyLogoBox.className = 'stripe-logo-box';
-            companyLogoBox.textContent = 'stripe';
-          }
+      // Fetch Jobs from Firestore
+      onSnapshot(collection(db, 'jobs'), (snapshot) => {
+        allJobs = [];
+        snapshot.forEach(doc => {
+          allJobs.push({ id: doc.id, ...doc.data() });
         });
+        renderJobs(allJobs);
+      }, (error) => {
+        console.error("Error fetching jobs:", error);
+        jobCardsGrid.innerHTML = `<div style="text-align: center; padding: 2rem; color: #ef4444; grid-column: span 2;">Error loading jobs: ${error.message}</div>`;
       });
+
+      function renderJobs(jobsArray) {
+        jobCardsGrid.innerHTML = '';
+        if (jobsArray.length === 0) {
+          jobCardsGrid.innerHTML = '<div style="text-align: center; padding: 4rem; color: #6b7280; grid-column: span 2; font-weight: 600;">No jobs posted yet.</div>';
+          if(detailPanel) detailPanel.style.opacity = '0';
+          return;
+        }
+
+        jobsArray.forEach((job, index) => {
+          const title = job.title || job.jobTitle || job.roleName || 'Untitled Job';
+          const company = job.company || job.companyName || 'Unknown Company';
+          const location = job.location || job.jobLocation || 'Remote';
+          
+          const card = document.createElement('article');
+          card.className = 'job-card';
+          // auto select the first job
+          if (index === 0) {
+            card.classList.add('selected');
+            selectJob(job);
+          }
+          
+          card.innerHTML = `
+            <div>
+              <div class="job-card-header">
+                <h3 class="job-card-title">${escapeHtml(title).replace(' at ', '<br>')}</h3>
+                <span class="vacancy-badge">Vacancies</span>
+              </div>
+              <p class="job-company-name">${escapeHtml(company)}</p>
+            </div>
+            <span class="job-location-tag">📍 ${escapeHtml(location)}</span>
+          `;
+          
+          card.addEventListener('click', () => {
+            document.querySelectorAll('.job-card').forEach(c => c.classList.remove('selected'));
+            card.classList.add('selected');
+            selectJob(job);
+          });
+          
+          jobCardsGrid.appendChild(card);
+        });
+      }
+
+      function selectJob(job) {
+        if(detailPanel) detailPanel.style.opacity = '1';
+        
+        const title = job.title || job.jobTitle || job.roleName || 'Untitled Job';
+        const company = job.company || job.companyName || 'Unknown Company';
+        const location = job.location || job.jobLocation || 'Remote';
+        const poster = job.posterName || job.authorName || 'Alumni';
+        const reqs = job.requirements || job.skills || job.description || 'No specific requirements listed.';
+        
+        detailJobTitle.innerHTML = escapeHtml(title).replace(' at ', '<br>');
+        detailCompanyName.textContent = escapeHtml(company);
+        detailLocationName.textContent = `📍 ${escapeHtml(location)}`;
+        posterNameTxt.textContent = `${escapeHtml(poster)} posted ${escapeHtml(company)}`;
+        
+        const rawPhoto = job.authorPhotoBase64 || job.profileImageUrl || job.imageUrl || job.photoUrl;
+        if (rawPhoto && posterAvatarImg) {
+          if (rawPhoto.startsWith('data:image') || rawPhoto.startsWith('http') || rawPhoto.startsWith('gs://')) {
+            posterAvatarImg.src = rawPhoto;
+          } else {
+            posterAvatarImg.src = `data:image/jpeg;base64,${rawPhoto}`;
+          }
+        } else if (posterAvatarImg) {
+          posterAvatarImg.src = defaultProfilePhoto;
+        }
+        
+        const logoType = company.toLowerCase();
+        if (logoType.includes('google')) {
+          companyLogoBox.className = 'google-logo-box';
+          companyLogoBox.textContent = 'G';
+        } else if (logoType.includes('stripe')) {
+          companyLogoBox.className = 'stripe-logo-box';
+          companyLogoBox.textContent = 'stripe';
+        } else {
+          companyLogoBox.className = 'stripe-logo-box'; // default blue
+          companyLogoBox.textContent = escapeHtml(company).charAt(0).toUpperCase();
+        }
+        
+        if (reqList) {
+          reqList.innerHTML = '';
+          const reqArray = typeof reqs === 'string' ? reqs.split('\\n') : reqs;
+          if (Array.isArray(reqArray)) {
+            reqArray.forEach(r => {
+              if (r.trim()) {
+                const li = document.createElement('li');
+                li.textContent = r;
+                reqList.appendChild(li);
+              }
+            });
+          } else {
+             const li = document.createElement('li');
+             li.textContent = 'No specific requirements listed.';
+             reqList.appendChild(li);
+          }
+        }
+      }
 
       // Apply Now Action
       const applyBtn = document.getElementById('apply-now-btn');
@@ -730,13 +732,17 @@
       if (searchInput) {
         searchInput.addEventListener('input', (e) => {
           const q = e.target.value.toLowerCase().trim();
-          jobCards.forEach(card => {
-            const title = (card.dataset.title || '').toLowerCase();
-            const company = (card.dataset.company || '').toLowerCase();
-            const location = (card.dataset.location || '').toLowerCase();
-            const match = title.includes(q) || company.includes(q) || location.includes(q);
-            card.style.display = match ? 'flex' : 'none';
+          if (!q) {
+            renderJobs(allJobs);
+            return;
+          }
+          const filtered = allJobs.filter(job => {
+            const title = (job.title || job.jobTitle || job.roleName || '').toLowerCase();
+            const company = (job.company || job.companyName || '').toLowerCase();
+            const location = (job.location || job.jobLocation || '').toLowerCase();
+            return title.includes(q) || company.includes(q) || location.includes(q);
           });
+          renderJobs(filtered);
         });
       }
     });

@@ -1,0 +1,473 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Connect - Leaderboard</title>
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+  
+  <style>
+    :root {
+      --bg-color: #f9fafb;
+      --text-main: #111827;
+      --text-muted: #6b7280;
+      --brand-gradient: linear-gradient(90deg, #ea4a36 0%, #f69d3c 100%);
+      
+      --gold-light: #fef08a;
+      --gold-main: #eab308;
+      --gold-dark: #ca8a04;
+      --gold-bg: linear-gradient(180deg, #fef08a 0%, #eab308 100%);
+      --gold-block: linear-gradient(180deg, #e8d1a7 0%, #c19b6c 100%);
+      
+      --silver-main: #9ca3af;
+      --silver-bg: linear-gradient(180deg, #e5e7eb 0%, #9ca3af 100%);
+      --silver-block: linear-gradient(180deg, #e2e4e8 0%, #b4b8bf 100%);
+      
+      --bronze-main: #b45309;
+      --bronze-bg: linear-gradient(180deg, #fdba74 0%, #b45309 100%);
+      --bronze-block: linear-gradient(180deg, #e1b496 0%, #c08564 100%);
+    }
+
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    body {
+      font-family: 'Outfit', sans-serif;
+      background: var(--bg-color);
+      color: var(--text-main);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+
+    /* ── Navbar ────────────────────────────────────────── */
+    .lb-navbar {
+      background: #ffffff;
+      padding: 1.2rem 4%;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      border-bottom: 1px solid #f3f4f6;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.02);
+      position: sticky;
+      top: 0;
+      z-index: 100;
+    }
+    
+    .lb-logo-wrap { display: flex; align-items: center; gap: 0.5rem; text-decoration: none; }
+    .lb-logo-mark {
+      width: 28px; height: 28px; border-radius: 50%;
+      background: var(--brand-gradient); display: inline-block;
+    }
+    .lb-logo-text { font-size: 1.5rem; font-weight: 800; color: #111827; letter-spacing: -0.5px; }
+
+    .lb-nav-links { display: flex; gap: 2.5rem; }
+    .lb-nav-item {
+      text-decoration: none; color: #6b7280; font-weight: 600; font-size: 1rem;
+      position: relative; padding-bottom: 0.2rem; transition: color 0.2s;
+    }
+    .lb-nav-item:hover { color: #111827; }
+    .lb-nav-item.active { color: #111827; }
+    .lb-nav-item.active::after {
+      content: ''; position: absolute; bottom: -0.3rem; left: 0;
+      width: 100%; height: 2.5px; background: #111827; border-radius: 999px;
+    }
+
+    .lb-nav-right { width: 100px; /* Spacer */ }
+
+    /* ── Main Content ──────────────────────────────────────── */
+    .lb-container {
+      max-width: 1100px;
+      margin: 0 auto;
+      padding: 3rem 1.5rem 5rem;
+      width: 100%;
+    }
+
+    /* Header & Toggle */
+    .lb-header-row {
+      display: flex;
+      align-items: center;
+      gap: 2rem;
+      margin-bottom: 3rem;
+    }
+    .lb-title {
+      font-size: 2.4rem; font-weight: 800; letter-spacing: -0.5px; color: #111827;
+    }
+    .lb-toggle {
+      display: flex; background: #f3f4f6; border-radius: 999px; padding: 0.25rem;
+      box-shadow: inset 0 2px 4px rgba(0,0,0,0.03);
+    }
+    .lb-toggle-btn {
+      padding: 0.6rem 1.5rem; border: none; background: transparent;
+      border-radius: 999px; font-family: 'Outfit', sans-serif; font-size: 0.95rem;
+      font-weight: 600; color: #6b7280; cursor: pointer; transition: all 0.2s;
+    }
+    .lb-toggle-btn.active {
+      background: #1f2937; color: #ffffff; box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+    }
+
+    /* ── Podium Section ────────────────────────────────────── */
+    .lb-podium-section {
+      display: flex;
+      align-items: flex-end;
+      justify-content: center;
+      margin-top: 5rem;
+      margin-bottom: -10px; /* To overlap list cleanly */
+      height: 380px;
+    }
+    
+    .podium-slot {
+      display: flex; flex-direction: column; align-items: center;
+      position: relative; width: 220px; text-align: center;
+    }
+    .podium-slot.rank-1 { z-index: 3; }
+    .podium-slot.rank-2 { z-index: 2; margin-right: -10px; }
+    .podium-slot.rank-3 { z-index: 1; margin-left: -10px; }
+
+    .podium-avatar-wrap {
+      position: relative; margin-bottom: 1rem;
+    }
+    .podium-avatar {
+      width: 85px; height: 85px; border-radius: 50%; object-fit: cover;
+      box-shadow: 0 8px 20px rgba(0,0,0,0.15);
+      background: #fff;
+    }
+    .rank-1 .podium-avatar {
+      width: 110px; height: 110px; border: 5px solid var(--gold-main);
+    }
+    .rank-2 .podium-avatar { border: 4px solid var(--silver-main); }
+    .rank-3 .podium-avatar { border: 4px solid var(--bronze-main); }
+
+    /* Medals / Crown */
+    .podium-medal {
+      position: absolute; bottom: 0; right: -5px;
+      width: 30px; height: 30px; border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+      font-weight: 800; color: #fff; font-size: 0.85rem;
+      box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+    }
+    .rank-2 .podium-medal { background: var(--silver-bg); }
+    .rank-3 .podium-medal { background: var(--bronze-bg); }
+    
+    .podium-crown {
+      position: absolute; top: -35px; left: 50%; transform: translateX(-50%);
+      font-size: 2.5rem; filter: drop-shadow(0 4px 6px rgba(234, 179, 8, 0.4));
+    }
+
+    /* Podium User Info */
+    .podium-name { font-size: 1.15rem; font-weight: 700; color: #111827; margin-bottom: 0.2rem; }
+    .rank-1 .podium-name { font-size: 1.3rem; }
+    .podium-role { font-size: 0.85rem; color: #4b5563; margin-bottom: 0.8rem; line-height: 1.2; padding: 0 10px; }
+    
+    .podium-pts-pill {
+      background: #ffedd5; color: #c2410c; padding: 0.4rem 1rem; border-radius: 999px;
+      font-weight: 700; font-size: 0.9rem; display: inline-flex; align-items: center; gap: 0.3rem;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.05); margin-bottom: 1.5rem;
+    }
+    .rank-1 .podium-pts-pill { background: #fef08a; color: #854d0e; font-size: 1rem; }
+
+    /* 3D Blocks */
+    .podium-block {
+      width: 100%; border-radius: 8px 8px 0 0;
+      box-shadow: inset 0 2px 4px rgba(255,255,255,0.4), 0 -4px 15px rgba(0,0,0,0.05);
+      position: relative;
+    }
+    .rank-1 .podium-block { height: 180px; background: var(--gold-block); }
+    .rank-2 .podium-block { height: 140px; background: var(--silver-block); }
+    .rank-3 .podium-block { height: 120px; background: var(--bronze-block); }
+
+    /* ── List Section (Ranks 4-10) ─────────────────────────── */
+    .lb-list-container {
+      background: #ffffff;
+      border-radius: 16px;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.04);
+      padding: 0.5rem;
+      position: relative;
+      z-index: 10;
+    }
+
+    .lb-list-item {
+      display: flex; align-items: center; padding: 1.2rem 1.5rem;
+      border-bottom: 1px solid #f3f4f6; transition: background 0.15s;
+    }
+    .lb-list-item:last-child { border-bottom: none; }
+    .lb-list-item:hover { background: #f9fafb; }
+
+    .list-rank-num {
+      width: 32px; height: 32px; background: #e5e7eb; border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+      font-weight: 700; color: #4b5563; font-size: 0.95rem; margin-right: 1.5rem;
+    }
+    .list-avatar {
+      width: 48px; height: 48px; border-radius: 50%; object-fit: cover;
+      margin-right: 1.2rem; border: 2px solid #fff; box-shadow: 0 2px 6px rgba(0,0,0,0.08);
+    }
+    .list-user-info { flex: 1; display: flex; flex-direction: column; }
+    .list-name { font-size: 1.05rem; font-weight: 700; color: #111827; margin-bottom: 0.15rem; }
+    .list-role { font-size: 0.85rem; color: #6b7280; }
+    
+    .list-pts-pill {
+      background: #ffedd5; color: #c2410c; padding: 0.4rem 1rem; border-radius: 999px;
+      font-weight: 700; font-size: 0.95rem; display: inline-flex; align-items: center; gap: 0.3rem;
+    }
+
+  </style>
+</head>
+<body>
+
+  <!-- Navbar -->
+  <nav class="lb-navbar">
+    <a href="index.html" class="lb-logo-wrap">
+      <div class="lb-logo-mark"></div>
+      <span class="lb-logo-text">connect</span>
+    </a>
+    <div class="lb-nav-links">
+      <a href="dashboard.html" class="lb-nav-item">Home</a>
+      <a href="leaderboard.html" class="lb-nav-item active">Leaderboard</a>
+      <a href="#" class="lb-nav-item">Events</a>
+      <a href="#" class="lb-nav-item">Community</a>
+      <a href="profile.html" class="lb-nav-item">Profile</a>
+    </div>
+    <div class="lb-nav-right"></div>
+  </nav>
+
+  <!-- Main Container -->
+  <main class="lb-container">
+    
+    <div class="lb-header-row">
+      <h1 class="lb-title">Leaderboard</h1>
+      <div class="lb-toggle">
+        <button type="button" class="lb-toggle-btn active" id="toggle-alumni">Top Alumni</button>
+        <button type="button" class="lb-toggle-btn" id="toggle-students">Top Students</button>
+      </div>
+    </div>
+
+    <div id="lb-content-area">
+      <div style="text-align: center; padding: 4rem; color: #6b7280; font-weight: 600;">
+        Loading Leaderboard...
+      </div>
+    </div>
+
+  </main>
+
+  <script type="module">
+    import { auth, onAuthStateChanged, db, collection, getDocs } from './firebase-config.js';
+
+    const defaultProfilePhoto = "data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='100' height='100' viewBox='0 0 100 100'><circle cx='50' cy='50' r='50' fill='%23e0812b'/><path d='M50 28 a 14 14 0 1 0 0.001 0 M32 74 a 18 18 0 0 1 36 0' stroke='%23ffffff' stroke-width='6' fill='none' stroke-linecap='round'/></svg>";
+
+    function formatImageSrc(src) {
+      if (!src || typeof src !== 'string') return defaultProfilePhoto;
+      src = src.trim();
+      if (src === '') return defaultProfilePhoto;
+      if (src.startsWith('http://') || src.startsWith('https://') || src.startsWith('data:image/')) return src;
+      if (src.startsWith('/9j/') || src.startsWith('iVBOR') || src.startsWith('R0lGOD') || (src.length > 80 && !src.includes('://'))) {
+        return `data:image/jpeg;base64,${src}`;
+      }
+      if (src.startsWith('gs://')) {
+        const parts = src.replace('gs://', '').split('/');
+        const bucket = parts.shift();
+        const filePath = parts.join('/');
+        return `https://firebasestorage.googleapis.com/v0/b/${bucket}/o/${encodeURIComponent(filePath)}?alt=media`;
+      }
+      if (!src.includes('://') && (src.includes('/') || src.includes('.'))) {
+        return `https://firebasestorage.googleapis.com/v0/b/connect-firebase2005.firebasestorage.app/o/${encodeURIComponent(src)}?alt=media`;
+      }
+      return defaultProfilePhoto;
+    }
+
+    function escapeHtml(str) {
+      if (!str) return '';
+      return String(str).replace(/[&<>"']/g, function(m) {
+        return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#039;' }[m];
+      });
+    }
+
+    document.addEventListener('DOMContentLoaded', () => {
+      const toggleAlumni = document.getElementById('toggle-alumni');
+      const toggleStudents = document.getElementById('toggle-students');
+      const contentArea = document.getElementById('lb-content-area');
+
+      let currentMode = 'Alumni'; // 'Alumni' or 'Students'
+
+      toggleAlumni.addEventListener('click', () => {
+        if (currentMode === 'Alumni') return;
+        currentMode = 'Alumni';
+        toggleAlumni.classList.add('active');
+        toggleStudents.classList.remove('active');
+        loadLeaderboard();
+      });
+
+      toggleStudents.addEventListener('click', () => {
+        if (currentMode === 'Students') return;
+        currentMode = 'Students';
+        toggleStudents.classList.add('active');
+        toggleAlumni.classList.remove('active');
+        loadLeaderboard();
+      });
+
+      async function loadLeaderboard() {
+        contentArea.innerHTML = '<div style="text-align: center; padding: 4rem; color: #6b7280; font-weight: 600;">Loading Leaderboard...</div>';
+        
+        try {
+          const colName = currentMode === 'Alumni' ? 'alumni' : 'students';
+          const querySnapshot = await getDocs(collection(db, colName));
+          
+          let users = [];
+          querySnapshot.forEach(docSnap => {
+            const data = docSnap.data();
+            const photoRaw = data.authorPhotoBase64 || data.userPhotoBase64 || data.profilePhotoBase64 || data.photoURL || data.profilePic || data.avatar || data.photo || data.profile_image || data.imageUrl || data.dpUrl;
+            
+            // Standardize points handling
+            let points = 0;
+            if (data.points !== undefined) points = Number(data.points);
+            else if (data.score !== undefined) points = Number(data.score);
+            else if (data.pts !== undefined) points = Number(data.pts);
+            else points = currentMode === 'Alumni' ? 500 : 350; // default points
+            if (isNaN(points)) points = 0;
+
+            users.push({
+              uid: data.uid || docSnap.id,
+              name: data.name || data.displayName || data.fullName || 'Member',
+              role: data.role || data.course || data.major || data.company || currentMode,
+              photo: formatImageSrc(photoRaw),
+              points: points
+            });
+          });
+
+          // Also check 'users' collection for the corresponding role just in case
+          const fallbackSnapshot = await getDocs(collection(db, 'users'));
+          fallbackSnapshot.forEach(docSnap => {
+            const data = docSnap.data();
+            const role = (data.role || data.userRole || '').toLowerCase();
+            // Match the target role
+            if ((currentMode === 'Alumni' && role === 'alumni') || (currentMode === 'Students' && role === 'student')) {
+              // Only add if not already present
+              const uid = data.uid || docSnap.id;
+              if (!users.find(u => u.uid === uid)) {
+                const photoRaw = data.authorPhotoBase64 || data.userPhotoBase64 || data.photoURL || data.profilePic || data.photo;
+                let points = data.points || data.score || data.pts || (currentMode === 'Alumni' ? 500 : 350);
+                users.push({
+                  uid: uid,
+                  name: data.name || data.displayName || data.fullName || 'Member',
+                  role: data.role || data.course || currentMode,
+                  photo: formatImageSrc(photoRaw),
+                  points: Number(points) || 0
+                });
+              }
+            }
+          });
+
+          // Sort by points desc
+          users.sort((a, b) => b.points - a.points);
+          renderUI(users);
+
+        } catch (e) {
+          console.error("Error loading leaderboard:", e);
+          contentArea.innerHTML = '<div style="text-align: center; padding: 4rem; color: #ef4444; font-weight: 600;">Failed to load leaderboard data.</div>';
+        }
+      }
+
+      function renderUI(users) {
+        if (users.length === 0) {
+          contentArea.innerHTML = '<div style="text-align: center; padding: 4rem; color: #6b7280; font-weight: 600;">No members found.</div>';
+          return;
+        }
+
+        const top3 = users.slice(0, 3);
+        const rest = users.slice(3, 10); // show up to rank 10
+
+        let podiumHtml = `<div class="lb-podium-section">`;
+        
+        // 2nd Place (Rank 2)
+        if (top3[1]) {
+          podiumHtml += `
+            <div class="podium-slot rank-2">
+              <div class="podium-avatar-wrap">
+                <img src="${top3[1].photo}" class="podium-avatar" alt="${escapeHtml(top3[1].name)}" onerror="this.src='${defaultProfilePhoto}';" />
+                <div class="podium-medal">2</div>
+              </div>
+              <div class="podium-name">${escapeHtml(top3[1].name)}</div>
+              <div class="podium-role">${escapeHtml(top3[1].role)}</div>
+              <div class="podium-pts-pill">✨ ${top3[1].points.toLocaleString()} pts</div>
+              <div class="podium-block"></div>
+            </div>
+          `;
+        } else {
+          podiumHtml += `<div class="podium-slot rank-2"></div>`;
+        }
+
+        // 1st Place (Rank 1)
+        if (top3[0]) {
+          podiumHtml += `
+            <div class="podium-slot rank-1">
+              <div class="podium-crown">👑</div>
+              <div class="podium-avatar-wrap">
+                <img src="${top3[0].photo}" class="podium-avatar" alt="${escapeHtml(top3[0].name)}" onerror="this.src='${defaultProfilePhoto}';" />
+                <div class="podium-medal" style="background:var(--gold-bg); color:#854d0e;">1</div>
+              </div>
+              <div class="podium-name">${escapeHtml(top3[0].name)}</div>
+              <div class="podium-role">${escapeHtml(top3[0].role)}</div>
+              <div class="podium-pts-pill">✨ ${top3[0].points.toLocaleString()} pts</div>
+              <div class="podium-block"></div>
+            </div>
+          `;
+        }
+
+        // 3rd Place (Rank 3)
+        if (top3[2]) {
+          podiumHtml += `
+            <div class="podium-slot rank-3">
+              <div class="podium-avatar-wrap">
+                <img src="${top3[2].photo}" class="podium-avatar" alt="${escapeHtml(top3[2].name)}" onerror="this.src='${defaultProfilePhoto}';" />
+                <div class="podium-medal">3</div>
+              </div>
+              <div class="podium-name">${escapeHtml(top3[2].name)}</div>
+              <div class="podium-role">${escapeHtml(top3[2].role)}</div>
+              <div class="podium-pts-pill">✨ ${top3[2].points.toLocaleString()} pts</div>
+              <div class="podium-block"></div>
+            </div>
+          `;
+        } else {
+          podiumHtml += `<div class="podium-slot rank-3"></div>`;
+        }
+
+        podiumHtml += `</div>`; // end podium section
+
+        // Ranks 4-10
+        let listHtml = '';
+        if (rest.length > 0) {
+          listHtml += `<div class="lb-list-container">`;
+          rest.forEach((u, idx) => {
+            const rank = idx + 4;
+            listHtml += `
+              <div class="lb-list-item">
+                <div class="list-rank-num">${rank}</div>
+                <img src="${u.photo}" class="list-avatar" alt="${escapeHtml(u.name)}" onerror="this.src='${defaultProfilePhoto}';" />
+                <div class="list-user-info">
+                  <div class="list-name">${escapeHtml(u.name)}</div>
+                  <div class="list-role">${escapeHtml(u.role)}</div>
+                </div>
+                <div class="list-pts-pill">✨ ${u.points.toLocaleString()} pts</div>
+              </div>
+            `;
+          });
+          listHtml += `</div>`;
+        }
+
+        contentArea.innerHTML = podiumHtml + listHtml;
+      }
+
+      onAuthStateChanged(auth, (user) => {
+        if (user) {
+          loadLeaderboard();
+        } else {
+          window.location.href = 'login.html';
+        }
+      });
+
+    });
+  </script>
+</body>
+</html>

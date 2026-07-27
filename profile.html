@@ -512,9 +512,10 @@
 
     <div class="nav-left-links">
       <a href="dashboard.html" class="profile-nav-item">Home</a>
-      <a href="#" class="profile-nav-item">About</a>
+      <a href="leaderboard.html" class="profile-nav-item">Leaderboard</a>
+      <a href="#" class="profile-nav-item">Events</a>
+      <a href="#" class="profile-nav-item">Community</a>
       <a href="profile.html" class="profile-nav-item active">Profile</a>
-      <a href="#" class="profile-nav-item">Contact</a>
     </div>
 
     <div class="nav-right-actions">
@@ -528,7 +529,7 @@
 
     <!-- Header Banner & Profile Header Card -->
     <header class="profile-header-card">
-      <div class="profile-banner-bg"></div>
+      <div class="profile-banner-bg" id="profile-banner-bg"></div>
 
       <div class="profile-info-row">
         <div class="profile-avatar-wrapper">
@@ -662,6 +663,11 @@
         <input type="file" id="edit-photo-file" accept="image/*" class="modal-input-field" />
       </div>
 
+      <div>
+        <label style="font-weight: 600; font-size: 0.9rem; color: #374151;">Cover Photo / Banner</label>
+        <input type="file" id="edit-cover-file" accept="image/*" class="modal-input-field" />
+      </div>
+
       <button type="button" class="modal-submit-btn" id="save-profile-btn">Save Profile Changes</button>
     </div>
   </div>
@@ -674,7 +680,9 @@
 
     let currentAuthUser = null;
     let currentUserDoc = null;
+    let currentUserCollection = 'users'; // track which collection the user lives in
     let newPhotoBase64 = null;
+    let newCoverBase64 = null;
 
     function formatImageSrc(src) {
       if (!src || typeof src !== 'string') return defaultProfilePhoto;
@@ -700,6 +708,7 @@
     }
 
     document.addEventListener('DOMContentLoaded', () => {
+      const profileBannerBg = document.getElementById('profile-banner-bg');
       const userProfileImg = document.getElementById('user-profile-img');
       const profileDisplayName = document.getElementById('profile-display-name');
       const profileRoleMajor = document.getElementById('profile-role-major');
@@ -721,6 +730,7 @@
       const editBioInput = document.getElementById('edit-bio-input');
       const editSkillsInput = document.getElementById('edit-skills-input');
       const editPhotoFile = document.getElementById('edit-photo-file');
+      const editCoverFile = document.getElementById('edit-cover-file');
 
       // 1. Auth Listener
       onAuthStateChanged(auth, async (user) => {
@@ -744,6 +754,7 @@
             const snap = await getDoc(doc(db, colName, currentAuthUser.uid));
             if (snap.exists()) {
               currentUserDoc = snap.data();
+              currentUserCollection = colName;
               break;
             }
           }
@@ -757,10 +768,11 @@
             };
           }
 
-          const name = currentUserDoc.name || currentUserDoc.displayName || currentAuthUser.displayName || 'Member';
-          const role = currentUserDoc.role || 'Alumni';
+          const name = currentUserDoc.name || currentUserDoc.displayName || currentUserDoc.fullName || currentAuthUser.displayName || 'Member';
+          const role = currentUserDoc.role || currentUserDoc.userRole || currentUserDoc.authorRole || 'Alumni';
+          const course = currentUserDoc.course || currentUserDoc.branch || currentUserDoc.major || currentUserDoc.degree || 'Computer Science';
           const location = currentUserDoc.location || 'Delhi, India';
-          const bio = currentUserDoc.bio || 'Passionate tech enthusiast connecting students and alumni.';
+          const bio = currentUserDoc.bio || currentUserDoc.about || 'Passionate tech enthusiast connecting students and alumni.';
           const photoRaw =
             currentUserDoc.authorPhotoBase64 ||
             currentUserDoc.userPhotoBase64 ||
@@ -788,13 +800,45 @@
             console.log('[Profile Debug] No photo field found. Available keys:', Object.keys(currentUserDoc));
           }
           const photo = formatImageSrc(photoRaw);
-          const skills = currentUserDoc.skills || ['Java', 'UX Design', 'Kotlin', 'Firebase', 'Web Development'];
+          let skills = currentUserDoc.skills || currentUserDoc.domain || currentUserDoc.expertise || ['Java', 'UX Design', 'Kotlin', 'Firebase', 'Web Development'];
+          if (typeof skills === 'string') {
+            skills = skills.split(',').map(s => s.trim());
+          }
 
           profileDisplayName.textContent = name;
-          profileRoleMajor.textContent = `${role} | Computer Science`;
+          profileRoleMajor.textContent = `${role} | ${course}`;
           profileLocation.textContent = location;
           profileBioText.textContent = bio;
           userProfileImg.src = photo || defaultProfilePhoto;
+          
+          const coverRaw =
+            currentUserDoc.coverPhotoBase64 ||
+            currentUserDoc.cover_photo_base64 ||
+            currentUserDoc.bannerBase64 ||
+            currentUserDoc.bgImageBase64 ||
+            currentUserDoc.coverPhoto ||
+            currentUserDoc.cover_photo ||
+            currentUserDoc.coverImage ||
+            currentUserDoc.cover_image ||
+            currentUserDoc.banner ||
+            currentUserDoc.bannerUrl ||
+            currentUserDoc.banner_url ||
+            currentUserDoc.bgImage ||
+            currentUserDoc.bg_image ||
+            currentUserDoc.headerImage ||
+            currentUserDoc.header_image ||
+            currentUserDoc.coverPhotoUrl;
+          
+          if (coverRaw) {
+            const coverPhoto = formatImageSrc(coverRaw);
+            if (coverPhoto && coverPhoto !== defaultProfilePhoto) {
+              profileBannerBg.style.backgroundImage = `url('${coverPhoto}')`;
+              profileBannerBg.style.backgroundSize = 'cover';
+              profileBannerBg.style.backgroundPosition = 'center';
+            }
+          } else {
+            console.log('[Profile Debug] No cover photo field found. Available keys:', Object.keys(currentUserDoc));
+          }
 
           // Render Skills
           skillsFlexWrap.innerHTML = '';
@@ -900,11 +944,17 @@
 
       // 5. Edit Profile Modal Logic
       editProfileBtn.addEventListener('click', () => {
-        editNameInput.value = currentUserDoc?.name || currentAuthUser?.displayName || '';
-        editRoleSelect.value = currentUserDoc?.role || 'Alumni';
+        editNameInput.value = currentUserDoc?.name || currentUserDoc?.displayName || currentUserDoc?.fullName || currentAuthUser?.displayName || '';
+        editRoleSelect.value = currentUserDoc?.role || currentUserDoc?.userRole || 'Alumni';
         editLocationInput.value = currentUserDoc?.location || 'Delhi, India';
-        editBioInput.value = currentUserDoc?.bio || '';
-        editSkillsInput.value = (currentUserDoc?.skills || ['Java', 'UX Design', 'Kotlin']).join(', ');
+        editBioInput.value = currentUserDoc?.bio || currentUserDoc?.about || '';
+        
+        let skillsList = currentUserDoc?.skills || currentUserDoc?.domain || currentUserDoc?.expertise || ['Java', 'UX Design', 'Kotlin'];
+        if (Array.isArray(skillsList)) {
+          skillsList = skillsList.join(', ');
+        }
+        editSkillsInput.value = skillsList;
+        
         editModalOverlay.style.display = 'flex';
       });
 
@@ -918,6 +968,16 @@
         const reader = new FileReader();
         reader.onload = (evt) => {
           newPhotoBase64 = evt.target.result;
+        };
+        reader.readAsDataURL(file);
+      });
+
+      editCoverFile.addEventListener('change', (e) => {
+        const file = e.target.files[0];
+        if (!file) return;
+        const reader = new FileReader();
+        reader.onload = (evt) => {
+          newCoverBase64 = evt.target.result;
         };
         reader.readAsDataURL(file);
       });
@@ -943,8 +1003,15 @@
           updatedData.authorPhotoBase64 = currentUserDoc.authorPhotoBase64;
         }
 
+        if (newCoverBase64) {
+          updatedData.coverPhotoBase64 = newCoverBase64;
+          updatedData.coverPhoto = newCoverBase64; // fallback for other platforms
+        } else if (currentUserDoc?.coverPhotoBase64 || currentUserDoc?.coverPhoto) {
+          updatedData.coverPhotoBase64 = currentUserDoc.coverPhotoBase64 || currentUserDoc.coverPhoto;
+        }
+
         try {
-          await setDoc(doc(db, 'users', currentAuthUser.uid), updatedData, { merge: true });
+          await setDoc(doc(db, currentUserCollection, currentAuthUser.uid), updatedData, { merge: true });
           editModalOverlay.style.display = 'none';
           saveProfileBtn.disabled = false;
           saveProfileBtn.textContent = 'Save Profile Changes';
