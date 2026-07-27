@@ -674,66 +674,111 @@
 
       // 3. Realtime Firestore Database Listeners (Users, Posts & Connections)
       function initFirestoreListeners() {
-        // Listen to Firestore 'connections'
-        onSnapshot(collection(db, 'connections'), (connSnapshot) => {
+        const myUid = currentAuthUser?.uid;
+
+        const registerUser = (uid, data, defaultRole) => {
+          if (uid && uid !== myUid) {
+            firestoreUsersMap[uid] = {
+              uid: uid,
+              name: data.name || data.displayName || data.authorName || data.fullName || data.username || 'Network User',
+              role: data.role || data.authorRole || data.userRole || defaultRole,
+              photo: formatImageSrc(data.authorPhotoBase64 || data.photoURL || data.photoBase64 || data.profilePic || data.avatar || data.profile_image)
+            };
+          }
+        };
+
+        // Listen to Firestore 'connections' & 'Connections'
+        const handleConnectionsSnapshot = (connSnapshot) => {
           connSnapshot.forEach(docSnap => {
             connectionsStateMap[docSnap.id] = docSnap.data();
           });
           renderMainView();
-        }, (err) => {
+        };
+
+        onSnapshot(collection(db, 'connections'), handleConnectionsSnapshot, (err) => {
           console.warn('Connections collection notice:', err);
         });
-
-        // Listen to Firestore 'users'
-        onSnapshot(collection(db, 'users'), (usersSnapshot) => {
-          usersSnapshot.forEach(docSnap => {
-            const data = docSnap.data();
-            const uid = docSnap.id || data.uid;
-            if (uid && uid !== currentAuthUser?.uid) {
-              firestoreUsersMap[uid] = {
-                uid: uid,
-                name: data.name || data.displayName || data.authorName || 'Network User',
-                role: data.role || data.authorRole || 'Student',
-                photo: formatImageSrc(data.authorPhotoBase64 || data.photoURL || data.photoBase64)
-              };
-            }
-          });
-          renderMainView();
-        }, (err) => {
-          console.warn('Users collection notice:', err);
+        onSnapshot(collection(db, 'Connections'), handleConnectionsSnapshot, (err) => {
+          console.warn('Connections (capitalized) collection notice:', err);
         });
 
-        // Also scan Firestore 'posts' to discover any active users
-        onSnapshot(collection(db, 'posts'), (postsSnapshot) => {
-          postsSnapshot.forEach(pSnap => {
-            const pData = pSnap.data();
-            const uid = pData.uid || pData.authorUid;
-            if (uid && uid !== currentAuthUser?.uid) {
-              if (!firestoreUsersMap[uid]) {
-                firestoreUsersMap[uid] = {
-                  uid: uid,
-                  name: pData.authorName || 'Network User',
-                  role: pData.authorRole || 'Alumni',
-                  photo: formatImageSrc(pData.authorPhotoBase64 || pData.userPhotoBase64)
-                };
-              }
-            }
+        // Listen to 'students' root collection
+        onSnapshot(collection(db, 'students'), (snapshot) => {
+          snapshot.forEach(docSnap => {
+            const data = docSnap.data();
+            const uid = data.uid || data.userId || data.user_id || data.id || docSnap.id;
+            registerUser(uid, data, 'Student');
           });
           renderMainView();
         }, (err) => {
+          console.warn('students collection notice:', err);
+        });
+
+        // Listen to 'alumni' root collection
+        onSnapshot(collection(db, 'alumni'), (snapshot) => {
+          snapshot.forEach(docSnap => {
+            const data = docSnap.data();
+            const uid = data.uid || data.userId || data.user_id || data.id || docSnap.id;
+            registerUser(uid, data, 'Alumni');
+          });
+          renderMainView();
+        }, (err) => {
+          console.warn('alumni collection notice:', err);
+        });
+
+        // Listen to Firestore 'users' & 'Users' (as legacy fallback)
+        const handleUsersSnapshot = (usersSnapshot) => {
+          usersSnapshot.forEach(docSnap => {
+            const data = docSnap.data();
+            const uid = data.uid || data.userId || data.user_id || data.id || docSnap.id;
+            registerUser(uid, data, 'Student');
+          });
+          renderMainView();
+        };
+
+        onSnapshot(collection(db, 'users'), handleUsersSnapshot, (err) => {
+          console.warn('Users collection notice:', err);
+        });
+        onSnapshot(collection(db, 'Users'), handleUsersSnapshot, (err) => {
+          console.warn('Users (capitalized) collection notice:', err);
+        });
+
+        // Also scan Firestore 'posts' & 'feed' to discover any active users
+        const handlePostsSnapshot = (postsSnapshot) => {
+          postsSnapshot.forEach(pSnap => {
+            const pData = pSnap.data();
+            const uid = pData.uid || pData.authorUid || pData.userId;
+            registerUser(uid, pData, 'Alumni');
+          });
+          renderMainView();
+        };
+
+        onSnapshot(collection(db, 'posts'), handlePostsSnapshot, (err) => {
           console.warn('Posts collection notice:', err);
+        });
+        onSnapshot(collection(db, 'feed'), handlePostsSnapshot, (err) => {
+          console.warn('feed collection notice:', err);
         });
       }
 
       function getUserStatus(otherUid) {
         if (!currentAuthUser || !otherUid) return 'none';
-        const connId = getConnId(currentAuthUser.uid, otherUid);
-        const conn = connectionsStateMap[connId];
-        if (!conn) return 'none';
-        if (conn.status === 'accepted') return 'accepted';
-        if (conn.status === 'pending') {
-          if (conn.senderUid === currentAuthUser.uid) return 'sent_pending';
-          if (conn.receiverUid === currentAuthUser.uid) return 'received_pending';
+        const myUid = currentAuthUser.uid;
+
+        for (const conn of Object.values(connectionsStateMap)) {
+          if (!conn) continue;
+
+          const sender = conn.senderUid || conn.sender_uid || conn.senderID || conn.senderId || conn.from || conn.fromUid || conn.fromId;
+          const receiver = conn.receiverUid || conn.receiver_uid || conn.receiverID || conn.receiverId || conn.to || conn.toUid || conn.toId;
+          const status = (conn.status || conn.state || conn.connectionStatus || '').toLowerCase();
+
+          if ((sender === myUid && receiver === otherUid) || (sender === otherUid && receiver === myUid)) {
+            if (status === 'accepted' || status === 'approved') return 'accepted';
+            if (status === 'pending' || status === 'requested') {
+              if (sender === myUid) return 'sent_pending';
+              if (receiver === myUid) return 'received_pending';
+            }
+          }
         }
         return 'none';
       }

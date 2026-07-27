@@ -637,6 +637,9 @@
     import { 
       auth, 
       db, 
+      messaging,
+      getToken,
+      onMessage,
       onAuthStateChanged, 
       signOut, 
       doc, 
@@ -655,6 +658,11 @@
     let currentUserDoc = null;
     let selectedPartner = null; // { uid, name, role, photo }
     let activeChatUnsubscribe = null;
+
+    // Cache maps for real-time list rendering
+    const allUsersMap = {};
+    const connectionsMap = {};
+    const activeChatsMap = {};
 
     // Helper: Base64 String Formatter
     function formatImageSrc(src) {
@@ -728,63 +736,143 @@
         });
       }
 
-      // 2. Real-Time Users / Contacts Listener with Graceful Fallbacks
+      // 2. Real-Time Users & Active Chat History Listeners
       function initRealtimeUsersList() {
-        const userMap = {};
+        const myUid = currentAuthUser.uid;
 
-        // Helper to update UI
-        function updateUI() {
-          const membersList = Object.values(userMap).filter(m => m.uid !== currentAuthUser?.uid);
-          renderConversationsList(membersList);
-        }
+        // Helper to update user mapping
+        const registerUser = (uid, data, defaultRole) => {
+          if (uid && uid !== myUid) {
+            const photo = formatImageSrc(data.authorPhotoBase64 || data.photoURL || data.photoBase64 || data.userPhotoBase64 || data.profilePic || data.avatar || data.profile_image);
+            const name = data.name || data.displayName || data.authorName || data.fullName || data.username || 'Network Member';
+            const role = data.role || data.authorRole || data.userRole || defaultRole;
 
-        // 1. Listen to 'posts' collection (publicly accessible across all accounts)
-        onSnapshot(collection(db, 'posts'), (postsSnapshot) => {
-          postsSnapshot.forEach(pSnap => {
-            const pData = pSnap.data();
-            const uid = pData.uid || pData.authorUid;
-            if (uid && uid !== currentAuthUser?.uid) {
-              const photo = formatImageSrc(pData.authorPhotoBase64 || pData.userPhotoBase64 || pData.profilePhotoBase64 || pData.photoURL);
-              const name = pData.authorName || pData.username || pData.name || 'Network Member';
-              const role = pData.authorRole || pData.role || 'Alumni';
+            allUsersMap[uid] = { uid, name, role, photo };
+          }
+        };
 
-              if (!userMap[uid]) {
-                userMap[uid] = { uid, name, role, photo };
-              } else {
-                if (photo !== defaultProfilePhoto) userMap[uid].photo = photo;
-                if (name !== 'Network Member') userMap[uid].name = name;
+        // Listen to 'students' root collection
+        onSnapshot(collection(db, 'students'), (snapshot) => {
+          snapshot.forEach(docSnap => {
+            const data = docSnap.data();
+            const uid = data.uid || data.userId || data.user_id || data.id || docSnap.id;
+            registerUser(uid, data, 'Student');
+          });
+          updateConversationsList();
+        }, (err) => {
+          console.warn('students snapshot notice:', err);
+        });
+
+        // Listen to 'alumni' root collection
+        onSnapshot(collection(db, 'alumni'), (snapshot) => {
+          snapshot.forEach(docSnap => {
+            const data = docSnap.data();
+            const uid = data.uid || data.userId || data.user_id || data.id || docSnap.id;
+            registerUser(uid, data, 'Alumni');
+          });
+          updateConversationsList();
+        }, (err) => {
+          console.warn('alumni snapshot notice:', err);
+        });
+
+        // Listen to 'users' & 'Users' (as fallback legacy)
+        const handleLegacyUsers = (snapshot) => {
+          snapshot.forEach(docSnap => {
+            const data = docSnap.data();
+            const uid = data.uid || data.userId || data.user_id || data.id || docSnap.id;
+            registerUser(uid, data, 'Student');
+          });
+          updateConversationsList();
+        };
+        onSnapshot(collection(db, 'users'), handleLegacyUsers, (err) => {});
+        onSnapshot(collection(db, 'Users'), handleLegacyUsers, (err) => {});
+
+        // Listen to 'chats' root collection for active chat rooms
+        onSnapshot(collection(db, 'chats'), (snapshot) => {
+          console.log(`[FCM/Messages] Loaded ${snapshot.size} chat room(s)`);
+          
+          // Clear previous map to recalculate fresh lists
+          for (const key in activeChatsMap) delete activeChatsMap[key];
+
+          snapshot.forEach(docSnap => {
+            const data = docSnap.data();
+            
+            // Check if current user is listed in participantNames map keys
+            const participantUids = data.participantNames ? Object.keys(data.participantNames) : [];
+            const isParticipant = participantUids.includes(myUid);
+
+            if (isParticipant) {
+              const partnerUid = participantUids.find(k => k !== myUid);
+              if (partnerUid) {
+                const partnerName = data.participantNames[partnerUid] || 'Chat Partner';
+                const lastText = data.lastMessage || '';
+                const lastTimestamp = getTimestampMs(data.lastMessageTimestamp || data.timestamp);
+                const lastIsOutgoing = (data.lastMessageSenderId === myUid);
+
+                activeChatsMap[partnerUid] = {
+                  chatDocId: docSnap.id,
+                  partnerUid: partnerUid,
+                  partnerName: partnerName,
+                  lastText: lastText,
+                  lastTimestamp: lastTimestamp,
+                  isOutgoing: lastIsOutgoing
+                };
               }
             }
           });
-          updateUI();
+          updateConversationsList();
         }, (err) => {
-          console.warn('Posts collection snapshot notice:', err);
-          updateUI();
+          console.warn('chats snapshot warning:', err);
         });
 
-        // 2. Safely query 'users' collection with fallback catch
-        onSnapshot(collection(db, 'users'), (usersSnapshot) => {
-          usersSnapshot.forEach(docSnap => {
-            const data = docSnap.data();
-            const uid = docSnap.id || data.uid;
-            if (uid && uid !== currentAuthUser?.uid) {
-              const photo = formatImageSrc(data.authorPhotoBase64 || data.photoURL || data.photoBase64 || data.userPhotoBase64);
-              const name = data.name || data.displayName || data.authorName || 'Network Member';
-              const role = data.role || data.authorRole || 'Student';
-
-              userMap[uid] = { uid, name, role, photo };
-            }
+        // Scan posts to pick up users who haven't messaged yet
+        onSnapshot(collection(db, 'posts'), (postsSnapshot) => {
+          postsSnapshot.forEach(pSnap => {
+            const pData = pSnap.data();
+            const uid = pData.uid || pData.authorUid || pData.userId;
+            registerUser(uid, pData, 'Alumni');
           });
-          updateUI();
+          updateConversationsList();
         }, (err) => {
-          console.warn('Users collection snapshot notice:', err);
-          updateUI();
+          console.warn('posts snapshot warning:', err);
         });
       }
 
-      function renderConversationsList(members) {
+      function updateConversationsList() {
+        const queryStr = searchContactInput ? searchContactInput.value.toLowerCase().trim() : '';
+        
+        let filteredUsers = [];
+        if (queryStr === '') {
+          // 1. Show only users with whom we have active chats
+          const activeChatsList = Object.values(activeChatsMap);
+          // Sort by last message timestamp desc
+          activeChatsList.sort((a, b) => b.lastTimestamp - a.lastTimestamp);
+          
+          // Map to user objects
+          filteredUsers = activeChatsList.map(chat => {
+            const cachedUser = allUsersMap[chat.partnerUid];
+            return {
+              uid: chat.partnerUid,
+              name: cachedUser?.name || chat.partnerName || 'Chat Partner',
+              role: cachedUser?.role || (chat.partnerUid.toLowerCase().includes('alumni') || chat.chatDocId?.toLowerCase().includes('alumni') ? 'Alumni' : 'Student'),
+              photo: cachedUser?.photo || defaultProfilePhoto
+            };
+          });
+        } else {
+          // 2. Show all registered users matching the name query
+          filteredUsers = Object.values(allUsersMap).filter(u => u.name.toLowerCase().includes(queryStr));
+        }
+
+        renderConversationsList(filteredUsers, queryStr);
+      }
+
+      function renderConversationsList(members, queryStr = '') {
         if (members.length === 0) {
-          convListContainer.innerHTML = '<div class="empty-conv-notice">No other members currently registered in network.</div>';
+          if (queryStr === '') {
+            convListContainer.innerHTML = '<div class="empty-conv-notice">No active chats. Search for a member above to start messaging!</div>';
+          } else {
+            convListContainer.innerHTML = `<div class="empty-conv-notice">No members found matching "${escapeHtml(queryStr)}".</div>`;
+          }
           return;
         }
 
@@ -794,6 +882,14 @@
           const isAlumni = (m.role || '').toLowerCase().includes('alumni');
           const roleClass = isAlumni ? 'alumni' : 'student';
           const roleText = isAlumni ? 'Alumni' : 'Student';
+
+          // Get dynamic snippet
+          let snippetText = 'Click to start conversation';
+          const chatInfo = activeChatsMap[m.uid];
+          if (chatInfo) {
+            const prefix = chatInfo.isOutgoing ? 'You: ' : '';
+            snippetText = `${prefix}${chatInfo.lastText}`;
+          }
 
           const itemEl = document.createElement('div');
           itemEl.className = `conversation-item ${selectedPartner?.uid === m.uid ? 'active' : ''}`;
@@ -811,7 +907,7 @@
                 </div>
               </div>
               <div class="conv-bottom-row">
-                <span class="conv-snippet" id="snippet-${m.uid}">Click to start conversation</span>
+                <span class="conv-snippet" id="snippet-${m.uid}">${escapeHtml(snippetText)}</span>
               </div>
             </div>
           `;
@@ -824,8 +920,8 @@
 
           convListContainer.appendChild(itemEl);
 
-          // Auto open first chat if none selected
-          if (idx === 0 && !selectedPartner) {
+          // Auto open first chat if none selected and not searching
+          if (idx === 0 && !selectedPartner && queryStr === '') {
             itemEl.classList.add('active');
             openChatWithMember(m);
           }
@@ -834,40 +930,15 @@
 
       // Search Contacts Filter Handler with Instant Click-to-Chat
       if (searchContactInput) {
-        searchContactInput.addEventListener('input', (e) => {
-          const queryStr = e.target.value.toLowerCase().trim();
-          const items = document.querySelectorAll('.conversation-item');
-          let matchCount = 0;
-
-          items.forEach(item => {
-            const nameTxt = item.querySelector('.conv-name')?.textContent.toLowerCase() || '';
-            const roleTxt = item.querySelector('.role-badge-pill')?.textContent.toLowerCase() || '';
-            const matches = nameTxt.includes(queryStr) || roleTxt.includes(queryStr);
-            item.style.display = matches ? 'flex' : 'none';
-            if (matches) matchCount++;
-          });
-
-          // Show empty search notice if no results match
-          let noResultEl = document.getElementById('no-search-results-notice');
-          if (matchCount === 0 && queryStr !== '') {
-            if (!noResultEl) {
-              noResultEl = document.createElement('div');
-              noResultEl.id = 'no-search-results-notice';
-              noResultEl.className = 'empty-conv-notice';
-              convListContainer.appendChild(noResultEl);
-            }
-            noResultEl.textContent = `No members found matching "${queryStr}".`;
-            noResultEl.style.display = 'block';
-          } else if (noResultEl) {
-            noResultEl.style.display = 'none';
-          }
+        searchContactInput.addEventListener('input', () => {
+          updateConversationsList();
         });
 
         // Allow pressing Enter in search bar to select first matching contact
         searchContactInput.addEventListener('keydown', (e) => {
           if (e.key === 'Enter') {
             e.preventDefault();
-            const firstVisible = Array.from(document.querySelectorAll('.conversation-item')).find(item => item.style.display !== 'none');
+            const firstVisible = convListContainer.querySelector('.conversation-item');
             if (firstVisible) {
               firstVisible.click();
               searchContactInput.blur();
@@ -892,38 +963,58 @@
           activeChatUnsubscribe = null;
         }
 
-        const chatId = getChatId(currentAuthUser.uid, member.uid);
+        const chatDocId = activeChatsMap[member.uid]?.chatDocId || ('chat_' + [currentAuthUser.uid, member.uid].sort().join('_'));
         chatMessagesLog.innerHTML = '<div class="empty-conv-notice">Loading conversation...</div>';
 
-        // Subscribe to real-time messages for this chatId in Firestore 'messages' collection
-        const q = query(collection(db, 'messages'), orderBy('timestamp', 'asc'));
+        const activeListeners = [];
+        const combinedMsgsMap = {}; // msgId -> msgData
 
-        activeChatUnsubscribe = onSnapshot(collection(db, 'messages'), (snapshot) => {
-          const chatMsgs = [];
-          snapshot.forEach(d => {
-            const data = d.data();
-            // Filter messages belonging to this chatId OR pair of participants
-            if (data.chatId === chatId || 
-               (data.participants && data.participants.includes(currentAuthUser.uid) && data.participants.includes(member.uid)) ||
-               (data.senderUid === currentAuthUser.uid && data.receiverUid === member.uid) ||
-               (data.senderUid === member.uid && data.receiverUid === currentAuthUser.uid)) {
-              chatMsgs.push({ id: d.id, data: data });
-            }
-          });
-
-          // Sort by timestamp
-          chatMsgs.sort((a, b) => (getTimestampMs(a.data.timestamp) - getTimestampMs(b.data.timestamp)));
-
+        const renderCombined = () => {
+          const chatMsgs = Object.entries(combinedMsgsMap).map(([id, data]) => ({ id, data }));
+          chatMsgs.sort((a, b) => (getTimestampMs(a.data.timestamp || a.data.createdAt) - getTimestampMs(b.data.timestamp || b.data.createdAt)));
           renderChatMessages(chatMsgs);
-        }, (err) => {
-          console.warn('Firestore Chat Listener Notice:', err);
-          chatMessagesLog.innerHTML = `
-            <div class="no-chat-selected">
-              <p>💬 Start conversation with ${escapeHtml(member.name)}!</p>
-              <span style="font-size:0.85rem; color:#9ca3af;">Type a message below to send direct update.</span>
-            </div>
-          `;
-        });
+        };
+
+        // 1. Listen to nested subcollection chats/{chatDocId}/messages
+        try {
+          const unsubSub = onSnapshot(collection(db, 'chats', chatDocId, 'messages'), (snapshot) => {
+            snapshot.forEach(d => {
+              combinedMsgsMap[d.id] = d.data();
+            });
+            renderCombined();
+          }, (err) => {
+            console.warn('Subcollection chat listener notice:', err);
+          });
+          activeListeners.push(unsubSub);
+        } catch (e) {
+          console.warn('Failed to listen to subcollection:', e);
+        }
+
+        // 2. Listen to flat root messages collection (for web compatibility)
+        try {
+          const unsubRoot = onSnapshot(collection(db, 'messages'), (snapshot) => {
+            snapshot.forEach(d => {
+              const data = d.data();
+              const isMatch = data.chatId === chatDocId || 
+                              (data.participants && data.participants.includes(currentAuthUser.uid) && data.participants.includes(member.uid)) ||
+                              (data.senderUid === currentAuthUser.uid && data.receiverUid === member.uid) ||
+                              (data.senderUid === member.uid && data.receiverUid === currentAuthUser.uid);
+              if (isMatch) {
+                combinedMsgsMap[d.id] = data;
+              }
+            });
+            renderCombined();
+          }, (err) => {
+            console.warn('Root collection chat listener notice:', err);
+          });
+          activeListeners.push(unsubRoot);
+        } catch (e) {
+          console.warn('Failed to listen to root collection:', e);
+        }
+
+        activeChatUnsubscribe = () => {
+          activeListeners.forEach(unsub => unsub());
+        };
       }
 
       function renderChatMessages(messages) {
@@ -941,9 +1032,9 @@
 
         messages.forEach(item => {
           const m = item.data;
-          const isOutgoing = m.senderUid === currentAuthUser.uid;
-          const text = m.text || m.message || m.content || '';
-          const timeStr = formatTime(m.timestamp);
+          const isOutgoing = m.senderUid === currentAuthUser.uid || m.senderId === currentAuthUser.uid;
+          const text = m.text || m.message || m.content || m.lastMessage || '';
+          const timeStr = formatTime(m.timestamp || m.createdAt);
 
           const row = document.createElement('div');
           row.className = `message-row ${isOutgoing ? 'outgoing' : 'incoming'}`;
@@ -961,7 +1052,7 @@
         chatMessagesLog.scrollTop = chatMessagesLog.scrollHeight;
       }
 
-      // 4. Send Message Handler to Firestore
+      // 4. Send Message Handler to Firestore (Mobile & Web Layout Sync)
       chatForm.addEventListener('submit', async (e) => {
         e.preventDefault();
         const text = chatInputField.value.trim();
@@ -969,26 +1060,56 @@
 
         chatInputField.value = '';
 
-        const chatId = getChatId(currentAuthUser.uid, selectedPartner.uid);
+        const chatDocId = activeChatsMap[selectedPartner.uid]?.chatDocId || ('chat_' + [currentAuthUser.uid, selectedPartner.uid].sort().join('_'));
         const myName = currentUserDoc?.name || currentAuthUser.displayName || 'Member';
+        const partnerName = selectedPartner.name;
 
         try {
-          // Write message document to Firestore 'messages' collection
-          await addDoc(collection(db, 'messages'), {
-            chatId: chatId,
-            participants: [currentAuthUser.uid, selectedPartner.uid],
+          const msgPayload = {
+            senderId: currentAuthUser.uid,
             senderUid: currentAuthUser.uid,
             senderName: myName,
+            receiverId: selectedPartner.uid,
             receiverUid: selectedPartner.uid,
-            receiverName: selectedPartner.name,
+            receiverName: partnerName,
             text: text,
             message: text,
             content: text,
             timestamp: serverTimestamp(),
             createdAt: Date.now()
-          });
+          };
 
-          // Update sidebar snippet
+          // 1. Write message document to the subcollection chats/{chatDocId}/messages (PRIMARY MOBILE SOURCE)
+          await addDoc(collection(db, 'chats', chatDocId, 'messages'), msgPayload);
+
+          // 2. Also write to flat root messages collection (legacy fallback, wrapped so it won't crash if blocked)
+          try {
+            await addDoc(collection(db, 'messages'), {
+              chatId: chatDocId,
+              participants: [currentAuthUser.uid, selectedPartner.uid],
+              ...msgPayload
+            });
+          } catch (rootErr) {
+            console.warn('Root messages collection write ignored (likely security rules):', rootErr);
+          }
+
+          // 3. Update parent chat room meta for mobile feed lists (wrapped in case of rule restriction)
+          try {
+            await setDoc(doc(db, 'chats', chatDocId), {
+              id: chatDocId,
+              lastMessage: text,
+              lastMessageSenderId: currentAuthUser.uid,
+              lastMessageTimestamp: Date.now(),
+              participantNames: {
+                [currentAuthUser.uid]: myName,
+                [selectedPartner.uid]: partnerName
+              }
+            }, { merge: true });
+          } catch (chatMetaErr) {
+            console.warn('Parent chats meta update ignored (likely security rules):', chatMetaErr);
+          }
+
+          // Update sidebar snippet instantly
           const snippetEl = document.getElementById(`snippet-${selectedPartner.uid}`);
           if (snippetEl) snippetEl.textContent = `You: ${text}`;
 
@@ -1003,6 +1124,8 @@
         if (!ts) return 0;
         if (typeof ts === 'number') return ts;
         if (ts.seconds) return ts.seconds * 1000;
+        if (typeof ts === 'string') return new Date(ts).getTime() || 0;
+        if (typeof ts === 'object' && ts.toDate) return ts.toDate().getTime();
         if (ts instanceof Date) return ts.getTime();
         return 0;
       }
@@ -1019,6 +1142,134 @@
         return String(str).replace(/[&<>"']/g, function(m) {
           return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#039;' }[m];
         });
+      }
+
+      // FCM / Web Push Notifications Implementation
+      const notificationBellBtn = document.querySelector('.icon-bell-btn');
+
+      // Register FCM service worker
+      if ('serviceWorker' in navigator) {
+        navigator.serviceWorker.register('./firebase-messaging-sw.js')
+          .then((registration) => {
+            console.log('FCM Service Worker registered with scope:', registration.scope);
+          })
+          .catch((err) => {
+            console.error('FCM Service Worker registration failed:', err);
+          });
+      }
+
+      async function setupNotifications() {
+        if (!('Notification' in window)) {
+          alert('This browser does not support push notifications.');
+          return;
+        }
+
+        try {
+          const permission = await Notification.requestPermission();
+          if (permission === 'granted') {
+            updateNotificationBellState(true);
+            await getAndSaveFCMToken();
+          } else {
+            updateNotificationBellState(false);
+            alert('Notification permissions were denied. Please enable them in browser settings.');
+          }
+        } catch (err) {
+          console.error('Error requesting notification permission:', err);
+        }
+      }
+
+      function updateNotificationBellState(enabled) {
+        if (!notificationBellBtn) return;
+        if (enabled) {
+          notificationBellBtn.style.color = '#ea4a36'; // Active/brand red
+          notificationBellBtn.title = 'Notifications Active';
+        } else {
+          notificationBellBtn.style.color = '#4b5563'; // Muted gray
+          notificationBellBtn.title = 'Enable Push Notifications';
+        }
+      }
+
+      async function getAndSaveFCMToken() {
+        if (!messaging || !currentAuthUser) return;
+        try {
+          const VAPID_KEY = 'YOUR_VAPID_PUBLIC_KEY';
+          let token;
+          if (VAPID_KEY === 'YOUR_VAPID_PUBLIC_KEY') {
+            token = await getToken(messaging);
+          } else {
+            token = await getToken(messaging, { vapidKey: VAPID_KEY });
+          }
+
+          if (token) {
+            console.log('FCM Token generated:', token);
+            // Save/Update under the logged-in user Firestore document
+            const userRef = doc(db, 'users', currentAuthUser.uid);
+            await updateDoc(userRef, { fcmToken: token });
+          }
+        } catch (err) {
+          console.warn('FCM registration token fetch notice:', err);
+        }
+      }
+
+      if (notificationBellBtn) {
+        notificationBellBtn.addEventListener('click', setupNotifications);
+
+        // Check if permission already exists
+        if (Notification.permission === 'granted') {
+          updateNotificationBellState(true);
+          onAuthStateChanged(auth, (user) => {
+            if (user) {
+              getAndSaveFCMToken();
+            }
+          });
+        }
+      }
+
+      // Foreground notification listener
+      if (messaging) {
+        onMessage(messaging, (payload) => {
+          console.log('FCM Foreground Message received:', payload);
+          showForegroundNotificationToast(payload);
+        });
+      }
+
+      function showForegroundNotificationToast(payload) {
+        const toast = document.createElement('div');
+        toast.style.position = 'fixed';
+        toast.style.bottom = '20px';
+        toast.style.right = '20px';
+        toast.style.background = '#ffffff';
+        toast.style.color = '#1f2937';
+        toast.style.padding = '1rem 1.5rem';
+        toast.style.borderRadius = '16px';
+        toast.style.boxShadow = '0 10px 25px rgba(0, 0, 0, 0.15)';
+        toast.style.borderLeft = '4px solid #ea4a36';
+        toast.style.zIndex = '99999';
+        toast.style.display = 'flex';
+        toast.style.flexDirection = 'column';
+        toast.style.gap = '0.25rem';
+        toast.style.fontFamily = "'Outfit', sans-serif";
+        toast.style.minWidth = '280px';
+        toast.style.animation = 'fadeIn 0.3s ease-out';
+
+        toast.innerHTML = `
+          <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom: 0.1rem;">
+            <strong style="font-size:0.95rem; color:#111827;">${escapeHtml(payload.notification?.title || 'MicroConnect Notification')}</strong>
+            <button onclick="this.parentNode.parentNode.remove()" style="background:none; border:none; color:#9ca3af; cursor:pointer; font-size:1.1rem; line-height:1;">&times;</button>
+          </div>
+          <span style="font-size:0.88rem; color:#4b5563;">${escapeHtml(payload.notification?.body || '')}</span>
+        `;
+
+        document.body.appendChild(toast);
+
+        // Auto remove after 6 seconds
+        setTimeout(() => {
+          if (toast.parentNode) {
+            toast.style.opacity = '0';
+            toast.style.transition = 'opacity 0.3s ease';
+            setTimeout(() => toast.remove(), 300);
+          }
+        }, 6000);
       }
     });
   </script>
