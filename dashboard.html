@@ -50,7 +50,9 @@
       <!-- Current Logged In Role Badge -->
       <span id="header-user-role-badge" class="user-role-pill alumni-pill">🎓 Alumni</span>
 
-      <img id="header-user-avatar" src="data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='100' height='100' viewBox='0 0 100 100'><circle cx='50' cy='50' r='50' fill='%23e0812b'/><path d='M50 28 a 14 14 0 1 0 0.001 0 M32 74 a 18 18 0 0 1 36 0' stroke='%23ffffff' stroke-width='6' fill='none' stroke-linecap='round'/></svg>" alt="Profile Photo" class="header-profile-photo" />
+      <a href="profile.html" title="View Profile">
+        <img id="header-user-avatar" src="data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='100' height='100' viewBox='0 0 100 100'><circle cx='50' cy='50' r='50' fill='%23e0812b'/><path d='M50 28 a 14 14 0 1 0 0.001 0 M32 74 a 18 18 0 0 1 36 0' stroke='%23ffffff' stroke-width='6' fill='none' stroke-linecap='round'/></svg>" alt="Profile Photo" class="header-profile-photo" style="cursor: pointer;" />
+      </a>
       <button id="signout-btn" class="signout-btn" title="Sign Out">Sign Out</button>
     </div>
   </header>
@@ -72,20 +74,29 @@
           <span>All Updates</span>
         </a>
 
-        <a href="#" id="filter-alumni-btn" class="nav-item">
+        <a href="messages.html" id="nav-messages-btn" class="nav-item">
           <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-            <path d="M22 10v6M2 10l10-5 10 5-10 5z"></path>
-            <path d="M6 12v5c3 3 9 3 12 0v-5"></path>
+            <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path>
           </svg>
-          <span>Alumni Posts</span>
+          <span>Messages</span>
         </a>
 
-        <a href="#" id="filter-student-btn" class="nav-item">
+        <a href="jobs.html" id="nav-jobs-btn" class="nav-item">
           <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-            <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"></path>
-            <path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"></path>
+            <rect x="2" y="7" width="20" height="14" rx="2" ry="2"></rect>
+            <path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"></path>
           </svg>
-          <span>Student Posts</span>
+          <span>Job Board</span>
+        </a>
+
+        <a href="network.html" id="nav-network-btn" class="nav-item">
+          <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
+            <circle cx="9" cy="7" r="4"></circle>
+            <path d="M23 21v-2a4 4 0 0 0-3-3.87"></path>
+            <path d="M16 3.13a4 4 0 0 1 0 7.75"></path>
+          </svg>
+          <span>Network</span>
         </a>
 
         <a href="#" class="nav-item">
@@ -409,10 +420,11 @@
       const leaderboardContainer = document.getElementById('leaderboard-list-container');
       const publishBtn = document.getElementById('publish-post-btn');
 
-      // Filter Buttons
+      // Navigation Buttons
       const filterAllBtn = document.getElementById('filter-all-btn');
-      const filterAlumniBtn = document.getElementById('filter-alumni-btn');
-      const filterStudentBtn = document.getElementById('filter-student-btn');
+      const navMessagesBtn = document.getElementById('nav-messages-btn');
+      const navJobsBtn = document.getElementById('nav-jobs-btn');
+      const navNetworkBtn = document.getElementById('nav-network-btn');
 
       // Diagnostic Elements
       const diagAuthInfo = document.getElementById('diag-auth-info');
@@ -449,30 +461,36 @@
         previewContainer.classList.add('hidden');
       });
 
-      // Filter Navigation Handlers
+      // Navigation Handlers
       if (filterAllBtn) {
         filterAllBtn.addEventListener('click', (e) => {
           e.preventDefault();
           setFilter('All', filterAllBtn);
         });
       }
-      if (filterAlumniBtn) {
-        filterAlumniBtn.addEventListener('click', (e) => {
+      if (navMessagesBtn) {
+        navMessagesBtn.addEventListener('click', (e) => {
           e.preventDefault();
-          setFilter('Alumni', filterAlumniBtn);
+          window.location.href = 'messages.html';
         });
       }
-      if (filterStudentBtn) {
-        filterStudentBtn.addEventListener('click', (e) => {
+      if (navJobsBtn) {
+        navJobsBtn.addEventListener('click', (e) => {
           e.preventDefault();
-          setFilter('Student', filterStudentBtn);
+          window.location.href = 'jobs.html';
+        });
+      }
+      if (navNetworkBtn) {
+        navNetworkBtn.addEventListener('click', (e) => {
+          e.preventDefault();
+          window.location.href = 'network.html';
         });
       }
 
-      function setFilter(role, btnEl) {
-        activeRoleFilter = role;
-        [filterAllBtn, filterAlumniBtn, filterStudentBtn].forEach(b => b.classList.remove('active'));
-        btnEl.classList.add('active');
+      function setFilter(filterType, btnEl) {
+        activeRoleFilter = filterType;
+        [filterAllBtn, navMessagesBtn, navJobsBtn, navNetworkBtn].forEach(b => b && b.classList.remove('active'));
+        if (btnEl) btnEl.classList.add('active');
         initLiveFeed();
       }
 
@@ -674,18 +692,29 @@
           updateUserRoleUI(globalUserRoles[authUser.uid]);
         }
 
-        // Apply Role Filtering if active
-        if (activeRoleFilter !== 'All') {
+        // Apply Tab Filtering if active
+        if (activeRoleFilter === 'Job Board') {
           postsArray = postsArray.filter(item => {
-            const r = getPostAuthorRole(item.data);
-            return r.toLowerCase().includes(activeRoleFilter.toLowerCase());
+            const role = getPostAuthorRole(item.data);
+            const text = getPostText(item.data).toLowerCase();
+            return role.toLowerCase().includes('alumni') || 
+                   text.includes('job') || 
+                   text.includes('hiring') || 
+                   text.includes('referral') || 
+                   text.includes('opportunity') || 
+                   text.includes('career');
+          });
+        } else if (activeRoleFilter === 'Messages') {
+          postsArray = postsArray.filter(item => {
+            const text = getPostText(item.data).toLowerCase();
+            return text.length > 0;
           });
         }
 
         if (postsArray.length === 0) {
           postsWrapper.innerHTML = `
             <div class="empty-feed-card">
-              <p>No ${activeRoleFilter} posts found.</p>
+              <p>No ${escapeHtml(activeRoleFilter)} updates found.</p>
               <span>Switch tabs or post an update to start the discussion!</span>
             </div>
           `;

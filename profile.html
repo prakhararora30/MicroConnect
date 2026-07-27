@@ -1,0 +1,927 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Profile - Connect</title>
+  <meta name="description" content="Connect Profile Page - View your profile, posts, connections, and skills.">
+  <!-- Google Fonts: Outfit -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+  <style>
+    /* Profile Page Layout matching User Screenshot */
+    body.profile-body {
+      background-color: #fafafa !important;
+      background-image: none !important;
+      color: #111827 !important;
+      display: block !important;
+      min-height: 100vh;
+      overflow-y: auto !important;
+      font-family: 'Outfit', sans-serif;
+    }
+
+    /* Top Navigation Header matching Screenshot */
+    .profile-navbar {
+      background: #ffffff;
+      padding: 0.9rem 3rem;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      border-bottom: 1px solid #f3f4f6;
+      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.02);
+    }
+
+    .nav-left-links {
+      display: flex;
+      align-items: center;
+      gap: 2.2rem;
+    }
+
+    .profile-nav-item {
+      color: #4b5563;
+      text-decoration: none;
+      font-weight: 500;
+      font-size: 1.05rem;
+      padding-bottom: 0.4rem;
+      position: relative;
+      transition: color 0.2s ease;
+    }
+
+    .profile-nav-item:hover {
+      color: #111827;
+    }
+
+    .profile-nav-item.active {
+      color: #111827;
+      font-weight: 700;
+    }
+
+    .profile-nav-item.active::after {
+      content: '';
+      position: absolute;
+      bottom: -0.4rem;
+      left: 0;
+      width: 100%;
+      height: 2.5px;
+      background: #ea4a36;
+      border-radius: 999px;
+    }
+
+    .nav-right-actions {
+      display: flex;
+      align-items: center;
+      gap: 1.2rem;
+    }
+
+    .nav-login-btn {
+      color: #374151;
+      text-decoration: none;
+      font-weight: 600;
+      font-size: 0.98rem;
+    }
+
+    .nav-signup-btn {
+      background: #000000;
+      color: #ffffff;
+      padding: 0.55rem 1.3rem;
+      border-radius: 8px;
+      text-decoration: none;
+      font-weight: 700;
+      font-size: 0.95rem;
+      transition: background 0.2s ease;
+    }
+
+    .nav-signup-btn:hover {
+      background: #1f2937;
+    }
+
+    /* Main Container */
+    .profile-container {
+      max-width: 1100px;
+      margin: 2rem auto 4rem auto;
+      padding: 0 1.5rem;
+      display: flex;
+      flex-direction: column;
+      gap: 1.8rem;
+    }
+
+    /* Header Profile Card matching Screenshot */
+    .profile-header-card {
+      background: #ffffff;
+      border-radius: 20px;
+      overflow: hidden;
+      box-shadow: 0 4px 16px rgba(0, 0, 0, 0.03);
+      border: 1px solid #f3f4f6;
+    }
+
+    .profile-banner-bg {
+      height: 190px;
+      background: linear-gradient(135deg, #e2e8f0 0%, #cbd5e1 50%, #94a3b8 100%);
+      background-image: radial-gradient(#cbd5e1 1px, transparent 1px), radial-gradient(#cbd5e1 1px, #e2e8f0 1px);
+      background-size: 20px 20px;
+      background-position: 0 0, 10px 10px;
+      position: relative;
+    }
+
+    .profile-info-row {
+      padding: 1.2rem 2.5rem 2rem 2.5rem;
+      display: flex;
+      align-items: flex-end;
+      justify-content: space-between;
+      position: relative;
+    }
+
+    .profile-avatar-wrapper {
+      position: absolute;
+      top: -75px;
+      left: 2.5rem;
+    }
+
+    .profile-avatar-img {
+      width: 140px;
+      height: 140px;
+      border-radius: 50%;
+      object-fit: cover;
+      border: 5px solid #ffffff;
+      box-shadow: 0 6px 18px rgba(0, 0, 0, 0.1);
+      background: #ffffff;
+    }
+
+    .profile-user-details {
+      margin-left: 11rem;
+      display: flex;
+      flex-direction: column;
+      gap: 0.3rem;
+    }
+
+    .profile-name-heading {
+      font-size: 2.1rem;
+      font-weight: 800;
+      color: #111827;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      letter-spacing: -0.5px;
+    }
+
+    .verified-badge {
+      color: #2563eb;
+      font-size: 1.25rem;
+    }
+
+    .profile-role-text {
+      font-size: 1.05rem;
+      color: #4b5563;
+      font-weight: 500;
+    }
+
+    .profile-location-text {
+      font-size: 0.95rem;
+      color: #6b7280;
+      display: flex;
+      align-items: center;
+      gap: 0.3rem;
+      margin-top: 0.1rem;
+    }
+
+    .profile-stats-group {
+      display: flex;
+      align-items: center;
+      gap: 2.2rem;
+    }
+
+    .stat-box {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+
+    .stat-number {
+      font-size: 1.35rem;
+      font-weight: 800;
+      color: #111827;
+    }
+
+    .stat-label {
+      font-size: 0.85rem;
+      color: #6b7280;
+      font-weight: 500;
+    }
+
+    .pts-badge-stat {
+      color: #ea4a36;
+      font-weight: 800;
+      font-size: 1.25rem;
+      display: flex;
+      align-items: center;
+      gap: 0.3rem;
+    }
+
+    .edit-profile-btn {
+      background: #000000;
+      color: #ffffff;
+      border: none;
+      padding: 0.7rem 1.4rem;
+      border-radius: 10px;
+      font-size: 0.95rem;
+      font-weight: 700;
+      font-family: inherit;
+      cursor: pointer;
+      transition: background 0.2s ease;
+    }
+
+    .edit-profile-btn:hover {
+      background: #1f2937;
+    }
+
+    /* Lower Section: 2 Columns */
+    .profile-grid-section {
+      display: grid;
+      grid-template-columns: 1fr 1.3fr;
+      gap: 1.8rem;
+      align-items: start;
+    }
+
+    /* Left Column Stacked Cards */
+    .profile-left-column {
+      display: flex;
+      flex-direction: column;
+      gap: 1.8rem;
+    }
+
+    .info-card {
+      background: #ffffff;
+      border-radius: 18px;
+      padding: 1.6rem 1.8rem;
+      border: 1px solid #f3f4f6;
+      box-shadow: 0 2px 10px rgba(0, 0, 0, 0.02);
+      display: flex;
+      flex-direction: column;
+      gap: 1rem;
+    }
+
+    .card-heading {
+      font-size: 1.3rem;
+      font-weight: 700;
+      color: #111827;
+    }
+
+    .about-bio-text {
+      font-size: 0.96rem;
+      line-height: 1.6;
+      color: #4b5563;
+    }
+
+    .skills-flex-wrap {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.6rem;
+    }
+
+    .skill-pill {
+      background: #f3f4f6;
+      color: #374151;
+      font-size: 0.9rem;
+      font-weight: 600;
+      padding: 0.45rem 1.1rem;
+      border-radius: 999px;
+    }
+
+    /* Right Column: Shares / Saved Posts */
+    .profile-right-column {
+      background: #ffffff;
+      border-radius: 18px;
+      border: 1px solid #f3f4f6;
+      box-shadow: 0 2px 10px rgba(0, 0, 0, 0.02);
+      padding: 1.4rem;
+      display: flex;
+      flex-direction: column;
+      gap: 1.2rem;
+    }
+
+    .shares-tabs-bar {
+      display: flex;
+      align-items: center;
+      justify-content: space-around;
+      border-bottom: 1px solid #f3f4f6;
+      padding-bottom: 0.6rem;
+    }
+
+    .shares-tab-btn {
+      background: none;
+      border: none;
+      font-family: inherit;
+      font-size: 1.05rem;
+      font-weight: 600;
+      color: #6b7280;
+      cursor: pointer;
+      padding-bottom: 0.6rem;
+      position: relative;
+    }
+
+    .shares-tab-btn.active {
+      color: #111827;
+      font-weight: 700;
+    }
+
+    .shares-tab-btn.active::after {
+      content: '';
+      position: absolute;
+      bottom: -0.65rem;
+      left: 0;
+      width: 100%;
+      height: 3px;
+      background: #ea4a36;
+      border-radius: 999px;
+    }
+
+    /* Feed Post Cards */
+    .shares-feed-container {
+      display: flex;
+      flex-direction: column;
+      gap: 1.2rem;
+    }
+
+    .feed-post-card {
+      background: #ffffff;
+      border-radius: 14px;
+      border: 1px solid #f3f4f6;
+      padding: 1.2rem;
+      display: flex;
+      flex-direction: column;
+      gap: 0.9rem;
+    }
+
+    .post-card-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .post-author-row {
+      display: flex;
+      align-items: center;
+      gap: 0.8rem;
+    }
+
+    .post-author-avatar {
+      width: 42px;
+      height: 42px;
+      border-radius: 50%;
+      object-fit: cover;
+    }
+
+    .post-author-meta {
+      display: flex;
+      flex-direction: column;
+    }
+
+    .post-author-name {
+      font-size: 1rem;
+      font-weight: 700;
+      color: #111827;
+    }
+
+    .post-time-ago {
+      font-size: 0.82rem;
+      color: #9ca3af;
+    }
+
+    .post-body-content {
+      font-size: 0.98rem;
+      color: #374151;
+      line-height: 1.5;
+    }
+
+    .post-image-attachment {
+      width: 100%;
+      max-height: 320px;
+      object-fit: cover;
+      border-radius: 12px;
+      border: 1px solid #f3f4f6;
+    }
+
+    .post-footer-actions {
+      display: flex;
+      align-items: center;
+      gap: 1.5rem;
+      color: #6b7280;
+      font-size: 0.9rem;
+      font-weight: 600;
+    }
+
+    .post-action-btn {
+      display: flex;
+      align-items: center;
+      gap: 0.4rem;
+      background: none;
+      border: none;
+      cursor: pointer;
+      color: #6b7280;
+      font-family: inherit;
+      font-size: 0.9rem;
+      font-weight: 600;
+    }
+
+    .post-action-btn:hover {
+      color: #ea4a36;
+    }
+
+    /* Modal Dialog */
+    .edit-modal-overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: rgba(17, 24, 39, 0.6);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 9999;
+      backdrop-filter: blur(4px);
+    }
+
+    .edit-modal-card {
+      background: #ffffff;
+      border-radius: 20px;
+      width: 90%;
+      max-width: 520px;
+      padding: 2rem;
+      box-shadow: 0 20px 40px rgba(0, 0, 0, 0.15);
+      display: flex;
+      flex-direction: column;
+      gap: 1.2rem;
+    }
+
+    .modal-title-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .modal-title {
+      font-size: 1.4rem;
+      font-weight: 800;
+      color: #111827;
+    }
+
+    .close-modal-btn {
+      background: none;
+      border: none;
+      font-size: 1.5rem;
+      cursor: pointer;
+      color: #6b7280;
+    }
+
+    .modal-input-field {
+      width: 100%;
+      padding: 0.75rem 1rem;
+      border-radius: 10px;
+      border: 1px solid #d1d5db;
+      font-family: inherit;
+      font-size: 0.95rem;
+      outline: none;
+    }
+
+    .modal-input-field:focus {
+      border-color: #ea4a36;
+    }
+
+    .modal-submit-btn {
+      background: linear-gradient(90deg, #ea4a36 0%, #f69d3c 100%);
+      color: #ffffff;
+      border: none;
+      padding: 0.85rem 1.5rem;
+      border-radius: 12px;
+      font-size: 1rem;
+      font-weight: 700;
+      font-family: inherit;
+      cursor: pointer;
+      box-shadow: 0 4px 15px rgba(234, 74, 54, 0.3);
+    }
+  </style>
+</head>
+<body class="profile-body">
+
+  <!-- Top Navbar Header -->
+  <nav class="profile-navbar">
+    <a href="index.html" class="dashboard-logo" aria-label="Connect Home">connect</a>
+
+    <div class="nav-left-links">
+      <a href="dashboard.html" class="profile-nav-item">Home</a>
+      <a href="#" class="profile-nav-item">About</a>
+      <a href="profile.html" class="profile-nav-item active">Profile</a>
+      <a href="#" class="profile-nav-item">Contact</a>
+    </div>
+
+    <div class="nav-right-actions">
+      <a href="login.html" class="nav-login-btn">Login</a>
+      <a href="get-started.html" class="nav-signup-btn">Sign Up</a>
+    </div>
+  </nav>
+
+  <!-- Profile Workspace Container -->
+  <main class="profile-container">
+
+    <!-- Header Banner & Profile Header Card -->
+    <header class="profile-header-card">
+      <div class="profile-banner-bg"></div>
+
+      <div class="profile-info-row">
+        <div class="profile-avatar-wrapper">
+          <img id="user-profile-img" src="data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='100' height='100' viewBox='0 0 100 100'><circle cx='50' cy='50' r='50' fill='%23e0812b'/><path d='M50 28 a 14 14 0 1 0 0.001 0 M32 74 a 18 18 0 0 1 36 0' stroke='%23ffffff' stroke-width='6' fill='none' stroke-linecap='round'/></svg>" alt="Profile Photo" class="profile-avatar-img" />
+        </div>
+
+        <div class="profile-user-details">
+          <h1 class="profile-name-heading">
+            <span id="profile-display-name">Loading...</span>
+            <svg class="verified-badge" xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="#2563eb">
+              <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z" fill="#ffffff"/>
+              <path d="M12 2a10 10 0 100 20 10 10 0 000-20zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z" fill="#2563eb"/>
+            </svg>
+          </h1>
+          <span class="profile-role-text" id="profile-role-major">Member | Computer Science</span>
+          <span class="profile-location-text">
+            <svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path>
+              <circle cx="12" cy="10" r="3"></circle>
+            </svg>
+            <span id="profile-location">India</span>
+          </span>
+        </div>
+
+        <div class="profile-stats-group">
+          <div class="stat-box">
+            <span class="stat-number" id="posts-count-stat">0</span>
+            <span class="stat-label">Posts</span>
+          </div>
+
+          <div class="stat-box">
+            <span class="stat-number" id="connections-count-stat">0</span>
+            <span class="stat-label">Connections</span>
+          </div>
+
+          <div class="stat-box">
+            <span class="pts-badge-stat">✨ <span id="pts-count-stat">1,200</span> pts</span>
+          </div>
+
+          <button type="button" class="edit-profile-btn" id="edit-profile-btn">Edit Profile</button>
+        </div>
+      </div>
+    </header>
+
+    <!-- Lower Grid Section (2 Columns) -->
+    <section class="profile-grid-section">
+
+      <!-- LEFT COLUMN: About Me & Skills -->
+      <div class="profile-left-column">
+        
+        <!-- About Me Card -->
+        <article class="info-card">
+          <h2 class="card-heading">About Me</h2>
+          <p class="about-bio-text" id="profile-bio-text">
+            Passionate tech enthusiast and active community member connecting students and alumni.
+          </p>
+        </article>
+
+        <!-- Skills Card -->
+        <article class="info-card">
+          <h2 class="card-heading">Skills</h2>
+          <div class="skills-flex-wrap" id="skills-flex-wrap">
+            <span class="skill-pill">Java</span>
+            <span class="skill-pill">UX Design</span>
+            <span class="skill-pill">Kotlin</span>
+            <span class="skill-pill">Firebase</span>
+            <span class="skill-pill">Web Development</span>
+          </div>
+        </article>
+
+      </div>
+
+      <!-- RIGHT COLUMN: My Shares & Saved Posts -->
+      <div class="profile-right-column">
+        
+        <!-- Tabs Bar -->
+        <div class="shares-tabs-bar">
+          <button type="button" class="shares-tab-btn active">My Shares</button>
+          <button type="button" class="shares-tab-btn">Saved Posts</button>
+        </div>
+
+        <!-- Shares Feed Container -->
+        <div class="shares-feed-container" id="shares-feed-container">
+          <div style="text-align: center; padding: 2.5rem; color: #6b7280;">Loading user posts...</div>
+        </div>
+
+      </div>
+
+    </section>
+
+  </main>
+
+  <!-- Edit Profile Modal Dialog -->
+  <div class="edit-modal-overlay" id="edit-modal-overlay" style="display: none;">
+    <div class="edit-modal-card">
+      <div class="modal-title-row">
+        <h2 class="modal-title">Edit Profile</h2>
+        <button type="button" class="close-modal-btn" id="close-modal-btn">&times;</button>
+      </div>
+
+      <div>
+        <label style="font-weight: 600; font-size: 0.9rem; color: #374151;">Full Name</label>
+        <input type="text" id="edit-name-input" class="modal-input-field" placeholder="Full Name" />
+      </div>
+
+      <div>
+        <label style="font-weight: 600; font-size: 0.9rem; color: #374151;">Role</label>
+        <select id="edit-role-select" class="modal-input-field">
+          <option value="Alumni">Alumni</option>
+          <option value="Student">Student</option>
+        </select>
+      </div>
+
+      <div>
+        <label style="font-weight: 600; font-size: 0.9rem; color: #374151;">Location</label>
+        <input type="text" id="edit-location-input" class="modal-input-field" placeholder="Location (e.g. Delhi, India)" />
+      </div>
+
+      <div>
+        <label style="font-weight: 600; font-size: 0.9rem; color: #374151;">About Bio</label>
+        <textarea id="edit-bio-input" class="modal-input-field" rows="3" placeholder="Tell us about yourself..."></textarea>
+      </div>
+
+      <div>
+        <label style="font-weight: 600; font-size: 0.9rem; color: #374151;">Skills (Comma separated)</label>
+        <input type="text" id="edit-skills-input" class="modal-input-field" placeholder="Java, UX Design, Python, React" />
+      </div>
+
+      <div>
+        <label style="font-weight: 600; font-size: 0.9rem; color: #374151;">Profile Photo</label>
+        <input type="file" id="edit-photo-file" accept="image/*" class="modal-input-field" />
+      </div>
+
+      <button type="button" class="modal-submit-btn" id="save-profile-btn">Save Profile Changes</button>
+    </div>
+  </div>
+
+  <!-- Realtime Profile Firebase Script -->
+  <script type="module">
+    import { auth, onAuthStateChanged, db, collection, onSnapshot, doc, getDoc, setDoc, updateDoc } from './firebase-config.js';
+
+    const defaultProfilePhoto = "data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='100' height='100' viewBox='0 0 100 100'><circle cx='50' cy='50' r='50' fill='%23e0812b'/><path d='M50 28 a 14 14 0 1 0 0.001 0 M32 74 a 18 18 0 0 1 36 0' stroke='%23ffffff' stroke-width='6' fill='none' stroke-linecap='round'/></svg>";
+
+    let currentAuthUser = null;
+    let currentUserDoc = null;
+    let newPhotoBase64 = null;
+
+    function formatImageSrc(src) {
+      if (!src || typeof src !== 'string') return defaultProfilePhoto;
+      src = src.trim();
+      if (src === '') return defaultProfilePhoto;
+
+      if (src.startsWith('http://') || src.startsWith('https://') || src.startsWith('data:image/')) return src;
+      if (src.startsWith('/9j/') || src.startsWith('iVBOR') || (src.length > 80 && !src.includes('://'))) {
+        return `data:image/jpeg;base64,${src}`;
+      }
+      return defaultProfilePhoto;
+    }
+
+    document.addEventListener('DOMContentLoaded', () => {
+      const userProfileImg = document.getElementById('user-profile-img');
+      const profileDisplayName = document.getElementById('profile-display-name');
+      const profileRoleMajor = document.getElementById('profile-role-major');
+      const profileLocation = document.getElementById('profile-location');
+      const profileBioText = document.getElementById('profile-bio-text');
+      const skillsFlexWrap = document.getElementById('skills-flex-wrap');
+      const postsCountStat = document.getElementById('posts-count-stat');
+      const connectionsCountStat = document.getElementById('connections-count-stat');
+      const sharesFeedContainer = document.getElementById('shares-feed-container');
+
+      // Edit Modal Elements
+      const editProfileBtn = document.getElementById('edit-profile-btn');
+      const editModalOverlay = document.getElementById('edit-modal-overlay');
+      const closeModalBtn = document.getElementById('close-modal-btn');
+      const saveProfileBtn = document.getElementById('save-profile-btn');
+      const editNameInput = document.getElementById('edit-name-input');
+      const editRoleSelect = document.getElementById('edit-role-select');
+      const editLocationInput = document.getElementById('edit-location-input');
+      const editBioInput = document.getElementById('edit-bio-input');
+      const editSkillsInput = document.getElementById('edit-skills-input');
+      const editPhotoFile = document.getElementById('edit-photo-file');
+
+      // 1. Auth Listener
+      onAuthStateChanged(auth, async (user) => {
+        if (!user) {
+          window.location.href = 'login.html';
+          return;
+        }
+
+        currentAuthUser = user;
+        loadUserProfile();
+        loadUserPosts();
+        loadUserConnectionsCount();
+      });
+
+      // 2. Load Real User Profile from Firestore 'users/{uid}'
+      async function loadUserProfile() {
+        if (!currentAuthUser) return;
+        try {
+          const uSnap = await getDoc(doc(db, 'users', currentAuthUser.uid));
+          if (uSnap.exists()) {
+            currentUserDoc = uSnap.data();
+          } else {
+            currentUserDoc = {
+              name: currentAuthUser.displayName || 'Network User',
+              role: 'Alumni',
+              location: 'Delhi, India',
+              bio: 'Passionate tech enthusiast and active community member connecting students and alumni.',
+              skills: ['Java', 'UX Design', 'Kotlin', 'Firebase', 'Web Development']
+            };
+          }
+
+          const name = currentUserDoc.name || currentUserDoc.displayName || currentAuthUser.displayName || 'Member';
+          const role = currentUserDoc.role || 'Alumni';
+          const location = currentUserDoc.location || 'Delhi, India';
+          const bio = currentUserDoc.bio || 'Passionate tech enthusiast connecting students and alumni.';
+          const photo = formatImageSrc(currentUserDoc.authorPhotoBase64 || currentUserDoc.photoURL || currentAuthUser.photoURL);
+          const skills = currentUserDoc.skills || ['Java', 'UX Design', 'Kotlin', 'Firebase', 'Web Development'];
+
+          profileDisplayName.textContent = name;
+          profileRoleMajor.textContent = `${role} | Computer Science`;
+          profileLocation.textContent = location;
+          profileBioText.textContent = bio;
+          userProfileImg.src = photo;
+
+          // Render Skills
+          skillsFlexWrap.innerHTML = '';
+          skills.forEach(s => {
+            const pill = document.createElement('span');
+            pill.className = 'skill-pill';
+            pill.textContent = s;
+            skillsFlexWrap.appendChild(pill);
+          });
+
+        } catch (e) {
+          console.warn('Profile load notice:', e);
+        }
+      }
+
+      // 3. Load Real-time User Posts from Firestore 'posts' collection
+      function loadUserPosts() {
+        if (!currentAuthUser) return;
+
+        onSnapshot(collection(db, 'posts'), (postsSnap) => {
+          const myPosts = [];
+          postsSnap.forEach(pDoc => {
+            const data = pDoc.data();
+            const uid = data.uid || data.authorUid;
+            if (uid === currentAuthUser.uid) {
+              myPosts.push({ id: pDoc.id, ...data });
+            }
+          });
+
+          // Sort by timestamp desc
+          myPosts.sort((a, b) => (b.timestamp?.seconds || 0) - (a.timestamp?.seconds || 0));
+
+          postsCountStat.textContent = myPosts.length;
+
+          if (myPosts.length === 0) {
+            sharesFeedContainer.innerHTML = `
+              <div style="text-align: center; padding: 3rem 1rem; color: #6b7280;">
+                <p style="font-size: 1.05rem; font-weight: 600; color: #374151;">No posts published yet.</p>
+                <span>Share an update on your home dashboard to see it here!</span>
+              </div>
+            `;
+            return;
+          }
+
+          sharesFeedContainer.innerHTML = '';
+
+          myPosts.forEach(post => {
+            const card = document.createElement('article');
+            card.className = 'feed-post-card';
+
+            const photo = formatImageSrc(post.authorPhotoBase64 || post.userPhotoBase64 || currentUserDoc?.authorPhotoBase64 || currentAuthUser.photoURL);
+            const name = post.authorName || currentUserDoc?.name || currentAuthUser.displayName || 'Member';
+            const text = post.content || post.text || post.message || '';
+
+            card.innerHTML = `
+              <div class="post-card-header">
+                <div class="post-author-row">
+                  <img src="${photo}" alt="${escapeHtml(name)}" class="post-author-avatar" onerror="this.src='${defaultProfilePhoto}';" />
+                  <div class="post-author-meta">
+                    <span class="post-author-name">${escapeHtml(name)}</span>
+                    <span class="post-time-ago">Just now</span>
+                  </div>
+                </div>
+                <span class="post-options-dots" style="color: #9ca3af; cursor: pointer;">•••</span>
+              </div>
+              <p class="post-body-content">${escapeHtml(text)}</p>
+              ${post.imageBase64 ? `<img src="${formatImageSrc(post.imageBase64)}" class="post-image-attachment" alt="Post Attachment" />` : ''}
+              <div class="post-footer-actions">
+                <button type="button" class="post-action-btn">
+                  <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path>
+                  </svg>
+                  <span>Like</span>
+                </button>
+                <button type="button" class="post-action-btn">
+                  <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path>
+                  </svg>
+                  <span>Comment</span>
+                </button>
+              </div>
+            `;
+
+            sharesFeedContainer.appendChild(card);
+          });
+        });
+      }
+
+      // 4. Load Connections Count
+      function loadUserConnectionsCount() {
+        if (!currentAuthUser) return;
+        onSnapshot(collection(db, 'connections'), (connSnap) => {
+          let count = 0;
+          connSnap.forEach(docSnap => {
+            const data = docSnap.data();
+            if (data.status === 'accepted' && (data.senderUid === currentAuthUser.uid || data.receiverUid === currentAuthUser.uid)) {
+              count++;
+            }
+          });
+          connectionsCountStat.textContent = count;
+        });
+      }
+
+      // 5. Edit Profile Modal Logic
+      editProfileBtn.addEventListener('click', () => {
+        editNameInput.value = currentUserDoc?.name || currentAuthUser?.displayName || '';
+        editRoleSelect.value = currentUserDoc?.role || 'Alumni';
+        editLocationInput.value = currentUserDoc?.location || 'Delhi, India';
+        editBioInput.value = currentUserDoc?.bio || '';
+        editSkillsInput.value = (currentUserDoc?.skills || ['Java', 'UX Design', 'Kotlin']).join(', ');
+        editModalOverlay.style.display = 'flex';
+      });
+
+      closeModalBtn.addEventListener('click', () => {
+        editModalOverlay.style.display = 'none';
+      });
+
+      editPhotoFile.addEventListener('change', (e) => {
+        const file = e.target.files[0];
+        if (!file) return;
+        const reader = new FileReader();
+        reader.onload = (evt) => {
+          newPhotoBase64 = evt.target.result;
+        };
+        reader.readAsDataURL(file);
+      });
+
+      saveProfileBtn.addEventListener('click', async () => {
+        if (!currentAuthUser) return;
+
+        saveProfileBtn.disabled = true;
+        saveProfileBtn.textContent = 'Saving...';
+
+        const updatedData = {
+          uid: currentAuthUser.uid,
+          name: editNameInput.value.trim() || 'Member',
+          role: editRoleSelect.value,
+          location: editLocationInput.value.trim() || 'Delhi, India',
+          bio: editBioInput.value.trim(),
+          skills: editSkillsInput.value.split(',').map(s => s.trim()).filter(s => s.length > 0)
+        };
+
+        if (newPhotoBase64) {
+          updatedData.authorPhotoBase64 = newPhotoBase64;
+        } else if (currentUserDoc?.authorPhotoBase64) {
+          updatedData.authorPhotoBase64 = currentUserDoc.authorPhotoBase64;
+        }
+
+        try {
+          await setDoc(doc(db, 'users', currentAuthUser.uid), updatedData, { merge: true });
+          editModalOverlay.style.display = 'none';
+          saveProfileBtn.disabled = false;
+          saveProfileBtn.textContent = 'Save Profile Changes';
+          loadUserProfile();
+        } catch (e) {
+          console.error('Error saving profile:', e);
+          alert('Could not save profile changes.');
+          saveProfileBtn.disabled = false;
+          saveProfileBtn.textContent = 'Save Profile Changes';
+        }
+      });
+
+      function escapeHtml(str) {
+        if (!str) return '';
+        return String(str).replace(/[&<>"']/g, function(m) {
+          return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#039;' }[m];
+        });
+      }
+    });
+  </script>
+</body>
+</html>

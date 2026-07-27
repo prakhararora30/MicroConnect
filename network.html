@@ -1,0 +1,922 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>My Network - Connect</title>
+  <meta name="description" content="Connect My Network - Discover and connect with alumni and students from your college.">
+  <!-- Google Fonts: Outfit -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+  <style>
+    /* Network Page Layout matching 3 User Screenshots */
+    body.network-body {
+      background-color: #fafafa !important;
+      background-image: none !important;
+      color: #111827 !important;
+      display: block !important;
+      min-height: 100vh;
+      overflow-y: auto !important;
+      font-family: 'Outfit', sans-serif;
+    }
+
+    .network-navbar {
+      background: #ffffff;
+      padding: 0.8rem 2.5rem;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      border-bottom: 1px solid #f3f4f6;
+      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.02);
+    }
+
+    .nav-right-icons {
+      display: flex;
+      align-items: center;
+      gap: 1.5rem;
+    }
+
+    .icon-nav-btn {
+      background: none;
+      border: none;
+      cursor: pointer;
+      color: #4b5563;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      position: relative;
+    }
+
+    .notification-dot {
+      position: absolute;
+      top: 0;
+      right: 0;
+      width: 8px;
+      height: 8px;
+      background: #ef4444;
+      border-radius: 50%;
+    }
+
+    .user-profile-dropdown {
+      display: flex;
+      align-items: center;
+      gap: 0.6rem;
+      cursor: pointer;
+    }
+
+    .nav-user-avatar {
+      width: 38px;
+      height: 38px;
+      border-radius: 50%;
+      object-fit: cover;
+    }
+
+    .signout-link-btn {
+      background: #f3f4f6;
+      border: 1px solid #e5e7eb;
+      padding: 0.35rem 0.85rem;
+      border-radius: 999px;
+      font-weight: 600;
+      font-size: 0.82rem;
+      color: #4b5563;
+      cursor: pointer;
+    }
+
+    .signout-link-btn:hover {
+      background: #fee2e2;
+      color: #dc2626;
+    }
+
+    /* Page Workspace Container */
+    .network-workspace {
+      max-width: 1240px;
+      margin: 1.5rem auto;
+      padding: 0 1.5rem;
+      display: grid;
+      grid-template-columns: 220px 1fr;
+      gap: 2.5rem;
+      align-items: start;
+    }
+
+    /* Left Nav Sidebar Panel */
+    .network-sidebar {
+      background: transparent;
+      display: flex;
+      flex-direction: column;
+      gap: 0.4rem;
+    }
+
+    .sidebar-nav-link {
+      display: flex;
+      align-items: center;
+      gap: 0.9rem;
+      padding: 0.85rem 1.1rem;
+      border-radius: 12px;
+      color: #4b5563;
+      text-decoration: none;
+      font-weight: 500;
+      font-size: 1rem;
+      transition: all 0.2s ease;
+    }
+
+    .sidebar-nav-link:hover {
+      background: #f3f4f6;
+      color: #111827;
+    }
+
+    .sidebar-nav-link.active {
+      background: #ffffff;
+      color: #111827;
+      font-weight: 700;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+      border-left: 3.5px solid #ea4a36;
+    }
+
+    /* Right Main Content */
+    .network-main-content {
+      display: flex;
+      flex-direction: column;
+      gap: 1.8rem;
+    }
+
+    .network-title {
+      font-size: 2.4rem;
+      font-weight: 800;
+      color: #111827;
+      letter-spacing: -0.6px;
+      margin-bottom: 0.5rem;
+    }
+
+    /* Search & Filter Bar matching Screenshots */
+    .search-filter-group {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+      width: 100%;
+    }
+
+    .network-search-box {
+      background: #f3f4f6;
+      border-radius: 999px;
+      padding: 0.8rem 1.4rem;
+      display: flex;
+      align-items: center;
+      gap: 0.8rem;
+      border: 1px solid transparent;
+      flex: 1;
+    }
+
+    .network-search-input {
+      border: none;
+      outline: none;
+      background: transparent;
+      width: 100%;
+      font-family: inherit;
+      font-size: 1.05rem;
+      color: #1f2937;
+    }
+
+    .network-search-input::placeholder {
+      color: #9ca3af;
+    }
+
+    .filter-options-btn {
+      width: 48px;
+      height: 48px;
+      border-radius: 50%;
+      background: #f3f4f6;
+      border: none;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      color: #111827;
+      flex-shrink: 0;
+    }
+
+    /* Tabs Bar matching Screenshots */
+    .network-tabs-bar {
+      display: flex;
+      align-items: center;
+      gap: 2.5rem;
+      border-bottom: 1px solid #f3f4f6;
+      padding-bottom: 0.75rem;
+    }
+
+    .tab-btn {
+      background: none;
+      border: none;
+      font-family: inherit;
+      font-size: 1.1rem;
+      font-weight: 500;
+      color: #6b7280;
+      cursor: pointer;
+      padding-bottom: 0.75rem;
+      position: relative;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      transition: color 0.2s ease;
+    }
+
+    .tab-btn.active {
+      color: #111827;
+      font-weight: 700;
+    }
+
+    .tab-btn.active::after {
+      content: '';
+      position: absolute;
+      bottom: -0.75rem;
+      left: 0;
+      width: 100%;
+      height: 3px;
+      background: #111827;
+      border-radius: 999px;
+    }
+
+    .tab-badge {
+      background: #e5e7eb;
+      color: #4b5563;
+      font-size: 0.75rem;
+      font-weight: 700;
+      width: 20px;
+      height: 20px;
+      border-radius: 50%;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    /* Suggested Cards Grid matching Screenshot 1 */
+    .suggested-cards-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+      gap: 1.5rem;
+    }
+
+    .suggested-card {
+      background: #ffffff;
+      border-radius: 24px;
+      padding: 1.8rem 1.4rem 1.4rem 1.4rem;
+      border: 1px solid #f3f4f6;
+      box-shadow: 0 4px 16px rgba(0, 0, 0, 0.03);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      text-align: center;
+      gap: 0.6rem;
+      transition: transform 0.2s ease, box-shadow 0.2s ease;
+    }
+
+    .suggested-card:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.06);
+    }
+
+    .suggested-card-avatar {
+      width: 100px;
+      height: 100px;
+      border-radius: 50%;
+      object-fit: cover;
+      margin-bottom: 0.4rem;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.06);
+    }
+
+    .suggested-card-name {
+      font-size: 1.2rem;
+      font-weight: 700;
+      color: #111827;
+    }
+
+    .suggested-role-badge {
+      font-size: 0.75rem;
+      font-weight: 600;
+      padding: 0.2rem 0.7rem;
+      border-radius: 6px;
+      background: #e0e7ff;
+      color: #2563eb;
+    }
+
+    .suggested-card-subtitle {
+      font-size: 0.9rem;
+      color: #6b7280;
+      font-weight: 400;
+      margin-bottom: 0.6rem;
+    }
+
+    .btn-connect-gradient {
+      background: linear-gradient(90deg, #ea4a36 0%, #f69d3c 100%);
+      color: #ffffff;
+      border: none;
+      padding: 0.75rem 1.2rem;
+      border-radius: 14px;
+      font-size: 1rem;
+      font-weight: 700;
+      font-family: inherit;
+      cursor: pointer;
+      width: 100%;
+      text-align: center;
+      box-shadow: 0 4px 14px rgba(234, 74, 54, 0.25);
+      transition: all 0.2s ease;
+    }
+
+    .btn-connect-gradient:hover {
+      opacity: 0.95;
+      transform: translateY(-1px);
+    }
+
+    .btn-connect-gradient.pending {
+      background: #f3f4f6;
+      color: #6b7280;
+      box-shadow: none;
+      border: 1px solid #d1d5db;
+    }
+
+    /* Requests View Empty State matching Screenshot 2 */
+    .empty-state-box {
+      text-align: center;
+      padding: 6rem 1rem;
+      color: #6b7280;
+      font-size: 1.15rem;
+      font-weight: 500;
+    }
+
+    /* Connections List View matching Screenshot 3 */
+    .connections-list {
+      display: flex;
+      flex-direction: column;
+      gap: 0.8rem;
+    }
+
+    .connection-item-card {
+      background: #ffffff;
+      border-radius: 18px;
+      padding: 1.1rem 1.4rem;
+      border: 1px solid #f3f4f6;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.02);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .connection-item-left {
+      display: flex;
+      align-items: center;
+      gap: 1.2rem;
+    }
+
+    .connection-avatar-img {
+      width: 52px;
+      height: 52px;
+      border-radius: 50%;
+      object-fit: cover;
+    }
+
+    .connection-initial-circle {
+      width: 52px;
+      height: 52px;
+      border-radius: 50%;
+      background: #f3f4f6;
+      color: #111827;
+      font-size: 1.25rem;
+      font-weight: 700;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .connection-item-info {
+      display: flex;
+      flex-direction: column;
+      gap: 0.15rem;
+    }
+
+    .connection-item-name {
+      font-size: 1.1rem;
+      font-weight: 700;
+      color: #111827;
+    }
+
+    .connection-item-role {
+      font-size: 0.9rem;
+      color: #6b7280;
+    }
+
+    .connection-item-actions {
+      display: flex;
+      align-items: center;
+      gap: 1.2rem;
+    }
+
+    .msg-icon-link {
+      background: none;
+      border: none;
+      color: #111827;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      text-decoration: none;
+    }
+
+    .more-opts-btn {
+      background: none;
+      border: none;
+      color: #9ca3af;
+      cursor: pointer;
+      font-size: 1.2rem;
+    }
+  </style>
+</head>
+<body class="network-body">
+
+  <!-- Top Navbar -->
+  <nav class="network-navbar">
+    <a href="index.html" class="dashboard-logo" aria-label="Connect Home">connect</a>
+
+    <div class="nav-right-icons">
+      <a href="messages.html" class="icon-nav-btn" title="Messages">
+        <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path>
+          <polyline points="22,6 12,13 2,6"></polyline>
+        </svg>
+      </a>
+
+      <button type="button" class="icon-nav-btn" title="Notifications">
+        <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"></path>
+          <path d="M13.73 21a2 2 0 0 1-3.46 0"></path>
+        </svg>
+        <span class="notification-dot"></span>
+      </button>
+
+      <div class="user-profile-dropdown">
+        <a href="profile.html" title="View Profile">
+          <img id="nav-user-avatar" src="data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='100' height='100' viewBox='0 0 100 100'><circle cx='50' cy='50' r='50' fill='%23e0812b'/><path d='M50 28 a 14 14 0 1 0 0.001 0 M32 74 a 18 18 0 0 1 36 0' stroke='%23ffffff' stroke-width='6' fill='none' stroke-linecap='round'/></svg>" alt="User Avatar" class="nav-user-avatar" style="cursor: pointer;" />
+        </a>
+        <button id="nav-signout-btn" class="signout-link-btn" title="Sign Out">Sign Out</button>
+      </div>
+    </div>
+  </nav>
+
+  <!-- Workspace Container -->
+  <main class="network-workspace">
+
+    <!-- LEFT SIDEBAR PANEL -->
+    <aside class="network-sidebar">
+      <a href="dashboard.html" class="sidebar-nav-link">
+        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path>
+          <polyline points="9 22 9 12 15 12 15 22"></polyline>
+        </svg>
+        <span>Home</span>
+      </a>
+
+      <a href="#" class="sidebar-nav-link">
+        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+          <circle cx="12" cy="7" r="4"></circle>
+        </svg>
+        <span>Profile</span>
+      </a>
+
+      <a href="network.html" class="sidebar-nav-link active">
+        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
+          <circle cx="9" cy="7" r="4"></circle>
+          <path d="M23 21v-2a4 4 0 0 0-3-3.87"></path>
+          <path d="M16 3.13a4 4 0 0 1 0 7.75"></path>
+        </svg>
+        <span>My Network</span>
+      </a>
+
+      <a href="#" class="sidebar-nav-link">
+        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <polyline points="22 12 16 12 14 15 10 15 8 12 2 12"></polyline>
+          <path d="M5.45 5.11L2 12v6a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2v-6l-3.45-6.89A2 2 0 0 0 16.76 4H7.24a2 2 0 0 0-1.79 1.11z"></path>
+        </svg>
+        <span>Requests</span>
+      </a>
+
+      <a href="#" class="sidebar-nav-link">
+        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path>
+          <path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path>
+        </svg>
+        <span>Connections</span>
+      </a>
+
+      <a href="#" class="sidebar-nav-link">
+        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <circle cx="12" cy="12" r="3"></circle>
+          <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path>
+        </svg>
+        <span>Settings</span>
+      </a>
+    </aside>
+
+    <!-- RIGHT MAIN CONTENT -->
+    <section class="network-main-content">
+      
+      <!-- Title -->
+      <h1 class="network-title">My Network</h1>
+
+      <!-- Search & Filter Bar matching Screenshots -->
+      <div class="search-filter-group">
+        <div class="network-search-box">
+          <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#9ca3af" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+            <circle cx="11" cy="11" r="8"></circle>
+            <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+          </svg>
+          <input type="text" id="network-search-input" placeholder="Search by name, college," class="network-search-input" aria-label="Search members" />
+        </div>
+
+        <button type="button" class="filter-options-btn" title="Filter Options">
+          <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <line x1="4" y1="21" x2="4" y2="14"></line>
+            <line x1="4" y1="10" x2="4" y2="3"></line>
+            <line x1="12" y1="21" x2="12" y2="12"></line>
+            <line x1="12" y1="8" x2="12" y2="3"></line>
+            <line x1="20" y1="21" x2="20" y2="16"></line>
+            <line x1="20" y1="12" x2="20" y2="3"></line>
+            <line x1="1" y1="14" x2="7" y2="14"></line>
+            <line x1="9" y1="8" x2="15" y2="8"></line>
+            <line x1="17" y1="16" x2="23" y2="16"></line>
+          </svg>
+        </button>
+      </div>
+
+      <!-- Tabs Bar matching Screenshots -->
+      <div class="network-tabs-bar">
+        <button type="button" id="tab-suggested" class="tab-btn active">
+          Suggested <span class="tab-badge" id="suggested-badge">3</span>
+        </button>
+        <button type="button" id="tab-requests" class="tab-btn">
+          Requests <span class="tab-badge" id="requests-badge" style="display:none;">0</span>
+        </button>
+        <button type="button" id="tab-connections" class="tab-btn">
+          Connections <span class="tab-badge" id="connections-badge">3</span>
+        </button>
+      </div>
+
+      <!-- Dynamic Content View Area -->
+      <div id="network-view-container">
+        <!-- Rendered via JS -->
+      </div>
+
+    </section>
+
+  </main>
+
+  <!-- Realtime Network Engine Script -->
+  <script type="module">
+    import { 
+      auth, 
+      onAuthStateChanged, 
+      signOut, 
+      db, 
+      collection, 
+      onSnapshot, 
+      doc, 
+      getDoc, 
+      setDoc, 
+      updateDoc, 
+      serverTimestamp 
+    } from './firebase-config.js';
+
+    const defaultProfilePhoto = "data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='100' height='100' viewBox='0 0 100 100'><circle cx='50' cy='50' r='50' fill='%23e0812b'/><path d='M50 28 a 14 14 0 1 0 0.001 0 M32 74 a 18 18 0 0 1 36 0' stroke='%23ffffff' stroke-width='6' fill='none' stroke-linecap='round'/></svg>";
+
+    let currentAuthUser = null;
+    let currentUserDoc = null;
+    let activeTab = 'Suggested';
+
+    // Pure Firebase Firestore Database Map (Zero dummy data)
+    const firestoreUsersMap = {};
+    const connectionsStateMap = {}; // connId -> { senderUid, receiverUid, status }
+
+    function formatImageSrc(src) {
+      if (!src || typeof src !== 'string') return null;
+      src = src.trim();
+      if (src === '') return null;
+      if (src.startsWith('http://') || src.startsWith('https://') || src.startsWith('data:image/')) return src;
+      if (src.startsWith('/9j/') || src.startsWith('iVBOR') || (src.length > 80 && !src.includes('://'))) {
+        return `data:image/jpeg;base64,${src}`;
+      }
+      return null;
+    }
+
+    function getConnId(uid1, uid2) {
+      if (!uid1 || !uid2) return null;
+      return [uid1, uid2].sort().join('_');
+    }
+
+    document.addEventListener('DOMContentLoaded', () => {
+      const navUserAvatar = document.getElementById('nav-user-avatar');
+      const navSignoutBtn = document.getElementById('nav-signout-btn');
+      const searchInput = document.getElementById('network-search-input');
+      const container = document.getElementById('network-view-container');
+
+      const tabSuggested = document.getElementById('tab-suggested');
+      const tabRequests = document.getElementById('tab-requests');
+      const tabConnections = document.getElementById('tab-connections');
+      const suggestedBadge = document.getElementById('suggested-badge');
+      const requestsBadge = document.getElementById('requests-badge');
+      const connectionsBadge = document.getElementById('connections-badge');
+
+      // Initial View
+      renderMainView();
+      initFirestoreListeners();
+
+      // 1. Auth Listener
+      onAuthStateChanged(auth, async (user) => {
+        if (user) {
+          currentAuthUser = user;
+
+          try {
+            const uSnap = await getDoc(doc(db, 'users', user.uid));
+            if (uSnap.exists()) {
+              currentUserDoc = uSnap.data();
+            }
+          } catch (e) {
+            console.warn('Profile fetch notice:', e);
+          }
+
+          const photo = formatImageSrc(currentUserDoc?.authorPhotoBase64 || currentUserDoc?.photoURL || user.photoURL) || defaultProfilePhoto;
+          navUserAvatar.src = photo;
+
+          renderMainView();
+        }
+      });
+
+      if (navSignoutBtn) {
+        navSignoutBtn.addEventListener('click', async () => {
+          await signOut(auth);
+          window.location.href = 'login.html';
+        });
+      }
+
+      // 2. Tab Navigation
+      [tabSuggested, tabRequests, tabConnections].forEach(tEl => {
+        tEl.addEventListener('click', () => {
+          [tabSuggested, tabRequests, tabConnections].forEach(t => t.classList.remove('active'));
+          tEl.classList.add('active');
+
+          if (tEl === tabRequests) activeTab = 'Requests';
+          else if (tEl === tabConnections) activeTab = 'Connections';
+          else activeTab = 'Suggested';
+
+          renderMainView();
+        });
+      });
+
+      // 3. Realtime Firestore Database Listeners (Users, Posts & Connections)
+      function initFirestoreListeners() {
+        // Listen to Firestore 'connections'
+        onSnapshot(collection(db, 'connections'), (connSnapshot) => {
+          connSnapshot.forEach(docSnap => {
+            connectionsStateMap[docSnap.id] = docSnap.data();
+          });
+          renderMainView();
+        }, (err) => {
+          console.warn('Connections collection notice:', err);
+        });
+
+        // Listen to Firestore 'users'
+        onSnapshot(collection(db, 'users'), (usersSnapshot) => {
+          usersSnapshot.forEach(docSnap => {
+            const data = docSnap.data();
+            const uid = docSnap.id || data.uid;
+            if (uid && uid !== currentAuthUser?.uid) {
+              firestoreUsersMap[uid] = {
+                uid: uid,
+                name: data.name || data.displayName || data.authorName || 'Network User',
+                role: data.role || data.authorRole || 'Student',
+                photo: formatImageSrc(data.authorPhotoBase64 || data.photoURL || data.photoBase64)
+              };
+            }
+          });
+          renderMainView();
+        }, (err) => {
+          console.warn('Users collection notice:', err);
+        });
+
+        // Also scan Firestore 'posts' to discover any active users
+        onSnapshot(collection(db, 'posts'), (postsSnapshot) => {
+          postsSnapshot.forEach(pSnap => {
+            const pData = pSnap.data();
+            const uid = pData.uid || pData.authorUid;
+            if (uid && uid !== currentAuthUser?.uid) {
+              if (!firestoreUsersMap[uid]) {
+                firestoreUsersMap[uid] = {
+                  uid: uid,
+                  name: pData.authorName || 'Network User',
+                  role: pData.authorRole || 'Alumni',
+                  photo: formatImageSrc(pData.authorPhotoBase64 || pData.userPhotoBase64)
+                };
+              }
+            }
+          });
+          renderMainView();
+        }, (err) => {
+          console.warn('Posts collection notice:', err);
+        });
+      }
+
+      function getUserStatus(otherUid) {
+        if (!currentAuthUser || !otherUid) return 'none';
+        const connId = getConnId(currentAuthUser.uid, otherUid);
+        const conn = connectionsStateMap[connId];
+        if (!conn) return 'none';
+        if (conn.status === 'accepted') return 'accepted';
+        if (conn.status === 'pending') {
+          if (conn.senderUid === currentAuthUser.uid) return 'sent_pending';
+          if (conn.receiverUid === currentAuthUser.uid) return 'received_pending';
+        }
+        return 'none';
+      }
+
+      function renderMainView() {
+        const all = Object.values(firestoreUsersMap).filter(m => !currentAuthUser || m.uid !== currentAuthUser.uid);
+
+        const suggestedList = all.filter(m => {
+          const st = getUserStatus(m.uid);
+          return st === 'none' || st === 'sent_pending';
+        });
+
+        const requestsList = all.filter(m => getUserStatus(m.uid) === 'received_pending');
+        const connectionsList = all.filter(m => getUserStatus(m.uid) === 'accepted');
+
+        // Update badges matching Screenshot
+        suggestedBadge.textContent = suggestedList.length;
+        connectionsBadge.textContent = connectionsList.length;
+
+        if (requestsList.length > 0) {
+          requestsBadge.style.display = 'inline-flex';
+          requestsBadge.textContent = requestsList.length;
+        } else {
+          requestsBadge.style.display = 'none';
+        }
+
+        container.innerHTML = '';
+
+        if (activeTab === 'Suggested') {
+          // SCREENSHOT 1: 2/3-Column Centered Cards
+          if (suggestedList.length === 0) {
+            container.innerHTML = `<div class="empty-state-box">No suggested members right now.</div>`;
+            return;
+          }
+
+          const grid = document.createElement('div');
+          grid.className = 'suggested-cards-grid';
+
+          suggestedList.forEach(m => {
+            const st = getUserStatus(m.uid);
+            const photoSrc = m.photo || defaultProfilePhoto;
+            const isPending = st === 'sent_pending';
+
+            const card = document.createElement('article');
+            card.className = 'suggested-card';
+            card.dataset.name = m.name;
+
+            card.innerHTML = `
+              <img src="${photoSrc}" alt="${escapeHtml(m.name)}" class="suggested-card-avatar" onerror="this.src='${defaultProfilePhoto}';" />
+              <span class="suggested-card-name">${escapeHtml(m.name)}</span>
+              <span class="suggested-role-badge">${escapeHtml(m.role)}</span>
+              <span class="suggested-card-subtitle">${escapeHtml(m.role)}</span>
+              <button type="button" class="btn-connect-gradient ${isPending ? 'pending' : ''}" data-action="connect" data-uid="${m.uid}">
+                ${isPending ? 'Pending' : 'Connect'}
+              </button>
+            `;
+
+            const btn = card.querySelector('[data-action="connect"]');
+            if (btn && !isPending) {
+              btn.addEventListener('click', async () => {
+                btn.textContent = 'Pending';
+                btn.classList.add('pending');
+                if (currentAuthUser) {
+                  const connId = getConnId(currentAuthUser.uid, m.uid);
+                  await setDoc(doc(db, 'connections', connId), {
+                    senderUid: currentAuthUser.uid,
+                    receiverUid: m.uid,
+                    status: 'pending',
+                    timestamp: serverTimestamp()
+                  });
+                }
+              });
+            }
+
+            grid.appendChild(card);
+          });
+
+          container.appendChild(grid);
+
+        } else if (activeTab === 'Requests') {
+          // SCREENSHOT 2: Requests View
+          if (requestsList.length === 0) {
+            container.innerHTML = `<div class="empty-state-box">No pending requests.</div>`;
+          } else {
+            const listDiv = document.createElement('div');
+            listDiv.className = 'connections-list';
+
+            requestsList.forEach(m => {
+              const item = document.createElement('div');
+              item.className = 'connection-item-card';
+              const photoSrc = m.photo;
+              const initialLetter = (m.name || 'U').charAt(0).toUpperCase();
+
+              item.innerHTML = `
+                <div class="connection-item-left">
+                  ${photoSrc ? `<img src="${photoSrc}" alt="${escapeHtml(m.name)}" class="connection-avatar-img" />` : `<div class="connection-initial-circle">${initialLetter}</div>`}
+                  <div class="connection-item-info">
+                    <span class="connection-item-name">${escapeHtml(m.name)}</span>
+                    <span class="connection-item-role">${escapeHtml(m.role)}</span>
+                  </div>
+                </div>
+                <button type="button" class="btn-connect-gradient" style="width: auto; padding: 0.6rem 1.4rem;" data-action="accept" data-uid="${m.uid}">Accept Request</button>
+              `;
+
+              const acceptBtn = item.querySelector('[data-action="accept"]');
+              if (acceptBtn) {
+                acceptBtn.addEventListener('click', async () => {
+                  if (currentAuthUser) {
+                    const connId = getConnId(currentAuthUser.uid, m.uid);
+                    await updateDoc(doc(db, 'connections', connId), { status: 'accepted', updatedAt: serverTimestamp() });
+                  }
+                });
+              }
+
+              listDiv.appendChild(item);
+            });
+
+            container.appendChild(listDiv);
+          }
+
+        } else if (activeTab === 'Connections') {
+          // SCREENSHOT 3: Connections List View
+          if (connectionsList.length === 0) {
+            container.innerHTML = `<div class="empty-state-box">No connections yet.</div>`;
+            return;
+          }
+
+          const listDiv = document.createElement('div');
+          listDiv.className = 'connections-list';
+
+          connectionsList.forEach(m => {
+            const item = document.createElement('div');
+            item.className = 'connection-item-card';
+            item.dataset.name = m.name;
+
+            const photoSrc = m.photo;
+            const initialLetter = (m.name || 'U').charAt(0).toUpperCase();
+
+            item.innerHTML = `
+              <div class="connection-item-left">
+                ${photoSrc ? `<img src="${photoSrc}" alt="${escapeHtml(m.name)}" class="connection-avatar-img" />` : `<div class="connection-initial-circle">${initialLetter}</div>`}
+                <div class="connection-item-info">
+                  <span class="connection-item-name">${escapeHtml(m.name)}</span>
+                  <span class="connection-item-role">${escapeHtml(m.role)}</span>
+                </div>
+              </div>
+
+              <div class="connection-item-actions">
+                <a href="messages.html" class="msg-icon-link" title="Chat with ${escapeHtml(m.name)}">
+                  <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path>
+                  </svg>
+                </a>
+                <button type="button" class="more-opts-btn" title="More Options">⋮</button>
+              </div>
+            `;
+
+            listDiv.appendChild(item);
+          });
+
+          container.appendChild(listDiv);
+        }
+      }
+
+      // Live Search Filter
+      if (searchInput) {
+        searchInput.addEventListener('input', (e) => {
+          const q = e.target.value.toLowerCase().trim();
+          const cards = document.querySelectorAll('.suggested-card, .connection-item-card');
+          cards.forEach(card => {
+            const name = (card.dataset.name || '').toLowerCase();
+            card.style.display = name.includes(q) ? 'flex' : 'none';
+          });
+        });
+      }
+
+      function escapeHtml(str) {
+        if (!str) return '';
+        return String(str).replace(/[&<>"']/g, function(m) {
+          return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#039;' }[m];
+        });
+      }
+    });
+  </script>
+</body>
+</html>

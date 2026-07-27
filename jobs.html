@@ -1,0 +1,745 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Job Board - Connect</title>
+  <meta name="description" content="Connect Job Board - Discover career opportunities and alumni job referrals.">
+  <!-- Google Fonts: Outfit -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+  <style>
+    /* Job Board Page Layout & Styles matching Screenshot */
+    body.jobs-body {
+      background-color: #f3f4f6 !important;
+      background-image: none !important;
+      color: #111827 !important;
+      display: block !important;
+      min-height: 100vh;
+      overflow-y: auto !important;
+    }
+
+    .jobs-navbar {
+      background: #ffffff;
+      padding: 0.8rem 2.5rem;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      border-bottom: 1px solid #e5e7eb;
+      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
+    }
+
+    .jobs-nav-left {
+      display: flex;
+      align-items: center;
+      gap: 3rem;
+    }
+
+    .jobs-nav-links {
+      display: flex;
+      align-items: center;
+      gap: 2rem;
+      list-style: none;
+    }
+
+    .jobs-nav-item {
+      text-decoration: none;
+      color: #4b5563;
+      font-weight: 500;
+      font-size: 1rem;
+      transition: color 0.2s ease;
+      display: flex;
+      align-items: center;
+      gap: 0.2rem;
+    }
+
+    .jobs-nav-item:hover, .jobs-nav-item.active {
+      color: #111827;
+      font-weight: 700;
+    }
+
+    .jobs-nav-right {
+      display: flex;
+      align-items: center;
+      gap: 1.5rem;
+    }
+
+    .signin-txt {
+      font-weight: 600;
+      font-size: 0.95rem;
+      color: #374151;
+      text-decoration: none;
+    }
+
+    .user-nav-dropdown {
+      display: flex;
+      align-items: center;
+      gap: 0.6rem;
+      cursor: pointer;
+    }
+
+    .nav-avatar-img {
+      width: 38px;
+      height: 38px;
+      border-radius: 50%;
+      object-fit: cover;
+    }
+
+    /* Main Container Grid */
+    .jobs-container {
+      max-width: 1280px;
+      margin: 2rem auto;
+      padding: 0 1.8rem;
+      display: grid;
+      grid-template-columns: 1fr 380px;
+      gap: 2rem;
+      align-items: start;
+    }
+
+    /* Left Main Section */
+    .jobs-main-section {
+      display: flex;
+      flex-direction: column;
+      gap: 1.5rem;
+    }
+
+    .jobs-page-title {
+      font-size: 2.5rem;
+      font-weight: 700;
+      color: #111827;
+      letter-spacing: -0.5px;
+    }
+
+    /* Main Search Box matching Screenshot */
+    .main-job-search-box {
+      background: #ffffff;
+      border-radius: 14px;
+      padding: 0.85rem 1.3rem;
+      display: flex;
+      align-items: center;
+      gap: 0.8rem;
+      border: 1px solid #e5e7eb;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.03);
+    }
+
+    .job-search-input {
+      border: none;
+      outline: none;
+      background: transparent;
+      width: 100%;
+      font-family: inherit;
+      font-size: 1.05rem;
+      color: #1f2937;
+    }
+
+    .job-search-input::placeholder {
+      color: #9ca3af;
+    }
+
+    /* Filter Pills Bar matching Screenshot */
+    .filter-pills-bar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 0.6rem;
+      flex-wrap: wrap;
+    }
+
+    .left-pills-group {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      flex-wrap: wrap;
+    }
+
+    .filter-pill {
+      background: #ffffff;
+      border: 1px solid #e5e7eb;
+      padding: 0.45rem 1rem;
+      border-radius: 999px;
+      font-size: 0.88rem;
+      font-weight: 500;
+      color: #4b5563;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.3rem;
+      transition: all 0.2s ease;
+    }
+
+    .filter-pill:hover, .filter-pill.active {
+      background: #f8fafc;
+      border-color: #cbd5e1;
+      color: #111827;
+    }
+
+    .right-filter-btn {
+      background: #ffffff;
+      border: 1px solid #e5e7eb;
+      padding: 0.45rem 1.1rem;
+      border-radius: 999px;
+      font-size: 0.88rem;
+      font-weight: 600;
+      color: #374151;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.4rem;
+    }
+
+    /* Job Cards 2-Column Grid matching Screenshot */
+    .job-cards-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 1.2rem;
+    }
+
+    .job-card {
+      background: #ffffff;
+      border-radius: 18px;
+      padding: 1.3rem 1.5rem;
+      border: 1.5px solid #e5e7eb;
+      cursor: pointer;
+      transition: all 0.25 ease;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      min-height: 130px;
+      box-shadow: 0 2px 10px rgba(0, 0, 0, 0.02);
+    }
+
+    .job-card:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.06);
+      border-color: #cbd5e1;
+    }
+
+    .job-card.selected {
+      border: 2px solid #111827;
+      background: #fafafa;
+      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.08);
+    }
+
+    .job-card-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      margin-bottom: 0.5rem;
+    }
+
+    .job-card-title {
+      font-size: 1.15rem;
+      font-weight: 700;
+      color: #111827;
+      line-height: 1.3;
+    }
+
+    .vacancy-badge {
+      background: #fef3c7;
+      color: #b45309;
+      font-size: 0.78rem;
+      font-weight: 700;
+      padding: 0.2rem 0.7rem;
+      border-radius: 999px;
+      flex-shrink: 0;
+    }
+
+    .job-company-name {
+      font-size: 0.95rem;
+      color: #6b7280;
+      font-weight: 500;
+      margin-bottom: 0.6rem;
+    }
+
+    .job-location-tag {
+      display: flex;
+      align-items: center;
+      gap: 0.3rem;
+      font-size: 0.88rem;
+      color: #6b7280;
+      font-weight: 500;
+    }
+
+    /* Right Detail Panel matching Screenshot */
+    .job-detail-panel {
+      background: #ffffff;
+      border-radius: 24px;
+      padding: 2.2rem 1.8rem;
+      border: 1px solid #e5e7eb;
+      box-shadow: 0 4px 25px rgba(0, 0, 0, 0.04);
+      display: flex;
+      flex-direction: column;
+      gap: 1.6rem;
+      position: sticky;
+      top: 2rem;
+    }
+
+    .detail-title {
+      font-size: 2.3rem;
+      font-weight: 700;
+      color: #111827;
+      line-height: 1.15;
+      letter-spacing: -0.5px;
+    }
+
+    .company-branding-row {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+    }
+
+    .stripe-logo-box {
+      width: 54px;
+      height: 54px;
+      border-radius: 14px;
+      background: #635bff;
+      color: #ffffff;
+      font-weight: 800;
+      font-size: 1.1rem;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      letter-spacing: -0.5px;
+      box-shadow: 0 4px 12px rgba(99, 91, 255, 0.3);
+      flex-shrink: 0;
+    }
+
+    .google-logo-box {
+      width: 54px;
+      height: 54px;
+      border-radius: 14px;
+      background: #ea4335;
+      color: #ffffff;
+      font-weight: 800;
+      font-size: 1.1rem;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 0 4px 12px rgba(234, 67, 53, 0.3);
+      flex-shrink: 0;
+    }
+
+    .company-meta-info {
+      display: flex;
+      flex-direction: column;
+    }
+
+    .detail-company-name {
+      font-size: 1.2rem;
+      font-weight: 700;
+      color: #111827;
+    }
+
+    .detail-location {
+      font-size: 0.95rem;
+      color: #6b7280;
+      display: flex;
+      align-items: center;
+      gap: 0.3rem;
+    }
+
+    .action-buttons-stack {
+      display: flex;
+      flex-direction: column;
+      gap: 0.85rem;
+    }
+
+    .btn-apply-now {
+      background: linear-gradient(90deg, #ea4a36 0%, #f69d3c 100%);
+      color: #ffffff;
+      border: none;
+      padding: 0.95rem 1.5rem;
+      border-radius: 14px;
+      font-size: 1.05rem;
+      font-weight: 700;
+      font-family: inherit;
+      cursor: pointer;
+      box-shadow: 0 4px 15px rgba(246, 120, 50, 0.35);
+      transition: transform 0.2s ease, box-shadow 0.2s ease;
+      text-align: center;
+      text-decoration: none;
+    }
+
+    .btn-apply-now:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 20px rgba(246, 120, 50, 0.5);
+    }
+
+    .btn-message-poster {
+      background: #e5e7eb;
+      color: #1f2937;
+      border: none;
+      padding: 0.95rem 1.5rem;
+      border-radius: 14px;
+      font-size: 1.05rem;
+      font-weight: 700;
+      font-family: inherit;
+      cursor: pointer;
+      transition: background 0.2s ease;
+      text-align: center;
+      text-decoration: none;
+      display: block;
+    }
+
+    .btn-message-poster:hover {
+      background: #d1d5db;
+    }
+
+    .requirements-block {
+      display: flex;
+      flex-direction: column;
+      gap: 0.75rem;
+      border-top: 1px solid #f3f4f6;
+      padding-top: 1.4rem;
+    }
+
+    .requirements-heading {
+      font-size: 1.15rem;
+      font-weight: 700;
+      color: #111827;
+    }
+
+    .requirements-list {
+      padding-left: 1.2rem;
+      display: flex;
+      flex-direction: column;
+      gap: 0.5rem;
+      color: #374151;
+      font-size: 0.92rem;
+      line-height: 1.5;
+    }
+
+    .alumni-poster-block {
+      display: flex;
+      flex-direction: column;
+      gap: 0.75rem;
+      border-top: 1px solid #f3f4f6;
+      padding-top: 1.4rem;
+    }
+
+    .alumni-heading {
+      font-size: 1.15rem;
+      font-weight: 700;
+      color: #111827;
+    }
+
+    .alumni-poster-card {
+      display: flex;
+      align-items: center;
+      gap: 0.85rem;
+    }
+
+    .alumni-poster-avatar {
+      width: 44px;
+      height: 44px;
+      border-radius: 50%;
+      object-fit: cover;
+    }
+
+    .alumni-poster-details {
+      display: flex;
+      flex-direction: column;
+    }
+
+    .poster-name-title {
+      font-size: 0.95rem;
+      font-weight: 700;
+      color: #111827;
+    }
+
+    .poster-sub-txt {
+      font-size: 0.82rem;
+      color: #6b7280;
+    }
+  </style>
+</head>
+<body class="jobs-body">
+
+  <!-- Top Navbar Matching Screenshot -->
+  <nav class="jobs-navbar">
+    <div class="jobs-nav-left">
+      <a href="index.html" class="dashboard-logo" aria-label="Connect Home">connect</a>
+
+      <ul class="jobs-nav-links">
+        <li><a href="dashboard.html" class="jobs-nav-item">Home <span>∨</span></a></li>
+        <li><a href="#" class="jobs-nav-item">Solutions <span>∨</span></a></li>
+        <li><a href="#" class="jobs-nav-item">Community</a></li>
+      </ul>
+    </div>
+
+    <div class="jobs-nav-right">
+      <a href="login.html" class="signin-txt">Sign In</a>
+      <div class="user-nav-dropdown" id="user-dropdown-trigger">
+        <a href="profile.html" title="View Profile">
+          <img id="nav-user-avatar" src="data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='100' height='100' viewBox='0 0 100 100'><circle cx='50' cy='50' r='50' fill='%23e0812b'/><path d='M50 28 a 14 14 0 1 0 0.001 0 M32 74 a 18 18 0 0 1 36 0' stroke='%23ffffff' stroke-width='6' fill='none' stroke-linecap='round'/></svg>" alt="User Profile" class="nav-avatar-img" style="cursor: pointer;" />
+        </a>
+        <span class="dropdown-arrow">∨</span>
+      </div>
+    </div>
+  </nav>
+
+  <!-- Main Job Board Grid Workspace -->
+  <main class="jobs-container">
+
+    <!-- LEFT MAIN SECTION -->
+    <section class="jobs-main-section">
+      <h1 class="jobs-page-title">Job Board</h1>
+
+      <!-- Main Search Bar -->
+      <div class="main-job-search-box">
+        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#9ca3af" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+          <circle cx="11" cy="11" r="8"></circle>
+          <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+        </svg>
+        <input type="text" id="job-search-input" placeholder="Search..." class="job-search-input" aria-label="Search jobs" />
+      </div>
+
+      <!-- Filter Pills Bar Matching Screenshot -->
+      <div class="filter-pills-bar">
+        <div class="left-pills-group">
+          <button type="button" class="filter-pill">Filter <span>∨</span></button>
+          <button type="button" class="filter-pill">Vacancys <span>∨</span></button>
+          <button type="button" class="filter-pill active">All</button>
+          <button type="button" class="filter-pill">Company <span>∨</span></button>
+          <button type="button" class="filter-pill">Search</button>
+          <button type="button" class="filter-pill">Filterces</button>
+        </div>
+
+        <button type="button" class="right-filter-btn">
+          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <polygon points="22 3 2 3 10 12.46 10 19 14 21 14 12.46 22 3"></polygon>
+          </svg>
+          Filter <span>∨</span>
+        </button>
+      </div>
+
+      <!-- Job Cards 2-Column Grid Matching Screenshot -->
+      <div class="job-cards-grid" id="job-cards-grid">
+        
+        <!-- Job 1 -->
+        <article class="job-card" data-id="1" data-title="Software Engineer" data-company="Google" data-location="Colorado" data-logo="google" data-poster="Alex Morgan">
+          <div>
+            <div class="job-card-header">
+              <h3 class="job-card-title">Software Engineer at<br>Google</h3>
+              <span class="vacancy-badge">Vacancies</span>
+            </div>
+            <p class="job-company-name">Google</p>
+          </div>
+          <span class="job-location-tag">📍 Colorado</span>
+        </article>
+
+        <!-- Job 2 -->
+        <article class="job-card" data-id="2" data-title="Data Analyst at Stripe" data-company="Stripe" data-location="Washington, IN" data-logo="stripe" data-poster="Sarah Chen">
+          <div>
+            <div class="job-card-header">
+              <h3 class="job-card-title">Data Analyst at Stripe</h3>
+              <span class="vacancy-badge">Vacancies</span>
+            </div>
+            <p class="job-company-name">Stripe</p>
+          </div>
+          <span class="job-location-tag">📍 Washington, IN</span>
+        </article>
+
+        <!-- Job 3 (SELECTED matching Screenshot) -->
+        <article class="job-card selected" data-id="3" data-title="Software Engineer" data-company="Stripe" data-location="Washington, IN" data-logo="stripe" data-poster="Prakhar Arora">
+          <div>
+            <div class="job-card-header">
+              <h3 class="job-card-title">Data Analyst at Stripe</h3>
+              <span class="vacancy-badge">Vacancies</span>
+            </div>
+            <p class="job-company-name">Stripe</p>
+          </div>
+          <span class="job-location-tag">📍 Washington, IN</span>
+        </article>
+
+        <!-- Job 4 -->
+        <article class="job-card" data-id="4" data-title="Software Engineer" data-company="Google" data-location="Colorado" data-logo="google" data-poster="Daran Norn">
+          <div>
+            <div class="job-card-header">
+              <h3 class="job-card-title">Software Engineer</h3>
+              <span class="vacancy-badge">Vacancies</span>
+            </div>
+            <p class="job-company-name">Google</p>
+          </div>
+          <span class="job-location-tag">📍 Colorado</span>
+        </article>
+
+        <!-- Job 5 -->
+        <article class="job-card" data-id="5" data-title="Software Engineer" data-company="Stripe" data-location="Samington" data-logo="stripe" data-poster="Jian Ron">
+          <div>
+            <div class="job-card-header">
+              <h3 class="job-card-title">Software Engineer</h3>
+              <span class="vacancy-badge">Vacancies</span>
+            </div>
+            <p class="job-company-name">Stripe</p>
+          </div>
+          <span class="job-location-tag">📍 Samington</span>
+        </article>
+
+        <!-- Job 6 -->
+        <article class="job-card" data-id="6" data-title="Data Analyst at Stripe" data-company="Stripe" data-location="Samington" data-logo="stripe" data-poster="Naan Shom">
+          <div>
+            <div class="job-card-header">
+              <h3 class="job-card-title">Data Analyst at Stripe</h3>
+              <span class="vacancy-badge">Vacancies</span>
+            </div>
+            <p class="job-company-name">Stripe</p>
+          </div>
+          <span class="job-location-tag">📍 Samington</span>
+        </article>
+
+        <!-- Job 7 -->
+        <article class="job-card" data-id="7" data-title="Software Engineer at Google" data-company="Google" data-location="Samington" data-logo="google" data-poster="Karinamson">
+          <div>
+            <div class="job-card-header">
+              <h3 class="job-card-title">Software Engineer at<br>Google</h3>
+              <span class="vacancy-badge">Vacancies</span>
+            </div>
+            <p class="job-company-name">Google</p>
+          </div>
+          <span class="job-location-tag">📍 Samington</span>
+        </article>
+
+        <!-- Job 8 -->
+        <article class="job-card" data-id="8" data-title="Data Analyst at Stripe" data-company="Stripe" data-location="Samington" data-logo="stripe" data-poster="Sarah Chen">
+          <div>
+            <div class="job-card-header">
+              <h3 class="job-card-title">Data Analyst at Stripe</h3>
+              <span class="vacancy-badge">Vacancies</span>
+            </div>
+            <p class="job-company-name">Stripe</p>
+          </div>
+          <span class="job-location-tag">📍 Samington</span>
+        </article>
+
+      </div>
+    </section>
+
+    <!-- RIGHT DETAIL PANEL Matching Screenshot -->
+    <aside class="job-detail-panel" id="job-detail-panel">
+      
+      <!-- Title -->
+      <h2 id="detail-job-title" class="detail-title">Software<br>Engineer</h2>
+
+      <!-- Branding Row -->
+      <div class="company-branding-row">
+        <div id="company-logo-box" class="stripe-logo-box">stripe</div>
+        <div class="company-meta-info">
+          <span id="detail-company-name" class="detail-company-name">Stripe</span>
+          <span id="detail-location-name" class="detail-location">📍 Washington, IN</span>
+        </div>
+      </div>
+
+      <!-- Buttons Stack -->
+      <div class="action-buttons-stack">
+        <button type="button" id="apply-now-btn" class="btn-apply-now">Apply Now</button>
+        <a href="messages.html" id="message-poster-btn" class="btn-message-poster">Message Poster</a>
+      </div>
+
+      <!-- Requirements Block -->
+      <div class="requirements-block">
+        <h3 class="requirements-heading">Requirements</h3>
+        <ul class="requirements-list">
+          <li>Development and Web/Node engineering</li>
+          <li>Requirement: for enterprise software systems</li>
+          <li>Develops asset & time-formation sources</li>
+          <li>JavaScript / React / Node.js migration</li>
+          <li>Requirements pourm: construction</li>
+          <li>Required borrow management standards</li>
+        </ul>
+      </div>
+
+      <!-- Alumni Poster Section matching Screenshot -->
+      <div class="alumni-poster-block">
+        <h3 class="alumni-heading">Alumni</h3>
+        <div class="alumni-poster-card">
+          <img id="poster-avatar-img" src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=100&auto=format&fit=crop&q=80" alt="Alumni Poster" class="alumni-poster-avatar" />
+          <div class="alumni-poster-details">
+            <span id="poster-name-txt" class="poster-name-title">Alumni posted Stripe</span>
+            <span class="poster-sub-txt">Originally Posted in Alumni</span>
+          </div>
+        </div>
+      </div>
+
+    </aside>
+
+  </main>
+
+  <!-- Interactive Job Board Script -->
+  <script type="module">
+    import { auth, onAuthStateChanged, db, collection, onSnapshot } from './firebase-config.js';
+
+    const defaultProfilePhoto = "data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='100' height='100' viewBox='0 0 100 100'><circle cx='50' cy='50' r='50' fill='%23e0812b'/><path d='M50 28 a 14 14 0 1 0 0.001 0 M32 74 a 18 18 0 0 1 36 0' stroke='%23ffffff' stroke-width='6' fill='none' stroke-linecap='round'/></svg>";
+
+    document.addEventListener('DOMContentLoaded', () => {
+      const jobCards = document.querySelectorAll('.job-card');
+      const detailJobTitle = document.getElementById('detail-job-title');
+      const detailCompanyName = document.getElementById('detail-company-name');
+      const detailLocationName = document.getElementById('detail-location-name');
+      const companyLogoBox = document.getElementById('company-logo-box');
+      const posterNameTxt = document.getElementById('poster-name-txt');
+      const posterAvatarImg = document.getElementById('poster-avatar-img');
+      const searchInput = document.getElementById('job-search-input');
+      const navAvatarImg = document.getElementById('nav-user-avatar');
+
+      // Auth Listener to update navbar profile
+      onAuthStateChanged(auth, (user) => {
+        if (user && user.photoURL) {
+          navAvatarImg.src = user.photoURL;
+        }
+      });
+
+      // Card Selection Handler
+      jobCards.forEach(card => {
+        card.addEventListener('click', () => {
+          jobCards.forEach(c => c.classList.remove('selected'));
+          card.classList.add('selected');
+
+          const title = card.dataset.title;
+          const company = card.dataset.company;
+          const location = card.dataset.location;
+          const logoType = card.dataset.logo;
+          const poster = card.dataset.poster;
+
+          detailJobTitle.innerHTML = title.replace(' at ', '<br>');
+          detailCompanyName.textContent = company;
+          detailLocationName.textContent = `📍 ${location}`;
+          posterNameTxt.textContent = `${poster} posted ${company}`;
+
+          if (logoType === 'google') {
+            companyLogoBox.className = 'google-logo-box';
+            companyLogoBox.textContent = 'G';
+          } else {
+            companyLogoBox.className = 'stripe-logo-box';
+            companyLogoBox.textContent = 'stripe';
+          }
+        });
+      });
+
+      // Apply Now Action
+      const applyBtn = document.getElementById('apply-now-btn');
+      if (applyBtn) {
+        applyBtn.addEventListener('click', () => {
+          alert(`Application submitted for ${detailJobTitle.innerText.replace('\n', ' ')} at ${detailCompanyName.textContent}!`);
+        });
+      }
+
+      // Search Filter
+      if (searchInput) {
+        searchInput.addEventListener('input', (e) => {
+          const q = e.target.value.toLowerCase().trim();
+          jobCards.forEach(card => {
+            const title = (card.dataset.title || '').toLowerCase();
+            const company = (card.dataset.company || '').toLowerCase();
+            const location = (card.dataset.location || '').toLowerCase();
+            const match = title.includes(q) || company.includes(q) || location.includes(q);
+            card.style.display = match ? 'flex' : 'none';
+          });
+        });
+      }
+    });
+  </script>
+</body>
+</html>
