@@ -23,6 +23,7 @@ import {
   limit, 
   onSnapshot, 
   updateDoc, 
+  deleteDoc,
   arrayUnion, 
   arrayRemove, 
   serverTimestamp 
@@ -71,6 +72,7 @@ export {
   limit, 
   onSnapshot, 
   updateDoc, 
+  deleteDoc,
   arrayUnion, 
   arrayRemove, 
   serverTimestamp 

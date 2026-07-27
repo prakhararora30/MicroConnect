@@ -505,6 +505,222 @@
       text-align: center;
       gap: 0.6rem;
     }
+
+    /* Hover and Actions styling for message bubble */
+    .message-row {
+      position: relative;
+    }
+
+    .message-container-wrapper {
+      position: relative;
+      display: flex;
+      flex-direction: column;
+      max-width: 70%;
+    }
+
+    .message-row.incoming .message-container-wrapper {
+      align-items: flex-start;
+    }
+
+    .message-row.outgoing .message-container-wrapper {
+      align-items: flex-end;
+    }
+
+    /* Actions trigger button */
+    .message-actions-trigger {
+      opacity: 0;
+      position: absolute;
+      top: 50%;
+      transform: translateY(-50%);
+      background: #ffffff;
+      border: 1px solid #e5e7eb;
+      border-radius: 50%;
+      width: 28px;
+      height: 28px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      color: #4b5563;
+      font-size: 0.9rem;
+      box-shadow: 0 2px 5px rgba(0,0,0,0.08);
+      transition: all 0.2s ease;
+      z-index: 10;
+    }
+
+    .message-row:hover .message-actions-trigger {
+      opacity: 1;
+    }
+
+    .message-row.incoming .message-actions-trigger {
+      right: -36px;
+    }
+
+    .message-row.outgoing .message-actions-trigger {
+      left: -36px;
+    }
+
+    .message-actions-trigger:hover {
+      background: #f3f4f6;
+      color: #111827;
+      transform: translateY(-50%) scale(1.05);
+    }
+
+    /* Actions Menu Dropdown */
+    .message-actions-menu {
+      display: none;
+      position: absolute;
+      background: #ffffff;
+      border: 1px solid #e5e7eb;
+      border-radius: 12px;
+      box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+      padding: 0.4rem;
+      z-index: 100;
+      min-width: 130px;
+    }
+
+    .message-row.incoming .message-actions-menu {
+      right: -145px;
+      top: 50%;
+      transform: translateY(-50%);
+    }
+
+    .message-row.outgoing .message-actions-menu {
+      left: -145px;
+      top: 50%;
+      transform: translateY(-50%);
+    }
+
+    .message-actions-menu.show {
+      display: block;
+      animation: fadeIn 0.15s ease-out;
+    }
+
+    .message-action-item {
+      padding: 0.45rem 0.75rem;
+      font-size: 0.85rem;
+      color: #374151;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      cursor: pointer;
+      border-radius: 8px;
+      transition: background 0.15s ease;
+    }
+
+    .message-action-item:hover {
+      background: #f3f4f6;
+      color: #111827;
+    }
+
+    .message-action-item.delete-action {
+      color: #ef4444;
+    }
+
+    .message-action-item.delete-action:hover {
+      background: #fef2f2;
+      color: #dc2626;
+    }
+
+    /* Reply preview banner styling */
+    .chat-action-banner {
+      background: #f9fafb;
+      border-top: 1px solid #f3f4f6;
+      border-bottom: 1.5px solid #f3f4f6;
+      padding: 0.6rem 1.5rem;
+      transition: all 0.2s ease;
+    }
+
+    .chat-action-banner-content {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border-left: 3.5px solid #f97316;
+      padding-left: 0.8rem;
+    }
+
+    .chat-action-banner-left {
+      display: flex;
+      flex-direction: column;
+      gap: 0.15rem;
+      max-width: 85%;
+      text-align: left;
+    }
+
+    .chat-action-title {
+      font-size: 0.82rem;
+      font-weight: 700;
+      color: #ea580c;
+      font-family: 'Outfit', sans-serif;
+    }
+
+    .chat-action-subtitle {
+      font-size: 0.88rem;
+      color: #4b5563;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .chat-action-cancel-btn {
+      background: none;
+      border: none;
+      font-size: 1.3rem;
+      color: #9ca3af;
+      cursor: pointer;
+      line-height: 1;
+      padding: 0.2rem;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: color 0.15s ease;
+    }
+
+    .chat-action-cancel-btn:hover {
+      color: #374151;
+    }
+
+    /* Quote style in message bubble */
+    .message-reply-quote {
+      background: rgba(0, 0, 0, 0.05);
+      border-left: 3px solid #f97316;
+      padding: 0.4rem 0.6rem;
+      border-radius: 6px;
+      margin-bottom: 0.4rem;
+      font-size: 0.82rem;
+      display: flex;
+      flex-direction: column;
+      gap: 0.1rem;
+      max-width: 100%;
+      cursor: pointer;
+      text-align: left;
+    }
+
+    .message-row.outgoing .message-reply-quote {
+      border-left-color: #ffffff;
+      background: rgba(255, 255, 255, 0.25);
+      color: #ffffff;
+    }
+
+    .message-reply-quote-sender {
+      font-weight: 700;
+      font-size: 0.76rem;
+    }
+
+    .message-reply-quote-text {
+      opacity: 0.9;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    /* Edited tag next to timestamp */
+    .message-edited-tag {
+      font-size: 0.7rem;
+      color: #9ca3af;
+      font-style: italic;
+      margin-left: 0.3rem;
+    }
   </style>
 </head>
 <body class="messages-body">
@@ -608,6 +824,17 @@
         </div>
       </div>
 
+      <!-- Reply/Edit Preview Bar -->
+      <div id="chat-action-banner" class="chat-action-banner" style="display: none;">
+        <div class="chat-action-banner-content">
+          <div class="chat-action-banner-left">
+            <span id="chat-action-title" class="chat-action-title">Replying to Prakhar</span>
+            <span id="chat-action-subtitle" class="chat-action-subtitle">"Hey how are you?"</span>
+          </div>
+          <button type="button" id="chat-action-cancel-btn" class="chat-action-cancel-btn" aria-label="Cancel">&times;</button>
+        </div>
+      </div>
+
       <!-- Chat Bottom Input Bar -->
       <form id="chat-form" class="chat-input-bar">
         <button type="button" class="attachment-btn" title="Attach file">
@@ -643,12 +870,15 @@
       onAuthStateChanged, 
       signOut, 
       doc, 
+      setDoc,
       getDoc, 
       collection, 
       addDoc, 
       onSnapshot, 
       query, 
       orderBy, 
+      updateDoc,
+      deleteDoc,
       serverTimestamp 
     } from './firebase-config.js';
 
@@ -663,6 +893,16 @@
     const allUsersMap = {};
     const connectionsMap = {};
     const activeChatsMap = {};
+
+    // Reply and Edit states
+    let replyingToMessage = null; // { id, text, senderName }
+    let editingMessage = null; // { id, text }
+
+    // Reply/Edit UI Banners
+    const chatActionBanner = document.getElementById('chat-action-banner');
+    const chatActionTitle = document.getElementById('chat-action-title');
+    const chatActionSubtitle = document.getElementById('chat-action-subtitle');
+    const chatActionCancelBtn = document.getElementById('chat-action-cancel-btn');
 
     // Helper: Base64 String Formatter
     function formatImageSrc(src) {
@@ -1036,23 +1276,192 @@
           const text = m.text || m.message || m.content || m.lastMessage || '';
           const timeStr = formatTime(m.timestamp || m.createdAt);
 
-          const row = document.createElement('div');
-          row.className = `message-row ${isOutgoing ? 'outgoing' : 'incoming'}`;
-          row.innerHTML = `
-            ${!isOutgoing ? `<img src="${selectedPartner.photo}" alt="${escapeHtml(selectedPartner.name)}" class="message-avatar" onerror="this.src='${defaultProfilePhoto}';" />` : ''}
-            <div class="message-content-group">
-              <div class="message-bubble">${escapeHtml(text)}</div>
-              <span class="message-timestamp">${timeStr}</span>
+          // Reply Quote HTML
+          let replyQuoteHtml = '';
+          if (m.replyToText) {
+            replyQuoteHtml = `
+              <div class="message-reply-quote" onclick="scrollToMessage('${m.replyToId}')">
+                <span class="message-reply-quote-sender">${escapeHtml(m.replyToSenderName)}</span>
+                <span class="message-reply-quote-text">${escapeHtml(m.replyToText)}</span>
+              </div>
+            `;
+          }
+
+          // Action dropdown and trigger button
+          const actionsTriggerHtml = `
+            <button type="button" class="message-actions-trigger" data-id="${item.id}">⋮</button>
+          `;
+
+          const actionsMenuHtml = `
+            <div class="message-actions-menu" id="menu-${item.id}">
+              <div class="message-action-item reply-action" data-id="${item.id}" data-text="${escapeHtml(text)}" data-sender="${escapeHtml(isOutgoing ? 'You' : selectedPartner.name)}">💬 Reply</div>
+              <div class="message-action-item copy-action" data-text="${escapeHtml(text)}">📋 Copy</div>
+              ${isOutgoing ? `
+                <div class="message-action-item edit-action" data-id="${item.id}" data-text="${escapeHtml(text)}">📝 Edit</div>
+                <div class="message-action-item delete-action" data-id="${item.id}">🗑️ Delete</div>
+              ` : ''}
             </div>
           `;
+
+          const row = document.createElement('div');
+          row.className = `message-row ${isOutgoing ? 'outgoing' : 'incoming'}`;
+          row.id = `msg-row-${item.id}`;
+          row.innerHTML = `
+            ${!isOutgoing ? `<img src="${selectedPartner.photo}" alt="${escapeHtml(selectedPartner.name)}" class="message-avatar" onerror="this.src='${defaultProfilePhoto}';" />` : ''}
+            <div class="message-container-wrapper">
+              <div class="message-bubble">
+                ${replyQuoteHtml}
+                <span class="bubble-text">${escapeHtml(text)}</span>
+              </div>
+              <span class="message-timestamp">
+                ${timeStr}
+                ${m.isEdited || m.edited ? `<span class="message-edited-tag">(edited)</span>` : ''}
+              </span>
+            </div>
+            ${actionsTriggerHtml}
+            ${actionsMenuHtml}
+          `;
+
           chatMessagesLog.appendChild(row);
         });
 
         // Scroll to bottom
         chatMessagesLog.scrollTop = chatMessagesLog.scrollHeight;
+
+        // Attach action trigger togglers
+        document.querySelectorAll('.message-actions-trigger').forEach(btn => {
+          btn.addEventListener('click', (e) => {
+            e.stopPropagation();
+            const msgId = btn.dataset.id;
+            const targetMenu = document.getElementById(`menu-${msgId}`);
+            
+            // Close all other menus
+            document.querySelectorAll('.message-actions-menu').forEach(menu => {
+              if (menu.id !== `menu-${msgId}`) {
+                menu.classList.remove('show');
+              }
+            });
+
+            if (targetMenu) {
+              targetMenu.classList.toggle('show');
+            }
+          });
+        });
+
+        // Attach Reply actions
+        document.querySelectorAll('.reply-action').forEach(btn => {
+          btn.addEventListener('click', () => {
+            const msgId = btn.dataset.id;
+            const msgText = btn.dataset.text;
+            const msgSender = btn.dataset.sender;
+
+            replyingToMessage = { id: msgId, text: msgText, senderName: msgSender };
+            editingMessage = null;
+
+            chatActionTitle.textContent = `Replying to ${msgSender}`;
+            chatActionSubtitle.textContent = `"${msgText}"`;
+            chatActionBanner.style.display = 'block';
+            chatInputField.placeholder = 'Reply to message...';
+            chatInputField.focus();
+          });
+        });
+
+        // Attach Copy actions
+        document.querySelectorAll('.copy-action').forEach(btn => {
+          btn.addEventListener('click', () => {
+            const msgText = btn.dataset.text;
+            navigator.clipboard.writeText(msgText).then(() => {
+              const originalLabel = btn.textContent;
+              btn.textContent = 'Copied!';
+              setTimeout(() => { btn.textContent = originalLabel; }, 1000);
+            });
+          });
+        });
+
+        // Attach Edit actions
+        document.querySelectorAll('.edit-action').forEach(btn => {
+          btn.addEventListener('click', () => {
+            const msgId = btn.dataset.id;
+            const msgText = btn.dataset.text;
+
+            editingMessage = { id: msgId, text: msgText };
+            replyingToMessage = null;
+
+            chatActionTitle.textContent = 'Editing message';
+            chatActionSubtitle.textContent = `"${msgText}"`;
+            chatActionBanner.style.display = 'block';
+            chatInputField.value = msgText;
+            chatInputField.placeholder = 'Edit message...';
+            chatInputField.focus();
+          });
+        });
+
+        // Attach Delete actions
+        document.querySelectorAll('.delete-action').forEach(btn => {
+          btn.addEventListener('click', async () => {
+            const msgId = btn.dataset.id;
+            const chatDocId = activeChatsMap[selectedPartner.uid]?.chatDocId || ('chat_' + [currentAuthUser.uid, selectedPartner.uid].sort().join('_'));
+            
+            if (confirm('Are you sure you want to delete this message?')) {
+              try {
+                // Delete from nested subcollection
+                await deleteDoc(doc(db, 'chats', chatDocId, 'messages', msgId));
+
+                // Delete from flat root messages (fallback)
+                try {
+                  await deleteDoc(doc(db, 'messages', msgId));
+                } catch (err) {}
+
+                // Optionally update parent chat preview text
+                try {
+                  await setDoc(doc(db, 'chats', chatDocId), {
+                    lastMessage: 'Message deleted'
+                  }, { merge: true });
+                } catch (err) {}
+
+              } catch (err) {
+                console.error('Failed to delete message:', err);
+                alert(`Error deleting message: ${err.message}`);
+              }
+            }
+          });
+        });
       }
 
-      // 4. Send Message Handler to Firestore (Mobile & Web Layout Sync)
+      // Cancel Reply/Edit Banner Handler
+      chatActionCancelBtn.addEventListener('click', () => {
+        chatActionBanner.style.display = 'none';
+        replyingToMessage = null;
+        if (editingMessage) {
+          chatInputField.value = '';
+          editingMessage = null;
+        }
+        chatInputField.placeholder = 'Type a message...';
+      });
+
+      // Scroll to specific message and flash highlight
+      window.scrollToMessage = function(msgId) {
+        const el = document.getElementById(`msg-row-${msgId}`);
+        if (el) {
+          el.scrollIntoView({ behavior: 'smooth', block: 'center' });
+          el.style.transition = 'background-color 0.5s ease';
+          el.style.backgroundColor = 'rgba(249, 115, 22, 0.15)';
+          setTimeout(() => {
+            el.style.backgroundColor = 'transparent';
+          }, 1500);
+        }
+      };
+
+      // Close action dropdowns on clicking outside
+      document.addEventListener('click', (e) => {
+        if (!e.target.classList.contains('message-actions-trigger')) {
+          document.querySelectorAll('.message-actions-menu').forEach(menu => {
+            menu.classList.remove('show');
+          });
+        }
+      });
+
+      // 4. Send/Edit/Reply Message Handler to Firestore (Mobile & Web Layout Sync)
       chatForm.addEventListener('submit', async (e) => {
         e.preventDefault();
         const text = chatInputField.value.trim();
@@ -1064,8 +1473,55 @@
         const myName = currentUserDoc?.name || currentAuthUser.displayName || 'Member';
         const partnerName = selectedPartner.name;
 
-        try {
+        // Hide action banner
+        chatActionBanner.style.display = 'none';
+        chatInputField.placeholder = 'Type a message...';
+
+        if (editingMessage) {
+          // EDIT MODE
+          const msgId = editingMessage.id;
+          editingMessage = null;
+
+          try {
+            // 1. Update in nested subcollection
+            await updateDoc(doc(db, 'chats', chatDocId, 'messages', msgId), {
+              text: text,
+              message: text,
+              content: text,
+              isEdited: true,
+              edited: true
+            });
+
+            // 2. Update in root messages
+            try {
+              await updateDoc(doc(db, 'messages', msgId), {
+                text: text,
+                message: text,
+                content: text,
+                isEdited: true,
+                edited: true
+              });
+            } catch (err) {}
+
+            // 3. Update parent chat meta
+            try {
+              await setDoc(doc(db, 'chats', chatDocId), {
+                lastMessage: text,
+                lastMessageTimestamp: Date.now()
+              }, { merge: true });
+            } catch (err) {}
+
+          } catch (err) {
+            console.error('Failed to edit message:', err);
+            alert(`Error editing message: ${err.message}`);
+          }
+        } else {
+          // SEND / REPLY MODE
+          const msgRef = doc(collection(db, 'chats', chatDocId, 'messages'));
+          const msgId = msgRef.id;
+
           const msgPayload = {
+            id: msgId,
             senderId: currentAuthUser.uid,
             senderUid: currentAuthUser.uid,
             senderName: myName,
@@ -1075,47 +1531,49 @@
             text: text,
             message: text,
             content: text,
-            timestamp: serverTimestamp(),
+            timestamp: Date.now(),
             createdAt: Date.now()
           };
 
-          // 1. Write message document to the subcollection chats/{chatDocId}/messages (PRIMARY MOBILE SOURCE)
-          await addDoc(collection(db, 'chats', chatDocId, 'messages'), msgPayload);
-
-          // 2. Also write to flat root messages collection (legacy fallback, wrapped so it won't crash if blocked)
-          try {
-            await addDoc(collection(db, 'messages'), {
-              chatId: chatDocId,
-              participants: [currentAuthUser.uid, selectedPartner.uid],
-              ...msgPayload
-            });
-          } catch (rootErr) {
-            console.warn('Root messages collection write ignored (likely security rules):', rootErr);
+          // If in reply mode, add reply references
+          if (replyingToMessage) {
+            msgPayload.replyToId = replyingToMessage.id;
+            msgPayload.replyToText = replyingToMessage.text;
+            msgPayload.replyToSenderName = replyingToMessage.senderName;
+            replyingToMessage = null;
           }
 
-          // 3. Update parent chat room meta for mobile feed lists (wrapped in case of rule restriction)
           try {
-            await setDoc(doc(db, 'chats', chatDocId), {
-              id: chatDocId,
-              lastMessage: text,
-              lastMessageSenderId: currentAuthUser.uid,
-              lastMessageTimestamp: Date.now(),
-              participantNames: {
-                [currentAuthUser.uid]: myName,
-                [selectedPartner.uid]: partnerName
-              }
-            }, { merge: true });
-          } catch (chatMetaErr) {
-            console.warn('Parent chats meta update ignored (likely security rules):', chatMetaErr);
+            // 1. Write message document to nested subcollection
+            await setDoc(msgRef, msgPayload);
+
+            // 2. Also write to flat root messages collection (wrapped fallback)
+            try {
+              await setDoc(doc(db, 'messages', msgId), {
+                chatId: chatDocId,
+                participants: [currentAuthUser.uid, selectedPartner.uid],
+                ...msgPayload
+              });
+            } catch (rootErr) {}
+
+            // 3. Update parent chat room meta for mobile feed lists
+            try {
+              await setDoc(doc(db, 'chats', chatDocId), {
+                id: chatDocId,
+                lastMessage: text,
+                lastMessageSenderId: currentAuthUser.uid,
+                lastMessageTimestamp: Date.now(),
+                participantNames: {
+                  [currentAuthUser.uid]: myName,
+                  [selectedPartner.uid]: partnerName
+                }
+              }, { merge: true });
+            } catch (chatMetaErr) {}
+
+          } catch (err) {
+            console.error('Failed to send message:', err);
+            alert(`Error sending message: ${err.message}`);
           }
-
-          // Update sidebar snippet instantly
-          const snippetEl = document.getElementById(`snippet-${selectedPartner.uid}`);
-          if (snippetEl) snippetEl.textContent = `You: ${text}`;
-
-        } catch (err) {
-          console.error('Failed to send message:', err);
-          alert(`Error sending message: ${err.message}`);
         }
       });
 
