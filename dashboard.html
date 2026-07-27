@@ -541,21 +541,24 @@
         authUser = user;
         diagAuthInfo.innerHTML = `<strong>Auth User UID:</strong> ${user.uid} (${user.email || 'No Email'})`;
 
-        // Fetch User profile document from Firestore 'users/{uid}'
+        // Fetch User profile document — checks users, students, alumni collections
         try {
-          const userDocSnap = await getDoc(doc(db, 'users', user.uid));
-          if (userDocSnap.exists()) {
-            currentUserDoc = userDocSnap.data();
-            diagUserDoc.innerHTML = `<strong>Firestore User Doc (users/${user.uid}):</strong> <pre>${JSON.stringify(currentUserDoc, null, 2)}</pre>`;
-          } else {
-            currentUserDoc = null;
-            diagUserDoc.innerHTML = `<strong>Firestore User Doc:</strong> Document users/${user.uid} not found in Firestore. Using Auth profile.`;
+          const collectionsToCheck = ['users', 'students', 'alumni'];
+          for (const colName of collectionsToCheck) {
+            const snap = await getDoc(doc(db, colName, user.uid));
+            if (snap.exists()) {
+              currentUserDoc = snap.data();
+              diagUserDoc.innerHTML = `<strong>Firestore User Doc (${colName}/${user.uid}):</strong> <pre>${JSON.stringify(currentUserDoc, null, 2)}</pre>`;
+              break;
+            }
+          }
+          if (!currentUserDoc) {
+            diagUserDoc.innerHTML = `<strong>Firestore User Doc:</strong> Not found in users/students/alumni. Using Auth profile.`;
           }
         } catch (err) {
           console.error('Error fetching user profile:', err);
-          diagErrorBox.innerHTML = `⚠️ <strong>Firestore Security Rule Notice:</strong><br>Failed to read <code>users/${user.uid}</code> (${err.message}).<br>Please update your Firestore Rules in Firebase Console to allow read access to the <code>users</code> collection.`;
+          diagErrorBox.innerHTML = `⚠️ <strong>Firestore Security Rule Notice:</strong><br>Failed to read user profile (${err.message}).`;
           diagErrorBox.classList.remove('hidden');
-
           currentUserDoc = null;
         }
 

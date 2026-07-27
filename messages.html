@@ -951,21 +951,33 @@
 
         currentAuthUser = user;
 
-        // Fetch User Profile from Firestore 'users/{uid}'
+        // Fetch User Profile — checks users, students, alumni collections
         try {
-          const uSnap = await getDoc(doc(db, 'users', user.uid));
-          if (uSnap.exists()) {
-            currentUserDoc = uSnap.data();
+          const collectionsToCheck = ['users', 'students', 'alumni'];
+          for (const colName of collectionsToCheck) {
+            const snap = await getDoc(doc(db, colName, user.uid));
+            if (snap.exists()) {
+              currentUserDoc = snap.data();
+              break;
+            }
           }
         } catch (e) {
           console.warn('Profile fetch notice:', e);
         }
 
-        const name = currentUserDoc?.name || user.displayName || 'Member Profile';
-        const photo = formatImageSrc(currentUserDoc?.authorPhotoBase64 || currentUserDoc?.photoURL || user.photoURL);
+        const name = currentUserDoc?.name || currentUserDoc?.displayName || user.displayName || 'Member Profile';
+        const photo = formatImageSrc(
+          currentUserDoc?.authorPhotoBase64 ||
+          currentUserDoc?.userPhotoBase64 ||
+          currentUserDoc?.photoURL ||
+          currentUserDoc?.profilePic ||
+          currentUserDoc?.avatar ||
+          currentUserDoc?.photo ||
+          user.photoURL
+        ) || defaultProfilePhoto;
 
         navUserName.textContent = name;
-        navUserAvatar.src = photo;
+        navUserAvatar.src = photo || defaultProfilePhoto;
 
         // Load Realtime Conversations List from Firestore Users & Posts
         initRealtimeUsersList();

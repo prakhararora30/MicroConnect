@@ -637,16 +637,29 @@
         if (user) {
           currentAuthUser = user;
 
+          // Check users, students, alumni collections for profile photo
           try {
-            const uSnap = await getDoc(doc(db, 'users', user.uid));
-            if (uSnap.exists()) {
-              currentUserDoc = uSnap.data();
+            const collectionsToCheck = ['users', 'students', 'alumni'];
+            for (const colName of collectionsToCheck) {
+              const snap = await getDoc(doc(db, colName, user.uid));
+              if (snap.exists()) {
+                currentUserDoc = snap.data();
+                break;
+              }
             }
           } catch (e) {
             console.warn('Profile fetch notice:', e);
           }
 
-          const photo = formatImageSrc(currentUserDoc?.authorPhotoBase64 || currentUserDoc?.photoURL || user.photoURL) || defaultProfilePhoto;
+          const photo = formatImageSrc(
+            currentUserDoc?.authorPhotoBase64 ||
+            currentUserDoc?.userPhotoBase64 ||
+            currentUserDoc?.photoURL ||
+            currentUserDoc?.profilePic ||
+            currentUserDoc?.avatar ||
+            currentUserDoc?.photo ||
+            user.photoURL
+          ) || defaultProfilePhoto;
           navUserAvatar.src = photo;
 
           renderMainView();

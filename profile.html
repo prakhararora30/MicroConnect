@@ -724,14 +724,19 @@
         loadUserConnectionsCount();
       });
 
-      // 2. Load Real User Profile from Firestore 'users/{uid}'
+      // 2. Load Real User Profile from Firestore (checks users, students, alumni)
       async function loadUserProfile() {
         if (!currentAuthUser) return;
         try {
-          const uSnap = await getDoc(doc(db, 'users', currentAuthUser.uid));
-          if (uSnap.exists()) {
-            currentUserDoc = uSnap.data();
-          } else {
+          const collectionsToCheck = ['users', 'students', 'alumni'];
+          for (const colName of collectionsToCheck) {
+            const snap = await getDoc(doc(db, colName, currentAuthUser.uid));
+            if (snap.exists()) {
+              currentUserDoc = snap.data();
+              break;
+            }
+          }
+          if (!currentUserDoc) {
             currentUserDoc = {
               name: currentAuthUser.displayName || 'Network User',
               role: 'Alumni',
@@ -745,14 +750,22 @@
           const role = currentUserDoc.role || 'Alumni';
           const location = currentUserDoc.location || 'Delhi, India';
           const bio = currentUserDoc.bio || 'Passionate tech enthusiast connecting students and alumni.';
-          const photo = formatImageSrc(currentUserDoc.authorPhotoBase64 || currentUserDoc.photoURL || currentAuthUser.photoURL);
+          const photo = formatImageSrc(
+            currentUserDoc.authorPhotoBase64 ||
+            currentUserDoc.userPhotoBase64 ||
+            currentUserDoc.photoURL ||
+            currentUserDoc.profilePic ||
+            currentUserDoc.avatar ||
+            currentUserDoc.photo ||
+            currentAuthUser.photoURL
+          );
           const skills = currentUserDoc.skills || ['Java', 'UX Design', 'Kotlin', 'Firebase', 'Web Development'];
 
           profileDisplayName.textContent = name;
           profileRoleMajor.textContent = `${role} | Computer Science`;
           profileLocation.textContent = location;
           profileBioText.textContent = bio;
-          userProfileImg.src = photo;
+          userProfileImg.src = photo || defaultProfilePhoto;
 
           // Render Skills
           skillsFlexWrap.innerHTML = '';
