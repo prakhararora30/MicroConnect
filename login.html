@@ -73,6 +73,9 @@
                   </svg>
                 </button>
               </div>
+              <div style="text-align: right; margin-top: 0.5rem;">
+                <a href="#" id="forgot-password-link" style="color: #e53012; text-decoration: none; font-size: 0.92rem; font-weight: 600;">Forgot Password?</a>
+              </div>
             </div>
 
             <!-- Submit Button -->
@@ -94,7 +97,7 @@
   
   <!-- Firebase Login Integration Module -->
   <script type="module">
-    import { auth, signInWithEmailAndPassword, onAuthStateChanged } from './firebase-config.js';
+    import { auth, signInWithEmailAndPassword, onAuthStateChanged, sendPasswordResetEmail } from './firebase-config.js';
 
     document.addEventListener('DOMContentLoaded', () => {
       const loginForm = document.getElementById('login-form');
@@ -104,6 +107,7 @@
       const errorBanner = document.getElementById('auth-error-msg');
       const toggleBtn = document.getElementById('toggle-password');
       const eyeIcon = document.getElementById('eye-icon');
+      const forgotPasswordLink = document.getElementById('forgot-password-link');
 
       // Password Eye Toggle
       const eyeOpenSvg = `<path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle>`;
@@ -119,6 +123,31 @@
       onAuthStateChanged(auth, (user) => {
         if (user) {
           window.location.href = 'dashboard.html';
+        }
+      });
+
+      // Handle Forgot Password
+      forgotPasswordLink.addEventListener('click', async (e) => {
+        e.preventDefault();
+        const email = emailInput.value.trim();
+        
+        if (!email) {
+          errorBanner.textContent = 'Please enter your email address above to reset your password.';
+          errorBanner.style.backgroundColor = ''; 
+          errorBanner.classList.remove('hidden');
+          return;
+        }
+
+        try {
+          await sendPasswordResetEmail(auth, email);
+          errorBanner.textContent = 'Password reset email sent! Please check your inbox.';
+          errorBanner.style.backgroundColor = '#10b981'; // Success Green
+          errorBanner.style.color = '#ffffff';
+          errorBanner.classList.remove('hidden');
+        } catch (error) {
+          errorBanner.textContent = getFriendlyErrorMessage(error.code);
+          errorBanner.style.backgroundColor = ''; // Reset to default error red
+          errorBanner.classList.remove('hidden');
         }
       });
 

@@ -56,6 +56,16 @@
             <input type="password" id="reg-pass" class="form-input" placeholder="••••••••" required minlength="6" />
           </div>
 
+          <div class="form-group" style="margin-bottom: 1.2rem;">
+            <label class="form-label">Profile Photo (Avatar) - Optional</label>
+            <input type="file" id="reg-profile-photo" class="form-input" accept="image/*" style="padding: 0.5rem;" />
+          </div>
+
+          <div class="form-group" style="margin-bottom: 1.5rem;">
+            <label class="form-label">ID Card (Photo) - Required</label>
+            <input type="file" id="reg-id-photo" class="form-input" accept="image/*" required style="padding: 0.5rem;" />
+          </div>
+
           <div class="role-options-group">
             <!-- Alumni Option -->
             <div class="role-option selected" id="role-alumni" data-role="Alumni" tabindex="0" role="radio" aria-checked="true">
@@ -140,6 +150,47 @@
         });
       });
 
+      // Helper to compress image and convert to raw base64
+      const fileToBase64 = (file) => {
+        return new Promise((resolve, reject) => {
+          if (!file) {
+            resolve('');
+            return;
+          }
+          const reader = new FileReader();
+          reader.readAsDataURL(file);
+          reader.onload = (e) => {
+            const img = new Image();
+            img.src = e.target.result;
+            img.onload = () => {
+              const canvas = document.createElement('canvas');
+              let width = img.width;
+              let height = img.height;
+              const MAX_DIM = 600;
+              
+              if (width > height && width > MAX_DIM) {
+                height *= MAX_DIM / width;
+                width = MAX_DIM;
+              } else if (height > MAX_DIM) {
+                width *= MAX_DIM / height;
+                height = MAX_DIM;
+              }
+              
+              canvas.width = width;
+              canvas.height = height;
+              const ctx = canvas.getContext('2d');
+              ctx.drawImage(img, 0, 0, width, height);
+              
+              const dataUrl = canvas.toDataURL('image/jpeg', 0.6); // Compress to 60% quality JPEG
+              const rawBase64 = dataUrl.includes(',') ? dataUrl.split(',')[1] : dataUrl;
+              resolve(rawBase64);
+            };
+            img.onerror = () => reject(new Error('Failed to load image'));
+          };
+          reader.onerror = error => reject(error);
+        });
+      };
+
       // Firebase User Registration & Firestore Document Creation
       registerForm.addEventListener('submit', async (e) => {
         e.preventDefault();
@@ -150,32 +201,40 @@
         const name = document.getElementById('reg-name').value.trim();
         const email = document.getElementById('reg-email').value.trim();
         const password = document.getElementById('reg-pass').value;
-
-        // Default Avatar Photo depending on role
-        const defaultPhoto = selectedRole === 'Alumni' 
-          ? 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=100&auto=format&fit=crop&q=80'
-          : 'https://images.unsplash.com/photo-1539571696357-5a69c17a67c6?w=100&auto=format&fit=crop&q=80';
+        const profilePhotoFile = document.getElementById('reg-profile-photo').files[0];
+        const idPhotoFile = document.getElementById('reg-id-photo').files[0];
 
         try {
+          // Convert images to base64 to match mobile app behavior
+          const profilePhotoBase64 = await fileToBase64(profilePhotoFile);
+          const idPhotoBase64 = await fileToBase64(idPhotoFile);
+
           // 1. Create Firebase Auth user
           const userCredential = await createUserWithEmailAndPassword(auth, email, password);
           const user = userCredential.user;
 
-          // 2. Update Auth Display Name & Photo
+          // 2. Update Auth Display Name
           await updateProfile(user, {
-            displayName: name,
-            photoURL: defaultPhoto
+            displayName: name
           });
 
-          // 3. Write user details to Firestore document 'users/{uid}'
-          await setDoc(doc(db, 'users', user.uid), {
-            uid: user.uid,
-            name: name,
+          // 3. Write user details to Firestore document based on role (Matching Mobile App Schema)
+          const collectionName = selectedRole === 'Alumni' ? 'alumni' : 'students';
+          await setDoc(doc(db, collectionName, user.uid), {
+            bio: "",
+            createdAt: new Date().getTime(),
+            education: "",
             email: email,
-            role: selectedRole,
+            experience: "",
+            fcmToken: "",
+            fullName: name,
+            idPhotoBase64: idPhotoBase64,
+            location: "",
             points: 350,
-            photoURL: defaultPhoto,
-            createdAt: serverTimestamp()
+            profilePhotoBase64: profilePhotoBase64,
+            role: selectedRole,
+            skills: "",
+            uid: user.uid
           });
 
           // 4. Redirect to Feed Dashboard
