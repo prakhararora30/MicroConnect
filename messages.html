@@ -11,6 +11,7 @@
   <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="style.css">
   <link rel="icon" type="image/png" href="favicon.png">
+  <script src="theme.js"></script>
 </head>
 <style>
     /* Messages Page Layout & Styling */
@@ -741,6 +742,7 @@
       margin-left: 0.3rem;
     }
   </style>
+  <script src="theme.js"></script>
 </head>
 <body class="messages-body">
 
@@ -750,10 +752,10 @@
       <a href="dashboard.html" class="dashboard-logo" aria-label="Connect Home">connect</a>
 
       <ul class="nav-links-list">
-        <li><a href="dashboard.html" class="nav-link-item">Dashboard</a></li>
+        <li><a href="dashboard.html" class="nav-link-item">Home</a></li>
         <li><a href="messages.html" class="nav-link-item active">Messages</a></li>
         <li><a href="network.html" class="nav-link-item">Network</a></li>
-        <li><a href="jobs.html" class="nav-link-item">Jobs</a></li>
+        <li><a href="jobs.html" class="nav-link-item">Job Board</a></li>
         <li><a href="leaderboard.html" class="nav-link-item">Leaderboard</a></li>
       </ul>
     </div>
@@ -1006,15 +1008,19 @@
           avatar: currentUserDoc?.avatar,
           photo: currentUserDoc?.photo
         });
-        const photo = formatImageSrc(
-          currentUserDoc?.authorPhotoBase64 ||
-          currentUserDoc?.userPhotoBase64 ||
-          currentUserDoc?.photoURL ||
-          currentUserDoc?.profilePic ||
-          currentUserDoc?.avatar ||
-          currentUserDoc?.photo ||
-          user.photoURL
-        ) || defaultProfilePhoto;
+        
+        let rawPhoto = null;
+        if (currentUserDoc) {
+          const photoKeys = ['authorPhotoBase64', 'userPhotoBase64', 'profilePhotoBase64', 'photoBase64', 'photoURL', 'photo_url', 'profilePic', 'profile_pic', 'profileImage', 'profile_image', 'avatar', 'avatarUrl', 'avatar_url', 'photo', 'image', 'userImage', 'user_image', 'userAvatar', 'user_photo'];
+          for (const k of photoKeys) {
+            if (currentUserDoc[k] && typeof currentUserDoc[k] === 'string' && currentUserDoc[k].trim().length > 0) {
+              rawPhoto = currentUserDoc[k];
+              break;
+            }
+          }
+        }
+        if (!rawPhoto && user.photoURL) rawPhoto = user.photoURL;
+        const photo = formatImageSrc(rawPhoto) || defaultProfilePhoto;
         console.log('[Profile Debug] resolved photo src (first 80 chars):', photo?.slice?.(0, 80));
 
         navUserName.textContent = name;
@@ -1813,3 +1819,5 @@
   </script>
 </body>
 </html>
+
+

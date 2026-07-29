@@ -548,6 +548,7 @@
     .filter-options-btn.has-filters .filter-active-dot { display: block; }
     /* ── End Filter Modal ─────────────────────────────────── */
   </style>
+  <script src="theme.js"></script>
 </head>
 <body class="network-body">
 
@@ -921,15 +922,18 @@
             console.warn('Profile fetch notice:', e);
           }
 
-          const photo = formatImageSrc(
-            currentUserDoc?.authorPhotoBase64 ||
-            currentUserDoc?.userPhotoBase64 ||
-            currentUserDoc?.photoURL ||
-            currentUserDoc?.profilePic ||
-            currentUserDoc?.avatar ||
-            currentUserDoc?.photo ||
-            user.photoURL
-          ) || defaultProfilePhoto;
+          let rawPhoto = null;
+          if (currentUserDoc) {
+            const photoKeys = ['authorPhotoBase64', 'userPhotoBase64', 'profilePhotoBase64', 'photoBase64', 'photoURL', 'photo_url', 'profilePic', 'profile_pic', 'profileImage', 'profile_image', 'avatar', 'avatarUrl', 'avatar_url', 'photo', 'image', 'userImage', 'user_image', 'userAvatar', 'user_photo'];
+            for (const k of photoKeys) {
+              if (currentUserDoc[k] && typeof currentUserDoc[k] === 'string' && currentUserDoc[k].trim().length > 0) {
+                rawPhoto = currentUserDoc[k];
+                break;
+              }
+            }
+          }
+          if (!rawPhoto && user.photoURL) rawPhoto = user.photoURL;
+          const photo = formatImageSrc(rawPhoto) || defaultProfilePhoto;
           navUserAvatar.src = photo;
 
           renderMainView();
@@ -1325,3 +1329,5 @@
   </script>
 </body>
 </html>
+
+

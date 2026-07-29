@@ -10,7 +10,8 @@ import {
   onAuthStateChanged, 
   signOut,
   updateProfile,
-  sendPasswordResetEmail
+  sendPasswordResetEmail,
+  deleteUser
 } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
 import { 
   getFirestore, 
@@ -65,6 +66,7 @@ export {
   signOut, 
   updateProfile,
   sendPasswordResetEmail,
+  deleteUser,
   doc, 
   setDoc, 
   getDoc, 
