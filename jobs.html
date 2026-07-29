@@ -466,9 +466,11 @@
       <a href="dashboard.html" class="dashboard-logo" aria-label="Connect Home">connect</a>
 
       <ul class="jobs-nav-links">
-        <li><a href="dashboard.html" class="jobs-nav-item">Home <span>∨</span></a></li>
-        <li><a href="#" class="jobs-nav-item">Solutions <span>∨</span></a></li>
-        <li><a href="#" class="jobs-nav-item">Community</a></li>
+        <li><a href="dashboard.html" class="jobs-nav-item">Home</a></li>
+        <li><a href="messages.html" class="jobs-nav-item">Messages</a></li>
+        <li><a href="network.html" class="jobs-nav-item">Network</a></li>
+        <li><a href="jobs.html" class="jobs-nav-item active">Job Board</a></li>
+        <li><a href="leaderboard.html" class="jobs-nav-item">Leaderboard</a></li>
       </ul>
     </div>
 
@@ -607,44 +609,9 @@
       let allJobs = [];
 
       // Auth Listener to update navbar profile
-      const defaultProfilePhoto = "data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='100' height='100' viewBox='0 0 100 100'><circle cx='50' cy='50' r='50' fill='%23e0812b'/><path d='M50 28 a 14 14 0 1 0 0.001 0 M32 74 a 18 18 0 0 1 36 0' stroke='%23ffffff' stroke-width='6' fill='none' stroke-linecap='round'/></svg>";
-
-      onAuthStateChanged(auth, async (user) => {
-        if (user) {
-          let currentUserDoc = null;
-          try {
-            const { getDoc, doc } = await import('./firebase-config.js');
-            const collectionsToCheck = ['users', 'students', 'alumni'];
-            for (const colName of collectionsToCheck) {
-              const snap = await getDoc(doc(db, colName, user.uid));
-              if (snap.exists()) {
-                currentUserDoc = snap.data();
-                break;
-              }
-            }
-          } catch(e) {}
-          
-          let rawPhoto = null;
-          if (currentUserDoc) {
-            const photoKeys = ['authorPhotoBase64', 'userPhotoBase64', 'profilePhotoBase64', 'photoBase64', 'photoURL', 'photo_url', 'profilePic', 'profile_pic', 'profileImage', 'profile_image', 'avatar', 'avatarUrl', 'avatar_url', 'photo', 'image', 'userImage', 'user_image', 'userAvatar', 'user_photo'];
-            for (const k of photoKeys) {
-              if (currentUserDoc[k] && typeof currentUserDoc[k] === 'string' && currentUserDoc[k].trim().length > 0) {
-                rawPhoto = currentUserDoc[k];
-                break;
-              }
-            }
-          }
-          if (!rawPhoto && user.photoURL) rawPhoto = user.photoURL;
-          
-          if (rawPhoto && navAvatarImg) {
-            if (rawPhoto.startsWith('data:image') || rawPhoto.startsWith('http') || rawPhoto.startsWith('gs://')) {
-              navAvatarImg.src = rawPhoto;
-            } else {
-              navAvatarImg.src = `data:image/jpeg;base64,${rawPhoto}`;
-            }
-          } else if (navAvatarImg) {
-            navAvatarImg.src = defaultProfilePhoto;
-          }
+      onAuthStateChanged(auth, (user) => {
+        if (user && user.photoURL && navAvatarImg) {
+          navAvatarImg.src = user.photoURL;
         }
       });
 
@@ -787,3 +754,4 @@
   </script>
 </body>
 </html>
+

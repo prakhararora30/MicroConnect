@@ -11,7 +11,42 @@
   <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="style.css">
   <link rel="icon" type="image/png" href="favicon.png">
-  <script src="theme.js"></script>
+  <style>
+    /* Dark Theme Overrides for Dashboard */
+    body.dashboard-body.dark-theme {
+      background-color: #0b0d19 !important;
+      color: #ffffff !important;
+    }
+    body.dashboard-body.dark-theme .dashboard-header {
+      background-color: #11162a !important;
+      border-color: #1f2937 !important;
+    }
+    body.dashboard-body.dark-theme .dashboard-sidebar,
+    body.dashboard-body.dark-theme .sidebar-card,
+    body.dashboard-body.dark-theme .feed-create-post,
+    body.dashboard-body.dark-theme .feed-post-card,
+    body.dashboard-body.dark-theme .trending-card {
+      background-color: #11162a !important;
+      border-color: #1f2937 !important;
+      color: #ffffff !important;
+    }
+    body.dashboard-body.dark-theme .nav-item {
+      color: #d1d5db !important;
+    }
+    body.dashboard-body.dark-theme .nav-item:hover {
+      background-color: #1f2937 !important;
+    }
+    body.dashboard-body.dark-theme .settings-dropdown {
+      background: #11162a !important;
+      border-color: #374151 !important;
+    }
+    body.dashboard-body.dark-theme .settings-dropdown button {
+      color: #e5e7eb !important;
+    }
+    body.dashboard-body.dark-theme .settings-dropdown button:hover {
+      background: #1f2937 !important;
+    }
+  </style>
 </head>
 <body class="dashboard-body">
 
@@ -63,7 +98,7 @@
       <a href="profile.html" title="View Profile">
         <img id="header-user-avatar" src="data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='100' height='100' viewBox='0 0 100 100'><circle cx='50' cy='50' r='50' fill='%23e0812b'/><path d='M50 28 a 14 14 0 1 0 0.001 0 M32 74 a 18 18 0 0 1 36 0' stroke='%23ffffff' stroke-width='6' fill='none' stroke-linecap='round'/></svg>" alt="Profile Photo" class="header-profile-photo" style="cursor: pointer;" />
       </a>
-      
+      <button id="signout-btn" class="signout-btn" title="Sign Out">Sign Out</button>
     </div>
   </header>
 
@@ -129,19 +164,16 @@
           <span>Courses</span>
         </a>
 
-        <div style="width: 100%;">
-          <a href="#" class="nav-item" id="sidebar-settings-btn" style="width: 100%; display: flex; justify-content: space-between;">
-            <div style="display: flex; align-items: center; gap: 0.8rem;">
-              <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                <circle cx="12" cy="12" r="3"></circle>
-                <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path>
-              </svg>
-              <span>Settings</span>
-            </div>
-            <span id="settings-chevron" style="transition: transform 0.2s;">▼</span>
+        <div style="position: relative; width: 100%;">
+          <a href="#" class="nav-item" id="sidebar-settings-btn" style="width: 100%;">
+            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <circle cx="12" cy="12" r="3"></circle>
+              <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path>
+            </svg>
+            <span>Settings</span>
           </a>
           
-          <div id="settings-dropdown" class="settings-dropdown" style="display: none; background: transparent; padding: 0.2rem 0 0.5rem 2.8rem; margin-bottom: 0.5rem; width: 100%;">
+          <div id="settings-dropdown" class="settings-dropdown" style="display: none; position: absolute; left: 105%; top: 0; background: white; border: 1px solid #e5e7eb; padding: 0.5rem; border-radius: 8px; z-index: 100; box-shadow: 0 4px 6px rgba(0,0,0,0.1); width: 170px;">
             <button id="theme-toggle-btn" style="display: flex; align-items: center; gap: 10px; width: 100%; padding: 0.6rem; border: none; background: transparent; cursor: pointer; border-radius: 6px; font-family: 'Outfit', sans-serif; font-size: 0.95rem; color: #4b5563; text-align: left; transition: background 0.2s ease;">
               <svg id="theme-icon-sun" xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display: none; flex-shrink: 0;">
                 <circle cx="12" cy="12" r="5"></circle>
@@ -508,7 +540,7 @@
       const headerRoleBadge = document.getElementById('header-user-role-badge');
       const createPostRoleBadge = document.getElementById('create-post-role-badge');
       const postInput = document.getElementById('post-input');
-      
+      const signoutBtn = document.getElementById('signout-btn');
       const postsWrapper = document.getElementById('feed-posts-wrapper');
       const leaderboardContainer = document.getElementById('leaderboard-list-container');
       const publishBtn = document.getElementById('publish-post-btn');
@@ -690,7 +722,11 @@
         initLiveLeaderboard(role);
       });
 
-      
+      // Sign Out Action
+      signoutBtn.addEventListener('click', async () => {
+        await signOut(auth);
+        window.location.href = 'login.html';
+      });
 
       // 2. Publish New Post to Firestore
       publishBtn.addEventListener('click', async () => {
@@ -1152,6 +1188,59 @@
         }, 6000);
       }
     });
+
+    // Settings Dropdown & Dark Mode Logic
+    const settingsBtn = document.getElementById('sidebar-settings-btn');
+    const settingsDropdown = document.getElementById('settings-dropdown');
+    const themeToggleBtn = document.getElementById('theme-toggle-btn');
+    const themeIconSun = document.getElementById('theme-icon-sun');
+    const themeIconMoon = document.getElementById('theme-icon-moon');
+    const themeText = document.getElementById('theme-text');
+
+    // Toggle Dropdown
+    if (settingsBtn && settingsDropdown) {
+      settingsBtn.addEventListener('click', (e) => {
+        e.preventDefault();
+        const isHidden = settingsDropdown.style.display === 'none';
+        settingsDropdown.style.display = isHidden ? 'block' : 'none';
+      });
+
+      // Close dropdown when clicking outside
+      document.addEventListener('click', (e) => {
+        if (!settingsBtn.contains(e.target) && !settingsDropdown.contains(e.target)) {
+          settingsDropdown.style.display = 'none';
+        }
+      });
+    }
+
+    // Initialize Theme
+    const currentTheme = localStorage.getItem('microconnect-theme') || 'light';
+    if (currentTheme === 'dark') {
+      document.body.classList.add('dark-theme');
+      themeIconSun.style.display = 'block';
+      themeIconMoon.style.display = 'none';
+      themeText.textContent = 'Light Mode';
+    }
+
+    // Toggle Theme
+    if (themeToggleBtn) {
+      themeToggleBtn.addEventListener('click', () => {
+        const isDark = document.body.classList.contains('dark-theme');
+        if (isDark) {
+          document.body.classList.remove('dark-theme');
+          localStorage.setItem('microconnect-theme', 'light');
+          themeIconSun.style.display = 'none';
+          themeIconMoon.style.display = 'block';
+          themeText.textContent = 'Dark Mode';
+        } else {
+          document.body.classList.add('dark-theme');
+          localStorage.setItem('microconnect-theme', 'dark');
+          themeIconSun.style.display = 'block';
+          themeIconMoon.style.display = 'none';
+          themeText.textContent = 'Light Mode';
+        }
+      });
+    }
   </script>
 </body>
 </html>

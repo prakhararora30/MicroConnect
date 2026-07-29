@@ -2,7 +2,7 @@
 :root {
   --bg-color: #0b0d19;
   --bg-gradient: radial-gradient(circle at center, #11162a 0%, #080a13 100%);
-  --text-main: #ffffff;
+  --text-main: var(--card-bg);
   --text-muted: #8e9bb0;
   --welcome-color: #d1d9e6;
   --gradient-brand: linear-gradient(90deg, #e53012 0%, #f46c05 38%, #f89d04 70%, #ffc107 100%);
@@ -10,26 +10,6 @@
   --btn-glow: 0 0 30px rgba(246, 120, 50, 0.45), 0 0 10px rgba(246, 120, 50, 0.2);
   --btn-glow-hover: 0 0 45px rgba(246, 120, 50, 0.7), 0 0 15px rgba(246, 120, 50, 0.4);
   --accent-gold: #ffb738;
-
-  /* App Variables (Light Mode Default) */
-  --app-bg: #f4f5f7;
-  --card-bg: #ffffff;
-  --text-app-main: #1f2937;
-  --text-app-muted: #4b5563;
-  --border-app: #e5e7eb;
-  --border-app-hover: #d1d5db;
-  --nav-hover-bg: #f8fafc;
-}
-
-/* App Dark Mode Override */
-.dark-theme {
-  --app-bg: #0b0d19;
-  --card-bg: #11162a;
-  --text-app-main: #ffffff;
-  --text-app-muted: #d1d5db;
-  --border-app: #1f2937;
-  --border-app-hover: #374151;
-  --nav-hover-bg: #1f2937;
 }
 
 * {
@@ -147,7 +127,7 @@ body {
 
 .btn-primary {
   background: var(--gradient-btn);
-  color: #ffffff !important;
+  color: var(--card-bg) !important;
   border: none;
   padding: 0.95rem 3.2rem;
   border-radius: 999px;
@@ -227,7 +207,7 @@ body {
 .role-main-title, .login-main-title {
   font-size: 3.8rem;
   font-weight: 700;
-  color: #ffffff;
+  color: var(--card-bg);
   letter-spacing: -0.5px;
   line-height: 1.1;
 }
@@ -259,7 +239,7 @@ body {
 .card-title {
   font-size: 2.1rem;
   font-weight: 700;
-  color: var(--text-app-main);
+  color: #111827;
   text-align: center;
   margin-bottom: 1.8rem;
   letter-spacing: -0.3px;
@@ -278,7 +258,7 @@ body {
 .form-label {
   font-size: 0.95rem;
   font-weight: 600;
-  color: var(--text-app-muted);
+  color: #374151;
   display: block;
 }
 
@@ -297,7 +277,7 @@ input[type="password"].form-input {
   padding: 0.85rem 1.1rem;
   font-family: 'Outfit', -apple-system, sans-serif;
   font-size: 1.05rem;
-  color: var(--text-app-main);
+  color: #111827;
   outline: none;
   box-shadow: none;
   transition: border-color 0.2s ease, box-shadow 0.2s ease;
@@ -537,7 +517,7 @@ body.dashboard-body {
   align-items: center;
   margin-bottom: 0.8rem;
   padding-bottom: 0.4rem;
-  border-bottom: 1px solid var(--border-app-hover);
+  border-bottom: 1px solid #374151;
 }
 
 .diagnostic-header h4 {
@@ -548,7 +528,7 @@ body.dashboard-body {
 .close-diag-btn {
   background: none;
   border: none;
-  color: var(--text-app-muted);
+  color: #9ca3af;
   font-size: 1.5rem;
   cursor: pointer;
 }
@@ -560,7 +540,8 @@ body.dashboard-body {
   font-size: 0.88rem;
 }
 
-.diagnostic-body pre { background: #1f2937;
+.diagnostic-body pre {
+  background: var(--text-app-main);
   padding: 0.6rem;
   border-radius: 6px;
   max-height: 150px;
@@ -579,13 +560,13 @@ body.dashboard-body {
 }
 
 .diag-toggle-btn {
-  background: var(--nav-hover-bg);
+  background: #f3f4f6;
   border: 1px solid var(--border-app-hover);
   padding: 0.4rem 0.85rem;
   border-radius: 999px;
   font-weight: 600;
   font-size: 0.82rem;
-  color: var(--text-app-muted);
+  color: #374151;
   cursor: pointer;
   transition: background 0.2s ease;
 }
@@ -626,7 +607,7 @@ body.dashboard-body {
 }
 
 .search-bar-wrapper {
-  background: var(--nav-hover-bg);
+  background: #f1f3f6;
   border-radius: 999px;
   padding: 0.6rem 1.4rem;
   flex-grow: 1;
@@ -649,7 +630,7 @@ body.dashboard-body {
   font-family: inherit;
   font-size: 0.98rem;
   width: 100%;
-  color: var(--text-app-muted);
+  color: #374151;
 }
 
 .header-right-user {
@@ -671,7 +652,7 @@ body.dashboard-body {
 }
 
 .signout-btn {
-  background: var(--nav-hover-bg);
+  background: #f3f4f6;
   border: 1px solid var(--border-app);
   padding: 0.45rem 1rem;
   border-radius: 999px;
@@ -703,12 +684,12 @@ body.dashboard-body {
 
 .alumni-pill {
   background: linear-gradient(135deg, #d97706 0%, #b45309 100%);
-  color: #ffffff;
+  color: var(--card-bg);
 }
 
 .student-pill {
   background: linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%);
-  color: #ffffff;
+  color: var(--card-bg);
 }
 
 .sidebar-role-badge {
@@ -761,12 +742,12 @@ body.dashboard-body {
   gap: 0.6rem;
   margin-bottom: 0.8rem;
   padding-bottom: 0.6rem;
-  border-bottom: 1px solid var(--border-app);
+  border-bottom: 1px solid #f3f4f6;
 }
 
 .posting-as-label {
   font-size: 0.88rem;
-  color: var(--text-app-muted);
+  color: #6b7280;
   font-weight: 500;
 }
 
@@ -823,13 +804,13 @@ body.dashboard-body {
 
 .nav-item:hover {
   background: var(--nav-hover-bg);
-  color: var(--text-app-main);
+  color: #111827;
 }
 
 .nav-item.active {
   background: var(--card-bg);
   box-shadow: 0 4px 14px rgba(0, 0, 0, 0.07);
-  color: var(--text-app-main);
+  color: #111827;
   font-weight: 700;
 }
 
@@ -862,7 +843,7 @@ body.dashboard-body {
 
 .widget-points {
   font-size: 0.82rem;
-  color: var(--text-app-muted);
+  color: #6b7280;
   margin-top: 0.1rem;
 }
 
@@ -917,7 +898,7 @@ body.dashboard-body {
   top: 8px;
   right: 8px;
   background: rgba(0, 0, 0, 0.7);
-  color: #ffffff;
+  color: var(--card-bg);
   border: none;
   width: 28px;
   height: 28px;
@@ -939,7 +920,7 @@ body.dashboard-body {
   justify-content: space-between;
   align-items: center;
   margin-top: 0.8rem;
-  border-top: 1px solid var(--border-app);
+  border-top: 1px solid #f3f4f6;
   padding-top: 0.8rem;
 }
 
@@ -961,12 +942,12 @@ body.dashboard-body {
 }
 
 .media-btn:hover {
-  background: var(--nav-hover-bg);
+  background: #f3f4f6;
 }
 
 .btn-publish {
   background: var(--gradient-btn);
-  color: #ffffff;
+  color: var(--card-bg);
   border: none;
   padding: 0.55rem 1.6rem;
   border-radius: 999px;
@@ -1015,13 +996,13 @@ body.dashboard-body {
 
 .author-name {
   font-weight: 700;
-  color: var(--text-app-main);
+  color: #111827;
   font-size: 1.05rem;
 }
 
 .post-time {
   font-size: 0.85rem;
-  color: var(--text-app-muted);
+  color: #9ca3af;
   display: block;
   margin-top: 0.15rem;
 }
@@ -1029,7 +1010,7 @@ body.dashboard-body {
 .more-options-btn {
   background: none;
   border: none;
-  color: var(--text-app-muted);
+  color: #9ca3af;
   font-size: 1.2rem;
   cursor: pointer;
   padding: 0.2rem;
@@ -1037,7 +1018,7 @@ body.dashboard-body {
 
 .post-text {
   font-size: 1.05rem;
-  color: var(--text-app-muted);
+  color: #374151;
   line-height: 1.5;
   margin-bottom: 1.1rem;
 }
@@ -1060,7 +1041,7 @@ body.dashboard-body {
   display: flex;
   align-items: center;
   gap: 2rem;
-  border-top: 1px solid var(--border-app);
+  border-top: 1px solid #f3f4f6;
   padding-top: 1rem;
 }
 
@@ -1070,7 +1051,7 @@ body.dashboard-body {
   gap: 0.45rem;
   background: none;
   border: none;
-  color: var(--text-app-muted);
+  color: #6b7280;
   font-size: 0.95rem;
   font-weight: 600;
   font-family: inherit;
@@ -1079,7 +1060,7 @@ body.dashboard-body {
 }
 
 .footer-action-btn:hover {
-  color: var(--text-app-main);
+  color: #111827;
 }
 
 .footer-action-btn.liked {
@@ -1093,7 +1074,7 @@ body.dashboard-body {
 .leaderboard-title {
   font-size: 1.25rem;
   font-weight: 700;
-  color: var(--text-app-main);
+  color: #111827;
   margin-bottom: 1.3rem;
 }
 
@@ -1139,7 +1120,7 @@ body.dashboard-body {
 
 .rank-points {
   font-size: 0.82rem;
-  color: var(--text-app-muted);
+  color: #6b7280;
 }
 
 .empty-feed-card {
@@ -1147,24 +1128,24 @@ body.dashboard-body {
   border-radius: 18px;
   padding: 3.5rem 2rem;
   text-align: center;
-  color: var(--text-app-muted);
+  color: #6b7280;
   box-shadow: 0 4px 18px rgba(0, 0, 0, 0.03);
 }
 
 .empty-feed-card p {
   font-size: 1.15rem;
   font-weight: 600;
-  color: var(--text-app-muted);
+  color: #374151;
   margin-bottom: 0.4rem;
 }
 
 .empty-feed-card span {
   font-size: 0.95rem;
-  color: var(--text-app-muted);
+  color: #9ca3af;
 }
 
 .loading-state-box, .loading-state-txt {
-  color: var(--text-app-muted);
+  color: #9ca3af;
   font-size: 0.95rem;
   text-align: center;
   padding: 1.5rem;
@@ -1265,7 +1246,7 @@ body.dashboard-body {
   }
   background: none;
   border: none;
-  color: var(--text-app-muted);
+  color: #6b7280;
   font-size: 0.95rem;
   font-weight: 600;
   font-family: inherit;
@@ -1274,7 +1255,7 @@ body.dashboard-body {
 }
 
 .footer-action-btn:hover {
-  color: var(--text-app-main);
+  color: #111827;
 }
 
 .footer-action-btn.liked {
@@ -1288,7 +1269,7 @@ body.dashboard-body {
 .leaderboard-title {
   font-size: 1.25rem;
   font-weight: 700;
-  color: var(--text-app-main);
+  color: #111827;
   margin-bottom: 1.3rem;
 }
 
@@ -1334,7 +1315,7 @@ body.dashboard-body {
 
 .rank-points {
   font-size: 0.82rem;
-  color: var(--text-app-muted);
+  color: #6b7280;
 }
 
 
@@ -1344,24 +1325,24 @@ body.dashboard-body {
   border-radius: 18px;
   padding: 3.5rem 2rem;
   text-align: center;
-  color: var(--text-app-muted);
+  color: #6b7280;
   box-shadow: 0 4px 18px rgba(0, 0, 0, 0.03);
 }
 
 .empty-feed-card p {
   font-size: 1.15rem;
   font-weight: 600;
-  color: var(--text-app-muted);
+  color: #374151;
   margin-bottom: 0.4rem;
 }
 
 .empty-feed-card span {
   font-size: 0.95rem;
-  color: var(--text-app-muted);
+  color: #9ca3af;
 }
 
 .loading-state-box, .loading-state-txt {
-  color: var(--text-app-muted);
+  color: #9ca3af;
   font-size: 0.95rem;
   text-align: center;
   padding: 1.5rem;
@@ -1541,7 +1522,7 @@ body.dashboard-body {
 .course-filter-btn.active {
   background: #111827;
   color: white;
-  border-color: var(--text-app-main);
+  border-color: #111827;
 }
 
 .courses-grid {
@@ -1556,7 +1537,7 @@ body.dashboard-body {
   overflow: hidden;
   box-shadow: 0 4px 15px rgba(0, 0, 0, 0.04);
   transition: transform 0.2s ease, box-shadow 0.2s ease;
-  border: 1px solid var(--border-app);
+  border: 1px solid #f3f4f6;
   display: flex;
   flex-direction: column;
 }
@@ -1600,7 +1581,7 @@ body.dashboard-body {
 .course-title {
   font-size: 1.15rem;
   font-weight: 700;
-  color: var(--text-app-main);
+  color: #111827;
   margin-bottom: 0.5rem;
   line-height: 1.3;
 }
@@ -1611,7 +1592,7 @@ body.dashboard-body {
   align-items: center;
   margin-bottom: 0.8rem;
   font-size: 0.85rem;
-  color: var(--text-app-muted);
+  color: #6b7280;
 }
 
 .course-instructor {
@@ -1641,18 +1622,18 @@ body.dashboard-body {
   justify-content: space-between;
   align-items: center;
   padding-top: 1rem;
-  border-top: 1px solid var(--border-app);
+  border-top: 1px solid #f3f4f6;
 }
 
 .course-rating {
   font-weight: 700;
-  color: var(--text-app-main);
+  color: #111827;
   font-size: 0.9rem;
 }
 
 .rating-count {
   font-weight: 400;
-  color: var(--text-app-muted);
+  color: #9ca3af;
   font-size: 0.8rem;
 }
 
@@ -1672,8 +1653,4 @@ body.dashboard-body {
 .btn-start-course:hover {
   opacity: 0.9;
 }
-
-
-
-
 
