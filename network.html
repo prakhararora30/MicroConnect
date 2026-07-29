@@ -629,7 +629,7 @@
         <a href="profile.html" title="View Profile">
           <img id="nav-user-avatar" src="data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='100' height='100' viewBox='0 0 100 100'><circle cx='50' cy='50' r='50' fill='%23e0812b'/><path d='M50 28 a 14 14 0 1 0 0.001 0 M32 74 a 18 18 0 0 1 36 0' stroke='%23ffffff' stroke-width='6' fill='none' stroke-linecap='round'/></svg>" alt="User Avatar" class="nav-user-avatar" style="cursor: pointer;" />
         </a>
-        <button id="nav-signout-btn" class="signout-link-btn" title="Sign Out">Sign Out</button>
+        
       </div>
     </div>
   </nav>
@@ -829,7 +829,7 @@
 
     document.addEventListener('DOMContentLoaded', () => {
       const navUserAvatar = document.getElementById('nav-user-avatar');
-      const navSignoutBtn = document.getElementById('nav-signout-btn');
+      
       const searchInput = document.getElementById('network-search-input');
       const container = document.getElementById('network-view-container');
 
@@ -940,12 +940,7 @@
         }
       });
 
-      if (navSignoutBtn) {
-        navSignoutBtn.addEventListener('click', async () => {
-          await signOut(auth);
-          window.location.href = 'login.html';
-        });
-      }
+      
 
       // 2. Tab Navigation
       [tabSuggested, tabRequests, tabConnections].forEach(tEl => {
