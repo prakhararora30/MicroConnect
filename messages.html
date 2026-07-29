@@ -114,13 +114,14 @@
 
     /* Messages Main Layout Grid */
     .messages-container {
-      max-width: 1280px;
+      width: 96%;
+      max-width: 1600px;
       margin: 1.8rem auto;
       padding: 0 1.5rem;
       display: grid;
       grid-template-columns: 360px 1fr;
       gap: 1.8rem;
-      min-height: calc(100vh - 130px);
+      height: calc(100vh - 185px);
     }
 
     /* Left Sidebar Conversations Panel */
@@ -128,6 +129,7 @@
       display: flex;
       flex-direction: column;
       gap: 1.2rem;
+      height: 100%;
     }
 
     .panel-header-title {
@@ -162,6 +164,18 @@
       display: flex;
       flex-direction: column;
       gap: 0.4rem;
+      flex-grow: 1;
+      overflow-y: auto;
+      padding-right: 0.4rem; /* add slight padding for scrollbar */
+    }
+    
+    /* Clean scrollbar for conversations list */
+    .conversations-list::-webkit-scrollbar {
+      width: 6px;
+    }
+    .conversations-list::-webkit-scrollbar-thumb {
+      background: #e5e7eb;
+      border-radius: 10px;
     }
 
     .conversation-item {
@@ -292,6 +306,7 @@
       flex-direction: column;
       border: 1px solid #e5e7eb;
       overflow: hidden;
+      height: 100%;
     }
 
     .chat-header {
@@ -352,8 +367,7 @@
       flex-direction: column;
       gap: 1.4rem;
       background: #ffffff;
-      max-height: 520px;
-      min-height: 380px;
+      min-height: 0;
     }
 
     .message-row {
@@ -733,7 +747,7 @@
   <!-- Top Navigation Header -->
   <nav class="messages-navbar">
     <div class="nav-left-group">
-      <a href="index.html" class="dashboard-logo" aria-label="Connect Home">connect</a>
+      <a href="dashboard.html" class="dashboard-logo" aria-label="Connect Home">connect</a>
 
       <ul class="nav-links-list">
         <li><a href="dashboard.html" class="nav-link-item">Dashboard</a></li>
