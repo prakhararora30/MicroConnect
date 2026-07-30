@@ -29,7 +29,8 @@ import {
   arrayUnion, 
   arrayRemove, 
   serverTimestamp,
-  getDocs
+  getDocs,
+  where
 } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
 import {
   getMessaging,
@@ -81,5 +82,6 @@ export {
   arrayUnion, 
   arrayRemove, 
   serverTimestamp,
-  getDocs
+  getDocs,
+  where
 };

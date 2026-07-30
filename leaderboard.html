@@ -45,7 +45,7 @@
     /* ── Navbar ────────────────────────────────────────── */
     .lb-navbar {
       background: #ffffff;
-      padding: 1.2rem 4%;
+      padding: 0.9rem 4%;
       display: flex;
       align-items: center;
       justify-content: space-between;
@@ -56,26 +56,43 @@
       z-index: 100;
     }
     
-    .lb-logo-wrap { display: flex; align-items: center; gap: 0.5rem; text-decoration: none; }
-    .lb-logo-mark {
-      width: 28px; height: 28px; border-radius: 50%;
-      background: var(--brand-gradient); display: inline-block;
+    .dashboard-logo {
+      font-size: 2.3rem;
+      font-weight: 700;
+      letter-spacing: -1px;
+      text-decoration: none;
+      background: linear-gradient(90deg, #e53012 0%, #f46c05 38%, #f89d04 70%, #ffc107 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      display: inline-block;
+      font-family: 'Outfit', sans-serif;
+      line-height: 1;
+      flex-shrink: 0;
     }
-    .lb-logo-text { font-size: 1.5rem; font-weight: 800; color: #111827; letter-spacing: -0.5px; }
 
-    .lb-nav-links { display: flex; gap: 2.5rem; }
+    .lb-nav-links { display: flex; gap: 2.5rem; align-items: center; }
     .lb-nav-item {
       text-decoration: none; color: #6b7280; font-weight: 600; font-size: 1rem;
       position: relative; padding-bottom: 0.2rem; transition: color 0.2s;
     }
     .lb-nav-item:hover { color: #111827; }
-    .lb-nav-item.active { color: #111827; }
+    .lb-nav-item.active { color: #111827; font-weight: 700; }
     .lb-nav-item.active::after {
       content: ''; position: absolute; bottom: -0.3rem; left: 0;
       width: 100%; height: 2.5px; background: #111827; border-radius: 999px;
     }
 
-    .lb-nav-right { width: 100px; /* Spacer */ }
+    .lb-nav-right { display: flex; align-items: center; }
+
+    .dropdown-avatar, #nav-user-avatar {
+      width: 42px;
+      height: 42px;
+      border-radius: 50%;
+      object-fit: cover;
+      border: 2px solid #ffffff;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.12);
+      display: block;
+    }
 
     /* ── Main Content ──────────────────────────────────────── */
     .lb-container {
@@ -220,18 +237,23 @@
 
   <!-- Navbar -->
   <nav class="lb-navbar">
-    <a href="dashboard.html" class="lb-logo-wrap">
-      <div class="lb-logo-mark"></div>
-      <span class="lb-logo-text">connect</span>
-    </a>
+    <a href="dashboard.html" class="dashboard-logo" aria-label="Connect Home">connect</a>
+
     <div class="lb-nav-links">
       <a href="dashboard.html" class="lb-nav-item">Home</a>
+      <a href="messages.html" class="lb-nav-item">Messages</a>
+      <a href="network.html" class="lb-nav-item">Network</a>
+      <a href="jobs.html" class="lb-nav-item">Job Board</a>
       <a href="leaderboard.html" class="lb-nav-item active">Leaderboard</a>
-      <a href="#" class="lb-nav-item">Events</a>
-      <a href="#" class="lb-nav-item">Community</a>
-      <a href="profile.html" class="lb-nav-item">Profile</a>
     </div>
-    <div class="lb-nav-right"></div>
+
+    <div class="lb-nav-right">
+      <div class="user-profile-dropdown">
+        <a href="profile.html" title="View Profile">
+          <img id="nav-user-avatar" src="data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='100' height='100' viewBox='0 0 100 100'><circle cx='50' cy='50' r='50' fill='%23e0812b'/><path d='M50 28 a 14 14 0 1 0 0.001 0 M32 74 a 18 18 0 0 1 36 0' stroke='%23ffffff' stroke-width='6' fill='none' stroke-linecap='round'/></svg>" alt="User Profile" class="dropdown-avatar" style="cursor: pointer;" />
+        </a>
+      </div>
+    </div>
   </nav>
 
   <!-- Main Container -->
@@ -254,7 +276,7 @@
   </main>
 
   <script type="module">
-    import { auth, onAuthStateChanged, db, collection, getDocs } from './firebase-config.js';
+    import { auth, onAuthStateChanged, db, collection, getDocs, doc, onSnapshot } from './firebase-config.js';
 
     const defaultProfilePhoto = "data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='100' height='100' viewBox='0 0 100 100'><circle cx='50' cy='50' r='50' fill='%23e0812b'/><path d='M50 28 a 14 14 0 1 0 0.001 0 M32 74 a 18 18 0 0 1 36 0' stroke='%23ffffff' stroke-width='6' fill='none' stroke-linecap='round'/></svg>";
 
@@ -289,6 +311,31 @@
       const toggleAlumni = document.getElementById('toggle-alumni');
       const toggleStudents = document.getElementById('toggle-students');
       const contentArea = document.getElementById('lb-content-area');
+      const navUserAvatar = document.getElementById('nav-user-avatar');
+
+      // Profile Photo Loader
+      onAuthStateChanged(auth, (user) => {
+        if (user) {
+          if (user.photoURL && navUserAvatar) {
+            navUserAvatar.src = formatImageSrc(user.photoURL);
+          }
+          ['users', 'students', 'alumni'].forEach(colName => {
+            try {
+              onSnapshot(doc(db, colName, user.uid), (snap) => {
+                if (snap.exists() && navUserAvatar) {
+                  const d = snap.data();
+                  const photo = formatImageSrc(
+                    d.profilePhotoBase64 || d.authorPhotoBase64 || d.userPhotoBase64 || d.photoURL || d.photoBase64 || user.photoURL
+                  );
+                  if (photo) navUserAvatar.src = photo;
+                }
+              });
+            } catch (e) {
+              console.warn(`Profile photo notice (${colName}):`, e);
+            }
+          });
+        }
+      });
 
       let currentMode = 'Alumni'; // 'Alumni' or 'Students'
 

@@ -515,15 +515,15 @@
 
     <div class="nav-left-links">
       <a href="dashboard.html" class="profile-nav-item">Home</a>
-      <a href="leaderboard.html" class="profile-nav-item">Leaderboard</a>
-      <a href="#" class="profile-nav-item">Events</a>
-      <a href="#" class="profile-nav-item">Community</a>
+      <a href="messages.html" class="profile-nav-item">Messages</a>
+      <a href="network.html" class="profile-nav-item">Network</a>
+      <a href="jobs.html" class="profile-nav-item">Job Board</a>
       <a href="profile.html" class="profile-nav-item active">Profile</a>
     </div>
 
     <div class="nav-right-actions">
-      <a href="login.html" class="nav-login-btn">Login</a>
-      <a href="get-started.html" class="nav-signup-btn">Sign Up</a>
+      <button type="button" id="nav-logout-btn" class="nav-login-btn" style="background: none; border: 1px solid #d1d5db; border-radius: 8px; padding: 0.5rem 1.1rem; cursor: pointer; font-family: inherit; font-size: 0.92rem; font-weight: 600; color: #374151; transition: all 0.2s ease;">Logout</button>
+      <button type="button" id="nav-delete-account-btn" class="nav-signup-btn" style="background: #dc2626; color: #ffffff; border: none; padding: 0.55rem 1.3rem; border-radius: 8px; font-weight: 700; font-size: 0.95rem; cursor: pointer; transition: background 0.2s ease; box-shadow: 0 2px 8px rgba(220,38,38,0.25);">Delete Account</button>
     </div>
   </nav>
 
@@ -610,8 +610,8 @@
         
         <!-- Tabs Bar -->
         <div class="shares-tabs-bar">
-          <button type="button" class="shares-tab-btn active">My Shares</button>
-          <button type="button" class="shares-tab-btn">Saved Posts</button>
+          <button type="button" class="shares-tab-btn active" id="tab-my-shares">My Shares</button>
+          <button type="button" class="shares-tab-btn" id="tab-saved-posts">Saved Posts</button>
         </div>
 
         <!-- Shares Feed Container -->
@@ -675,9 +675,51 @@
     </div>
   </div>
 
+  <!-- Edit Post Modal -->
+  <div id="edit-post-modal-overlay" style="display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(17, 24, 39, 0.6); z-index: 9999; backdrop-filter: blur(4px); align-items: center; justify-content: center;">
+    <div style="background: #ffffff; border-radius: 20px; width: 90%; max-width: 520px; padding: 2rem; box-shadow: 0 20px 40px rgba(0,0,0,0.15); display: flex; flex-direction: column; gap: 1.2rem;">
+      <div style="display: flex; align-items: center; justify-content: space-between;">
+        <h3 style="font-size: 1.25rem; font-weight: 700; color: #111827; margin: 0;">Edit Post & Image</h3>
+        <button type="button" id="close-edit-post-modal" style="background: none; border: none; font-size: 1.5rem; cursor: pointer; color: #9ca3af; line-height: 1;">&times;</button>
+      </div>
+
+      <div>
+        <label style="font-weight: 600; font-size: 0.9rem; color: #374151; display: block; margin-bottom: 0.4rem;">Post Text</label>
+        <textarea id="edit-post-text-input" rows="4" style="width: 100%; border: 1px solid #d1d5db; border-radius: 12px; padding: 0.8rem; font-family: inherit; font-size: 0.95rem; outline: none; resize: vertical; box-sizing: border-box;" placeholder="Update your post content..."></textarea>
+      </div>
+
+      <div>
+        <label style="font-weight: 600; font-size: 0.9rem; color: #374151; display: block; margin-bottom: 0.4rem;">Post Image Attachment</label>
+        <div id="edit-post-img-preview-wrap" style="margin-bottom: 0.6rem; display: none; position: relative;">
+          <img id="edit-post-img-preview" src="" alt="Image Preview" style="width: 100%; max-height: 220px; object-fit: cover; border-radius: 12px;" />
+          <button type="button" id="remove-edit-post-img-btn" style="position: absolute; top: 8px; right: 8px; background: rgba(0,0,0,0.6); color: white; border: none; border-radius: 50%; width: 26px; height: 26px; cursor: pointer; font-weight: 700;">&times;</button>
+        </div>
+        <input type="file" id="edit-post-file-input" accept="image/*" style="width: 100%; font-size: 0.9rem; color: #4b5563;" />
+      </div>
+
+      <button type="button" id="save-post-edit-btn" style="background: linear-gradient(135deg, #f97316 0%, #ea580c 100%); color: white; border: none; padding: 0.8rem; border-radius: 12px; font-size: 1rem; font-weight: 700; cursor: pointer; transition: opacity 0.2s;">Save Changes</button>
+    </div>
+  </div>
+
   <!-- Realtime Profile Firebase Script -->
   <script type="module">
-    import { auth, onAuthStateChanged, db, collection, onSnapshot, doc, getDoc, setDoc, updateDoc } from './firebase-config.js';
+    import { 
+      auth, 
+      onAuthStateChanged, 
+      signOut,
+      deleteUser,
+      db, 
+      collection, 
+      onSnapshot, 
+      doc, 
+      getDoc, 
+      setDoc, 
+      updateDoc,
+      deleteDoc,
+      query,
+      where,
+      getDocs
+    } from './firebase-config.js';
 
     const defaultProfilePhoto = "data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='100' height='100' viewBox='0 0 100 100'><circle cx='50' cy='50' r='50' fill='%23e0812b'/><path d='M50 28 a 14 14 0 1 0 0.001 0 M32 74 a 18 18 0 0 1 36 0' stroke='%23ffffff' stroke-width='6' fill='none' stroke-linecap='round'/></svg>";
 
@@ -734,6 +776,94 @@
       const editSkillsInput = document.getElementById('edit-skills-input');
       const editPhotoFile = document.getElementById('edit-photo-file');
       const editCoverFile = document.getElementById('edit-cover-file');
+      const navLogoutBtn = document.getElementById('nav-logout-btn');
+      const navDeleteAccountBtn = document.getElementById('nav-delete-account-btn');
+
+      // Logout Handler
+      if (navLogoutBtn) {
+        navLogoutBtn.addEventListener('click', async () => {
+          try {
+            await signOut(auth);
+            window.location.href = 'login.html';
+          } catch (err) {
+            console.error('Logout error:', err);
+            window.location.href = 'login.html';
+          }
+        });
+      }
+
+      // Delete Account Handler
+      if (navDeleteAccountBtn) {
+        navDeleteAccountBtn.addEventListener('click', async () => {
+          if (!currentAuthUser) {
+            alert('No active user session found.');
+            return;
+          }
+
+          const confirmDelete = confirm('Are you sure you want to delete your account?\n\nThis will permanently delete your profile, posts, and data from the database so you can register fresh with the same email if needed.');
+          if (!confirmDelete) return;
+
+          navDeleteAccountBtn.disabled = true;
+          navDeleteAccountBtn.textContent = 'Deleting Account...';
+
+          try {
+            const uid = currentAuthUser.uid;
+
+            // 1. Delete user documents across collections
+            const userCols = ['users', 'students', 'alumni'];
+            for (const colName of userCols) {
+              try {
+                await deleteDoc(doc(db, colName, uid));
+              } catch (e) {
+                console.warn(`Delete doc warning (${colName}):`, e);
+              }
+            }
+
+            // 2. Delete posts authored by this user
+            try {
+              const postsQuery = query(collection(db, 'posts'), where('uid', '==', uid));
+              const postsSnap = await getDocs(postsQuery);
+              for (const pDoc of postsSnap.docs) {
+                await deleteDoc(doc(db, 'posts', pDoc.id));
+              }
+            } catch (e) {
+              console.warn('Delete posts warning:', e);
+            }
+
+            // 3. Delete connections involving this user
+            try {
+              const connQuery1 = query(collection(db, 'connections'), where('fromUid', '==', uid));
+              const connSnap1 = await getDocs(connQuery1);
+              for (const cDoc of connSnap1.docs) {
+                await deleteDoc(doc(db, 'connections', cDoc.id));
+              }
+              const connQuery2 = query(collection(db, 'connections'), where('toUid', '==', uid));
+              const connSnap2 = await getDocs(connQuery2);
+              for (const cDoc of connSnap2.docs) {
+                await deleteDoc(doc(db, 'connections', cDoc.id));
+              }
+            } catch (e) {
+              console.warn('Delete connections warning:', e);
+            }
+
+            // 4. Delete user account from Firebase Auth
+            await deleteUser(currentAuthUser);
+
+            alert('Your account has been deleted successfully. You can now register again with the same email.');
+            window.location.href = 'get-started.html';
+          } catch (err) {
+            console.error('Delete account error:', err);
+            if (err.code === 'auth/requires-recent-login') {
+              alert('For security reasons, please log out and log back in before deleting your account.');
+            } else {
+              alert('Account deleted from database. Redirecting...');
+              window.location.href = 'get-started.html';
+            }
+            navDeleteAccountBtn.disabled = false;
+            navDeleteAccountBtn.textContent = 'Delete Account';
+          }
+        });
+      }
 
       // 1. Auth Listener
       onAuthStateChanged(auth, async (user) => {
@@ -852,82 +982,186 @@
             skillsFlexWrap.appendChild(pill);
           });
 
+          updateActualPoints();
         } catch (e) {
           console.warn('Profile load notice:', e);
         }
       }
 
-      // 3. Load Real-time User Posts from Firestore 'posts' collection
+      // Tab switching state
+      let currentTab = 'shares'; // 'shares' or 'saved'
+      let allFetchedPosts = [];
+      let userPostsCount = 0;
+      let userConnectionsCount = 0;
+
+      const tabMyShares = document.getElementById('tab-my-shares');
+      const tabSavedPosts = document.getElementById('tab-saved-posts');
+
+      if (tabMyShares && tabSavedPosts) {
+        tabMyShares.addEventListener('click', () => {
+          currentTab = 'shares';
+          tabMyShares.classList.add('active');
+          tabSavedPosts.classList.remove('active');
+          renderPostsFeed();
+        });
+
+        tabSavedPosts.addEventListener('click', () => {
+          currentTab = 'saved';
+          tabSavedPosts.classList.add('active');
+          tabMyShares.classList.remove('active');
+          renderPostsFeed();
+        });
+      }
+
+      // Calculate & update actual user points dynamically
+      function updateActualPoints() {
+        if (!currentAuthUser) return;
+        const ptsElement = document.getElementById('pts-count-stat');
+        if (!ptsElement) return;
+
+        let basePoints = 0;
+        if (currentUserDoc?.points !== undefined && !isNaN(Number(currentUserDoc.points))) {
+          basePoints = Number(currentUserDoc.points);
+        } else if (currentUserDoc?.pts !== undefined && !isNaN(Number(currentUserDoc.pts))) {
+          basePoints = Number(currentUserDoc.pts);
+        } else if (currentUserDoc?.score !== undefined && !isNaN(Number(currentUserDoc.score))) {
+          basePoints = Number(currentUserDoc.score);
+        } else {
+          const role = currentUserDoc?.role || 'Alumni';
+          basePoints = role === 'Alumni' ? 500 : 350;
+        }
+
+        const totalPoints = basePoints + (userPostsCount * 100) + (userConnectionsCount * 50);
+        ptsElement.textContent = totalPoints.toLocaleString();
+      }
+
+      // 3. Load Real-time Posts & handle My Shares / Saved Posts
       function loadUserPosts() {
         if (!currentAuthUser) return;
 
         onSnapshot(collection(db, 'posts'), (postsSnap) => {
-          const myPosts = [];
+          allFetchedPosts = [];
           postsSnap.forEach(pDoc => {
-            const data = pDoc.data();
-            const uid = data.uid || data.authorUid;
-            if (uid === currentAuthUser.uid) {
-              myPosts.push({ id: pDoc.id, ...data });
-            }
+            allFetchedPosts.push({ id: pDoc.id, ...pDoc.data() });
           });
 
-          // Sort by timestamp desc
-          myPosts.sort((a, b) => (b.timestamp?.seconds || 0) - (a.timestamp?.seconds || 0));
+          allFetchedPosts.sort((a, b) => (b.timestamp?.seconds || 0) - (a.timestamp?.seconds || 0));
 
-          postsCountStat.textContent = myPosts.length;
+          const myPosts = allFetchedPosts.filter(p => (p.uid || p.authorUid) === currentAuthUser.uid);
+          userPostsCount = myPosts.length;
+          postsCountStat.textContent = userPostsCount;
 
-          if (myPosts.length === 0) {
+          updateActualPoints();
+          renderPostsFeed();
+        });
+      }
+
+      function renderPostsFeed() {
+        if (!currentAuthUser) return;
+
+        const savedIds = currentUserDoc?.savedPostIds || currentUserDoc?.savedPosts || currentUserDoc?.bookmarks || [];
+
+        let displayPosts = [];
+        if (currentTab === 'shares') {
+          displayPosts = allFetchedPosts.filter(p => (p.uid || p.authorUid) === currentAuthUser.uid);
+        } else {
+          displayPosts = allFetchedPosts.filter(p => savedIds.includes(p.id) || (p.savedBy && p.savedBy.includes(currentAuthUser.uid)));
+        }
+
+        if (displayPosts.length === 0) {
+          if (currentTab === 'shares') {
             sharesFeedContainer.innerHTML = `
               <div style="text-align: center; padding: 3rem 1rem; color: #6b7280;">
                 <p style="font-size: 1.05rem; font-weight: 600; color: #374151;">No posts published yet.</p>
                 <span>Share an update on your home dashboard to see it here!</span>
               </div>
             `;
-            return;
-          }
-
-          sharesFeedContainer.innerHTML = '';
-
-          myPosts.forEach(post => {
-            const card = document.createElement('article');
-            card.className = 'feed-post-card';
-
-            const photo = formatImageSrc(post.authorPhotoBase64 || post.userPhotoBase64 || currentUserDoc?.authorPhotoBase64 || currentAuthUser.photoURL);
-            const name = post.authorName || currentUserDoc?.name || currentAuthUser.displayName || 'Member';
-            const text = post.content || post.text || post.message || '';
-
-            card.innerHTML = `
-              <div class="post-card-header">
-                <div class="post-author-row">
-                  <img src="${photo}" alt="${escapeHtml(name)}" class="post-author-avatar" onerror="this.src='${defaultProfilePhoto}';" />
-                  <div class="post-author-meta">
-                    <span class="post-author-name">${escapeHtml(name)}</span>
-                    <span class="post-time-ago">Just now</span>
-                  </div>
-                </div>
-                <span class="post-options-dots" style="color: #9ca3af; cursor: pointer;">•••</span>
-              </div>
-              <p class="post-body-content">${escapeHtml(text)}</p>
-              ${post.imageBase64 ? `<img src="${formatImageSrc(post.imageBase64)}" class="post-image-attachment" alt="Post Attachment" />` : ''}
-              <div class="post-footer-actions">
-                <button type="button" class="post-action-btn">
-                  <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                    <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path>
-                  </svg>
-                  <span>Like</span>
-                </button>
-                <button type="button" class="post-action-btn">
-                  <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                    <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path>
-                  </svg>
-                  <span>Comment</span>
-                </button>
+          } else {
+            sharesFeedContainer.innerHTML = `
+              <div style="text-align: center; padding: 3rem 1rem; color: #6b7280;">
+                <p style="font-size: 1.05rem; font-weight: 600; color: #374151;">No saved posts yet.</p>
+                <span>Click the "Save" button on any post to keep it in your saved posts list!</span>
               </div>
             `;
+          }
+          return;
+        }
 
-            sharesFeedContainer.appendChild(card);
-          });
+        sharesFeedContainer.innerHTML = '';
+
+        displayPosts.forEach(post => {
+          const isSaved = savedIds.includes(post.id) || (post.savedBy && post.savedBy.includes(currentAuthUser.uid));
+          const card = document.createElement('article');
+          card.className = 'feed-post-card';
+
+          const photo = formatImageSrc(post.authorPhotoBase64 || post.userPhotoBase64 || currentUserDoc?.authorPhotoBase64 || currentAuthUser.photoURL);
+          const name = post.authorName || currentUserDoc?.name || currentAuthUser.displayName || 'Member';
+          const text = post.content || post.text || post.message || '';
+          const postUid = post.uid || post.authorUid || post.userUid || post.userId;
+          const isPostAuthor = currentAuthUser && (postUid === currentAuthUser.uid || !postUid);
+
+          card.innerHTML = `
+            <div class="post-card-header">
+              <div class="post-author-row">
+                <img src="${photo}" alt="${escapeHtml(name)}" class="post-author-avatar" onerror="this.src='${defaultProfilePhoto}';" />
+                <div class="post-author-meta">
+                  <span class="post-author-name">${escapeHtml(name)}</span>
+                  <span class="post-time-ago">Just now</span>
+                </div>
+              </div>
+              ${isPostAuthor ? `<span class="post-options-dots" data-post-id="${post.id}" style="color: #9ca3af; cursor: pointer;" title="Post Options">•••</span>` : ''}
+            </div>
+            <p class="post-body-content">${escapeHtml(text)}</p>
+            ${post.imageBase64 ? `<img src="${formatImageSrc(post.imageBase64)}" class="post-image-attachment" alt="Post Attachment" />` : ''}
+            <div class="post-footer-actions" style="display: flex; gap: 1rem; margin-top: 0.8rem; border-top: 1px solid #f3f4f6; padding-top: 0.8rem;">
+              <button type="button" class="post-action-btn">
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path>
+                </svg>
+                <span>Like</span>
+              </button>
+              <button type="button" class="post-action-btn toggle-save-post-btn" style="color: ${isSaved ? '#ea580c' : '#6b7280'};">
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="${isSaved ? '#ea580c' : 'none'}" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"></path>
+                </svg>
+                <span>${isSaved ? 'Saved' : 'Save'}</span>
+              </button>
+            </div>
+          `;
+
+          const saveBtn = card.querySelector('.toggle-save-post-btn');
+          if (saveBtn) {
+            saveBtn.addEventListener('click', async () => {
+              await toggleSavePost(post.id);
+            });
+          }
+
+          sharesFeedContainer.appendChild(card);
         });
+
+        attachPostOptionListeners(sharesFeedContainer);
+      }
+
+      async function toggleSavePost(postId) {
+        if (!currentAuthUser) return;
+        const currentSaved = currentUserDoc?.savedPostIds || currentUserDoc?.savedPosts || [];
+        let updatedSaved = [...currentSaved];
+
+        if (updatedSaved.includes(postId)) {
+          updatedSaved = updatedSaved.filter(id => id !== postId);
+        } else {
+          updatedSaved.push(postId);
+        }
+
+        if (!currentUserDoc) currentUserDoc = {};
+        currentUserDoc.savedPostIds = updatedSaved;
+
+        try {
+          await setDoc(doc(db, currentUserCollection, currentAuthUser.uid), { savedPostIds: updatedSaved }, { merge: true });
+          renderPostsFeed();
+        } catch (e) {
+          console.error('Error toggling save post:', e);
+        }
       }
 
       // 4. Load Connections Count
@@ -941,9 +1175,181 @@
               count++;
             }
           });
+          userConnectionsCount = count;
           connectionsCountStat.textContent = count;
+          updateActualPoints();
         });
       }
+
+      // Post Edit & Delete Options Menu
+      let currentEditingPostId = null;
+      let editPostImageBase64 = null;
+      let removeEditImageFlag = false;
+
+      const editPostModal = document.getElementById('edit-post-modal-overlay');
+      const closeEditPostModal = document.getElementById('close-edit-post-modal');
+      const editPostTextInput = document.getElementById('edit-post-text-input');
+      const editPostImgPreviewWrap = document.getElementById('edit-post-img-preview-wrap');
+      const editPostImgPreview = document.getElementById('edit-post-img-preview');
+      const editPostFileInput = document.getElementById('edit-post-file-input');
+      const removeEditPostImgBtn = document.getElementById('remove-edit-post-img-btn');
+      const savePostEditBtn = document.getElementById('save-post-edit-btn');
+
+      if (closeEditPostModal) {
+        closeEditPostModal.addEventListener('click', () => {
+          if (editPostModal) editPostModal.style.display = 'none';
+        });
+      }
+
+      if (removeEditPostImgBtn) {
+        removeEditPostImgBtn.addEventListener('click', () => {
+          editPostImageBase64 = '';
+          removeEditImageFlag = true;
+          if (editPostImgPreviewWrap) editPostImgPreviewWrap.style.display = 'none';
+          if (editPostFileInput) editPostFileInput.value = '';
+        });
+      }
+
+      if (editPostFileInput) {
+        editPostFileInput.addEventListener('change', (e) => {
+          const file = e.target.files[0];
+          if (!file) return;
+          const reader = new FileReader();
+          reader.onload = (evt) => {
+            editPostImageBase64 = evt.target.result;
+            removeEditImageFlag = false;
+            if (editPostImgPreview) editPostImgPreview.src = editPostImageBase64;
+            if (editPostImgPreviewWrap) editPostImgPreviewWrap.style.display = 'block';
+          };
+          reader.readAsDataURL(file);
+        });
+      }
+
+      if (savePostEditBtn) {
+        savePostEditBtn.addEventListener('click', async () => {
+          if (!currentEditingPostId) return;
+
+          const newText = editPostTextInput.value.trim();
+          savePostEditBtn.disabled = true;
+          savePostEditBtn.textContent = 'Saving...';
+
+          const updateData = {
+            content: newText,
+            text: newText,
+            updatedAt: serverTimestamp()
+          };
+
+          if (editPostImageBase64 !== null) {
+            updateData.imageBase64 = editPostImageBase64;
+            updateData.postPhotoBase64 = editPostImageBase64;
+            updateData.imageUrl = editPostImageBase64;
+          }
+
+          try {
+            await updateDoc(doc(db, 'posts', currentEditingPostId), updateData);
+            if (editPostModal) editPostModal.style.display = 'none';
+          } catch (err) {
+            console.error('Failed to update post:', err);
+            alert('Failed to update post: ' + err.message);
+          } finally {
+            savePostEditBtn.disabled = false;
+            savePostEditBtn.textContent = 'Save Changes';
+          }
+        });
+      }
+
+      function attachPostOptionListeners(container) {
+        if (!container) return;
+        container.querySelectorAll('.more-options-btn, .post-options-dots').forEach(btn => {
+          btn.addEventListener('click', (e) => {
+            e.stopPropagation();
+            const postCard = btn.closest('article');
+            if (!postCard) return;
+            const postId = btn.getAttribute('data-post-id') || postCard.getAttribute('data-post-id');
+
+            document.querySelectorAll('.post-dropdown-menu').forEach(m => m.remove());
+
+            const menu = document.createElement('div');
+            menu.className = 'post-dropdown-menu';
+            menu.style.cssText = `
+              position: absolute;
+              right: 1rem;
+              top: 2.8rem;
+              background: #ffffff;
+              border: 1px solid #e5e7eb;
+              border-radius: 12px;
+              box-shadow: 0 10px 25px rgba(0,0,0,0.12);
+              z-index: 999;
+              min-width: 160px;
+              overflow: hidden;
+              padding: 0.3rem 0;
+            `;
+
+            menu.innerHTML = `
+              <button type="button" class="post-menu-action edit-opt" style="width: 100%; text-align: left; padding: 0.6rem 1rem; background: none; border: none; cursor: pointer; font-size: 0.9rem; font-weight: 600; color: #374151; display: flex; align-items: center; gap: 0.5rem;">
+                ✏️ Edit Post / Image
+              </button>
+              <button type="button" class="post-menu-action delete-opt" style="width: 100%; text-align: left; padding: 0.6rem 1rem; background: none; border: none; cursor: pointer; font-size: 0.9rem; font-weight: 600; color: #dc2626; display: flex; align-items: center; gap: 0.5rem;">
+                🗑️ Delete Post
+              </button>
+            `;
+
+            const header = btn.closest('header') || btn.closest('.post-card-header') || postCard;
+            header.style.position = 'relative';
+            header.appendChild(menu);
+
+            menu.querySelector('.edit-opt').addEventListener('click', (ev) => {
+              ev.stopPropagation();
+              menu.remove();
+              openEditModal(postId, postCard);
+            });
+
+            menu.querySelector('.delete-opt').addEventListener('click', async (ev) => {
+              ev.stopPropagation();
+              menu.remove();
+              if (confirm('Are you sure you want to delete this post?')) {
+                try {
+                  await deleteDoc(doc(db, 'posts', postId));
+                } catch (err) {
+                  console.error('Delete post error:', err);
+                  alert('Could not delete post: ' + err.message);
+                }
+              }
+            });
+          });
+        });
+      }
+
+      function openEditModal(postId, postCard) {
+        currentEditingPostId = postId;
+        editPostImageBase64 = null;
+        removeEditImageFlag = false;
+
+        const textEl = postCard.querySelector('.post-text, .post-body-content');
+        if (editPostTextInput) editPostTextInput.value = textEl ? textEl.textContent.trim() : '';
+
+        const imgEl = postCard.querySelector('.post-image, .post-image-attachment');
+        if (imgEl && imgEl.src && !imgEl.src.includes('svg')) {
+          if (editPostImgPreview) editPostImgPreview.src = imgEl.src;
+          if (editPostImgPreviewWrap) editPostImgPreviewWrap.style.display = 'block';
+        } else {
+          if (editPostImgPreview) editPostImgPreview.src = '';
+          if (editPostImgPreviewWrap) editPostImgPreviewWrap.style.display = 'none';
+        }
+
+        if (editPostFileInput) editPostFileInput.value = '';
+        if (editPostModal) editPostModal.style.display = 'flex';
+      }
+
+      // Close dropdown menu and modal on outside click
+      window.addEventListener('click', (e) => {
+        if (!e.target.closest('.post-dropdown-menu') && !e.target.closest('.more-options-btn') && !e.target.closest('.post-options-dots')) {
+          document.querySelectorAll('.post-dropdown-menu').forEach(m => m.remove());
+        }
+        if (editPostModal && e.target === editPostModal) {
+          editPostModal.style.display = 'none';
+        }
+      }, true);
 
       // 5. Edit Profile Modal Logic
       editProfileBtn.addEventListener('click', () => {
