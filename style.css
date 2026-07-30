@@ -1658,3 +1658,570 @@ body.dashboard-body {
   opacity: 0.9;
 }
 
+/* ─────────────────────────────────────────────────────────────
+   COMPLETE UNIFIED DARK THEME SYSTEM
+   ───────────────────────────────────────────────────────────── */
+[data-theme="dark"],
+html.dark-theme,
+body.dark-theme,
+[data-theme="dark"] body,
+[data-theme="dark"] body.messages-body,
+[data-theme="dark"] body.network-body,
+[data-theme="dark"] body.dashboard-body,
+[data-theme="dark"] body.profile-body,
+[data-theme="dark"] body.jobs-body,
+[data-theme="dark"] body.lb-body,
+body.dark-theme.messages-body,
+body.dark-theme.network-body,
+body.dark-theme.dashboard-body,
+body.dark-theme.profile-body,
+body.dark-theme.jobs-body,
+body.dark-theme.lb-body {
+  background-color: #0b0d19 !important;
+  background-image: none !important;
+  color: #f8fafc !important;
+}
+
+/* 1. Transparent Search & Textarea Input Background Fix */
+[data-theme="dark"] .header-search-bar input,
+[data-theme="dark"] .search-bar input,
+[data-theme="dark"] .search-conversation-box input,
+[data-theme="dark"] .network-search-box input,
+[data-theme="dark"] .job-search-box input,
+[data-theme="dark"] .create-post-textarea,
+.header-search-bar input,
+.search-conversation-box input {
+  background: transparent !important;
+  color: inherit !important;
+}
+
+/* 2. All Card Containers in Dark Mode */
+[data-theme="dark"] header,
+[data-theme="dark"] nav,
+[data-theme="dark"] .dashboard-navbar,
+[data-theme="dark"] .messages-navbar,
+[data-theme="dark"] .profile-navbar,
+[data-theme="dark"] .lb-navbar,
+[data-theme="dark"] .jobs-header,
+[data-theme="dark"] .sidebar-card,
+[data-theme="dark"] .feed-card,
+[data-theme="dark"] .create-post-card,
+[data-theme="dark"] .info-card,
+[data-theme="dark"] .profile-right-column,
+[data-theme="dark"] .profile-header-card,
+[data-theme="dark"] .chat-card,
+[data-theme="dark"] .search-conversation-box,
+[data-theme="dark"] .job-item-card,
+[data-theme="dark"] .job-card,
+[data-theme="dark"] .job-details-pane,
+[data-theme="dark"] .network-card,
+[data-theme="dark"] .network-member-card,
+[data-theme="dark"] .lb-card,
+[data-theme="dark"] .podium-card,
+[data-theme="dark"] .modal-card,
+[data-theme="dark"] .edit-modal-card,
+[data-theme="dark"] .message-actions-menu,
+[data-theme="dark"] .post-dropdown-menu,
+[data-theme="dark"] .login-card-container,
+[data-theme="dark"] .role-selection-card,
+[data-theme="dark"] .chat-workspace-panel,
+[data-theme="dark"] .chat-messages-scroll,
+[data-theme="dark"] .chat-header-bar,
+[data-theme="dark"] .chat-input-row,
+[data-theme="dark"] div[style*="background: #ffffff"],
+[data-theme="dark"] div[style*="background: white"] {
+  background-color: #1e293b !important;
+  color: #f8fafc !important;
+  border-color: #334155 !important;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3) !important;
+}
+
+/* 3. Pure White User Names & Headings across all pages */
+/* 3. Author & Contact Names in Light & Dark Mode */
+.author-name,
+.post-author-name,
+.member-name,
+.job-title,
+.podium-name,
+.lb-user-name,
+.conv-name,
+.chat-header-name {
+  color: #111827 !important;
+  font-weight: 700 !important;
+}
+
+[data-theme="dark"] .author-name,
+[data-theme="dark"] .post-author-name,
+[data-theme="dark"] .member-name,
+[data-theme="dark"] .job-title,
+[data-theme="dark"] .podium-name,
+[data-theme="dark"] .lb-user-name,
+[data-theme="dark"] .conv-name,
+[data-theme="dark"] .chat-header-name,
+[data-theme="dark"] .widget-name,
+[data-theme="dark"] .contact-name,
+[data-theme="dark"] .header-title {
+  color: #ffffff !important;
+  font-weight: 700 !important;
+}
+
+/* 4. Headings & Main Text In Dark Mode */
+[data-theme="dark"] h1,
+[data-theme="dark"] h2,
+[data-theme="dark"] h3,
+[data-theme="dark"] h4,
+[data-theme="dark"] h5,
+[data-theme="dark"] h6,
+[data-theme="dark"] p,
+[data-theme="dark"] label,
+[data-theme="dark"] a.nav-link-item,
+[data-theme="dark"] a.profile-nav-item,
+[data-theme="dark"] a.lb-nav-item,
+[data-theme="dark"] a.nav-item,
+[data-theme="dark"] .profile-name-heading,
+[data-theme="dark"] .card-heading,
+[data-theme="dark"] .panel-header-title,
+[data-theme="dark"] .network-title,
+[data-theme="dark"] .page-title {
+  color: #f1f5f9 !important;
+}
+
+[data-theme="dark"] a.nav-item:hover,
+[data-theme="dark"] a.nav-item.active,
+[data-theme="dark"] .nav-link-item:hover,
+[data-theme="dark"] .nav-link-item.active,
+[data-theme="dark"] .profile-nav-item.active,
+[data-theme="dark"] .lb-nav-item.active {
+  color: #ffffff !important;
+}
+
+/* 5. Subtitles & Muted Text In Dark Mode */
+[data-theme="dark"] .post-time,
+[data-theme="dark"] .conv-snippet,
+[data-theme="dark"] .conv-time,
+[data-theme="dark"] .about-bio-text,
+[data-theme="dark"] .stat-label,
+[data-theme="dark"] .network-subtitle,
+[data-theme="dark"] .search-conversation-input::placeholder,
+[data-theme="dark"] .post-text,
+[data-theme="dark"] .member-role,
+[data-theme="dark"] .job-company-location,
+[data-theme="dark"] .lb-score {
+  color: #cbd5e1 !important;
+}
+
+/* 6. Form Inputs & Textareas In Dark Mode */
+[data-theme="dark"] input[type="text"],
+[data-theme="dark"] input[type="email"],
+[data-theme="dark"] input[type="password"],
+[data-theme="dark"] textarea,
+[data-theme="dark"] select,
+[data-theme="dark"] .search-conversation-input,
+[data-theme="dark"] .create-post-textarea {
+  color: #f8fafc !important;
+  border-color: #475569 !important;
+}
+
+/* 7. Messages Page Incoming & Outgoing Bubbles in Dark Mode */
+[data-theme="dark"] .message-row.incoming .message-bubble {
+  background: #334155 !important;
+  color: #f8fafc !important;
+}
+
+/* 8. Active & Hover Items in Dark Mode */
+[data-theme="dark"] .conversation-item:hover,
+[data-theme="dark"] .nav-item:hover {
+  background: rgba(255, 255, 255, 0.08) !important;
+}
+
+[data-theme="dark"] .conversation-item.active {
+  background: #334155 !important;
+}
+
+/* ─────────────────────────────────────────────────────────────
+   EXPLICIT CHAT SCREEN DARK MODE STYLING
+   ───────────────────────────────────────────────────────────── */
+[data-theme="dark"] .chat-card,
+[data-theme="dark"] .chat-header,
+[data-theme="dark"] .chat-messages-log,
+[data-theme="dark"] .chat-input-bar {
+  background: #1e293b !important;
+  color: #f8fafc !important;
+  border-color: #334155 !important;
+}
+
+[data-theme="dark"] .chat-header-name,
+[data-theme="dark"] .conv-name {
+  color: #ffffff !important;
+  font-weight: 700 !important;
+}
+
+[data-theme="dark"] .input-field-wrapper {
+  background: #0f172a !important;
+  border-color: #475569 !important;
+}
+
+[data-theme="dark"] .chat-input {
+  color: #ffffff !important;
+  background: transparent !important;
+}
+
+[data-theme="dark"] .chat-input::placeholder {
+  color: #94a3b8 !important;
+}
+
+[data-theme="dark"] .chat-messages-log {
+  background-color: #1e293b !important;
+}
+
+[data-theme="dark"] .message-row.incoming .message-bubble {
+  background: #334155 !important;
+  color: #ffffff !important;
+}
+
+[data-theme="dark"] .conversations-panel {
+  background: transparent !important;
+  background-color: transparent !important;
+  border: none !important;
+  box-shadow: none !important;
+}
+
+.conversations-list::-webkit-scrollbar-thumb,
+[data-theme="dark"] .conversations-list::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.15) !important;
+  border-radius: 10px;
+}
+
+.conversations-list::-webkit-scrollbar-thumb:hover,
+[data-theme="dark"] .conversations-list::-webkit-scrollbar-thumb:hover {
+  background: rgba(255, 255, 255, 0.3) !important;
+}
+
+/* ─────────────────────────────────────────────────────────────
+   EXPLICIT NETWORK PAGE DARK MODE STYLING
+   ───────────────────────────────────────────────────────────── */
+[data-theme="dark"] .suggested-card,
+[data-theme="dark"] .network-member-card {
+  background: #1e293b !important;
+  color: #f8fafc !important;
+  border: 1px solid #334155 !important;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3) !important;
+}
+
+[data-theme="dark"] .suggested-card-name,
+[data-theme="dark"] .member-name {
+  color: #ffffff !important;
+  font-weight: 700 !important;
+}
+
+[data-theme="dark"] .suggested-card-subtitle,
+[data-theme="dark"] .member-role,
+[data-theme="dark"] .member-subtitle {
+  color: #cbd5e1 !important;
+}
+
+[data-theme="dark"] .network-search-box {
+  background: #1e293b !important;
+  border: 1px solid #334155 !important;
+}
+
+[data-theme="dark"] .network-search-input {
+  color: #ffffff !important;
+  background: transparent !important;
+}
+
+[data-theme="dark"] .network-search-input::placeholder {
+  color: #94a3b8 !important;
+}
+
+[data-theme="dark"] .filter-options-btn {
+  background: #1e293b !important;
+  color: #ffffff !important;
+  border: 1px solid #334155 !important;
+}
+
+[data-theme="dark"] .tab-btn {
+  color: #cbd5e1 !important;
+}
+
+[data-theme="dark"] .tab-btn.active {
+  color: #ffffff !important;
+  font-weight: 700 !important;
+}
+
+[data-theme="dark"] .tab-btn.active::after {
+  background: #ea580c !important;
+}
+
+[data-theme="dark"] .tab-badge {
+  background: #334155 !important;
+  color: #ffffff !important;
+}
+
+[data-theme="dark"] .network-navbar {
+  background: #0f172a !important;
+  border-bottom-color: #1e293b !important;
+}
+
+/* ─────────────────────────────────────────────────────────────
+   EXPLICIT JOB BOARD DARK MODE STYLING
+   ───────────────────────────────────────────────────────────── */
+[data-theme="dark"] .jobs-navbar {
+  background: #0f172a !important;
+  border-bottom-color: #1e293b !important;
+}
+
+[data-theme="dark"] .jobs-nav-item {
+  color: #cbd5e1 !important;
+}
+
+[data-theme="dark"] .jobs-nav-item:hover,
+[data-theme="dark"] .jobs-nav-item.active {
+  color: #ffffff !important;
+  font-weight: 700 !important;
+}
+
+[data-theme="dark"] .job-card,
+[data-theme="dark"] .job-detail-panel,
+[data-theme="dark"] .main-job-search-box {
+  background: #1e293b !important;
+  color: #f8fafc !important;
+  border-color: #334155 !important;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3) !important;
+}
+
+[data-theme="dark"] .job-card.selected {
+  border-color: #ea580c !important;
+  background: #1e293b !important;
+}
+
+[data-theme="dark"] .detail-title,
+[data-theme="dark"] .detail-company-name,
+[data-theme="dark"] .job-card-title,
+[data-theme="dark"] .requirements-heading,
+[data-theme="dark"] .alumni-heading,
+[data-theme="dark"] .poster-name-title,
+[data-theme="dark"] .jobs-page-title {
+  color: #ffffff !important;
+  font-weight: 700 !important;
+}
+
+[data-theme="dark"] .detail-location,
+[data-theme="dark"] .job-company-name,
+[data-theme="dark"] .job-location-tag,
+[data-theme="dark"] .requirements-list,
+[data-theme="dark"] .poster-originally-tag {
+  color: #cbd5e1 !important;
+}
+
+[data-theme="dark"] .btn-message-poster {
+  background: #334155 !important;
+  color: #ffffff !important;
+}
+
+[data-theme="dark"] .filter-pill,
+[data-theme="dark"] .right-filter-btn {
+  background: #1e293b !important;
+  color: #cbd5e1 !important;
+  border-color: #334155 !important;
+}
+
+[data-theme="dark"] .filter-pill.active,
+[data-theme="dark"] .filter-pill:hover {
+  background: #334155 !important;
+  color: #ffffff !important;
+}
+
+/* ─────────────────────────────────────────────────────────────
+   EXPLICIT LEADERBOARD DARK MODE STYLING
+   ───────────────────────────────────────────────────────────── */
+[data-theme="dark"] .lb-navbar {
+  background: #0f172a !important;
+  border-bottom-color: #1e293b !important;
+  width: 100% !important;
+  box-sizing: border-box !important;
+}
+
+[data-theme="dark"] .lb-nav-item {
+  color: #cbd5e1 !important;
+}
+
+[data-theme="dark"] .lb-nav-item:hover,
+[data-theme="dark"] .lb-nav-item.active {
+  color: #ffffff !important;
+  font-weight: 700 !important;
+}
+
+[data-theme="dark"] .lb-nav-item.active::after {
+  background: #ea580c !important;
+}
+
+[data-theme="dark"] .lb-title,
+[data-theme="dark"] .podium-name,
+[data-theme="dark"] .list-user-name,
+[data-theme="dark"] .lb-list-item h4 {
+  color: #ffffff !important;
+  font-weight: 700 !important;
+}
+
+[data-theme="dark"] .podium-role,
+[data-theme="dark"] .list-user-role,
+[data-theme="dark"] .list-rank-num {
+  color: #cbd5e1 !important;
+}
+
+[data-theme="dark"] .lb-toggle {
+  background: #1e293b !important;
+  border: 1px solid #334155 !important;
+}
+
+[data-theme="dark"] .lb-toggle-btn {
+  color: #cbd5e1 !important;
+}
+
+[data-theme="dark"] .lb-toggle-btn.active {
+  background: #ea580c !important;
+  color: #ffffff !important;
+}
+
+[data-theme="dark"] .lb-list-container,
+[data-theme="dark"] .lb-list-item {
+  background: #1e293b !important;
+  color: #f8fafc !important;
+  border-color: #334155 !important;
+}
+
+[data-theme="dark"] .lb-list-item:hover {
+  background: rgba(255, 255, 255, 0.05) !important;
+}
+
+[data-theme="dark"] .list-rank-num {
+  background: #334155 !important;
+  color: #ffffff !important;
+}
+
+[data-theme="dark"] .lb-container {
+  background: transparent !important;
+  background-color: transparent !important;
+  border: none !important;
+  box-shadow: none !important;
+}
+
+/* ─────────────────────────────────────────────────────────────
+   EXPLICIT PROFILE PAGE DARK MODE STYLING
+   ───────────────────────────────────────────────────────────── */
+.nav-logout-header-btn {
+  background: none;
+  border: 1px solid #cbd5e1;
+  border-radius: 8px;
+  padding: 0.5rem 1.1rem;
+  cursor: pointer;
+  font-family: inherit;
+  font-size: 0.92rem;
+  font-weight: 600;
+  color: #374151;
+  transition: all 0.2s ease;
+}
+
+.nav-logout-header-btn:hover {
+  background: #f1f5f9;
+}
+
+[data-theme="dark"] .profile-navbar {
+  background: #0f172a !important;
+  border-bottom-color: #1e293b !important;
+}
+
+[data-theme="dark"] .profile-nav-item {
+  color: #cbd5e1 !important;
+}
+
+[data-theme="dark"] .profile-nav-item:hover,
+[data-theme="dark"] .profile-nav-item.active {
+  color: #ffffff !important;
+  font-weight: 700 !important;
+}
+
+[data-theme="dark"] .nav-logout-header-btn {
+  color: #ffffff !important;
+  border-color: rgba(255, 255, 255, 0.3) !important;
+  background: transparent !important;
+}
+
+[data-theme="dark"] .nav-logout-header-btn:hover {
+  background: rgba(255, 255, 255, 0.1) !important;
+  border-color: #ffffff !important;
+}
+
+[data-theme="dark"] .profile-header-card,
+[data-theme="dark"] .profile-right-column,
+[data-theme="dark"] .info-card,
+[data-theme="dark"] .feed-post-card {
+  background: #1e293b !important;
+  color: #f8fafc !important;
+  border-color: #334155 !important;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3) !important;
+}
+
+[data-theme="dark"] .profile-name-heading,
+[data-theme="dark"] .stat-number,
+[data-theme="dark"] .card-heading,
+[data-theme="dark"] .post-author-name,
+[data-theme="dark"] .post-author-row,
+[data-theme="dark"] .shares-tab-btn.active {
+  color: #ffffff !important;
+  font-weight: 700 !important;
+}
+
+[data-theme="dark"] .profile-role-text,
+[data-theme="dark"] .profile-location-text,
+[data-theme="dark"] .stat-label,
+[data-theme="dark"] .about-bio-text,
+[data-theme="dark"] .shares-tab-btn {
+  color: #cbd5e1 !important;
+}
+
+[data-theme="dark"] .shares-tabs-bar {
+  border-bottom-color: #334155 !important;
+}
+
+[data-theme="dark"] .post-body-content,
+[data-theme="dark"] .post-text {
+  color: #f8fafc !important;
+}
+
+[data-theme="dark"] .post-time-ago {
+  color: #9ca3af !important;
+}
+
+[data-theme="dark"] .post-action-btn,
+[data-theme="dark"] .post-footer-actions {
+  color: #cbd5e1 !important;
+}
+
+[data-theme="dark"] .skill-pill {
+  background: #334155 !important;
+  color: #ffffff !important;
+}
+
+[data-theme="dark"] .edit-profile-btn {
+  background: #ea580c !important;
+  color: #ffffff !important;
+}
+
+[data-theme="dark"] .search-bar-wrapper {
+  background: #1e293b !important;
+  border: 1px solid #334155 !important;
+}
+
+[data-theme="dark"] .search-bar-wrapper input,
+[data-theme="dark"] .search-input {
+  color: #ffffff !important;
+  background: transparent !important;
+}
+
+[data-theme="dark"] .search-bar-wrapper input::placeholder,
+[data-theme="dark"] .search-input::placeholder {
+  color: #94a3b8 !important;
+}
+

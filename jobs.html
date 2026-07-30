@@ -14,9 +14,9 @@
   <style>
     /* Job Board Page Layout & Styles matching Screenshot */
     body.jobs-body {
-      background-color: #f3f4f6 !important;
-      background-image: none !important;
-      color: #111827 !important;
+      background-color: #f3f4f6;
+      background-image: none;
+      color: #111827;
       display: block !important;
       min-height: 100vh;
       overflow-y: auto !important;
@@ -475,12 +475,10 @@
     </div>
 
     <div class="jobs-nav-right">
-      <a href="login.html" class="signin-txt">Sign In</a>
       <div class="user-nav-dropdown" id="user-dropdown-trigger">
         <a href="profile.html" title="View Profile">
           <img id="nav-user-avatar" src="data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='100' height='100' viewBox='0 0 100 100'><circle cx='50' cy='50' r='50' fill='%23e0812b'/><path d='M50 28 a 14 14 0 1 0 0.001 0 M32 74 a 18 18 0 0 1 36 0' stroke='%23ffffff' stroke-width='6' fill='none' stroke-linecap='round'/></svg>" alt="User Profile" class="nav-avatar-img" style="cursor: pointer;" />
         </a>
-        <span class="dropdown-arrow">∨</span>
       </div>
     </div>
   </nav>
@@ -580,7 +578,7 @@
 
   <!-- Interactive Job Board Script -->
   <script type="module">
-    import { auth, onAuthStateChanged, db, collection, onSnapshot } from './firebase-config.js';
+    import { auth, onAuthStateChanged, db, collection, doc, onSnapshot } from './firebase-config.js';
 
     function escapeHtml(str) {
       if (!str) return '';
@@ -608,10 +606,28 @@
 
       let allJobs = [];
 
-      // Auth Listener to update navbar profile
+      // Auth Listener to update navbar profile in real time from Firestore
       onAuthStateChanged(auth, (user) => {
-        if (user && user.photoURL && navAvatarImg) {
-          navAvatarImg.src = user.photoURL;
+        if (user) {
+          if (user.photoURL && navAvatarImg) navAvatarImg.src = user.photoURL;
+
+          const updateNavPhoto = (data) => {
+            if (!data || !navAvatarImg) return;
+            const photo = data.photoBase64 || data.authorPhotoBase64 || data.userPhotoBase64 || data.profilePhotoBase64 || data.photoURL || user.photoURL;
+            if (photo) {
+              navAvatarImg.src = photo.startsWith('data:') || photo.startsWith('http') ? photo : `data:image/jpeg;base64,${photo}`;
+            }
+          };
+
+          onSnapshot(doc(db, 'users', user.uid), (docSnap) => {
+            if (docSnap.exists()) updateNavPhoto(docSnap.data());
+          });
+          onSnapshot(doc(db, 'students', user.uid), (docSnap) => {
+            if (docSnap.exists()) updateNavPhoto(docSnap.data());
+          });
+          onSnapshot(doc(db, 'alumni', user.uid), (docSnap) => {
+            if (docSnap.exists()) updateNavPhoto(docSnap.data());
+          });
         }
       });
 

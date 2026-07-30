@@ -8,7 +8,9 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
   <link rel="icon" type="image/png" href="favicon.png">
+  <script src="theme.js"></script>
   <style>
     :root {
       --bg-color: #f9fafb;
@@ -45,7 +47,7 @@
     /* ── Navbar ────────────────────────────────────────── */
     .lb-navbar {
       background: #ffffff;
-      padding: 0.9rem 4%;
+      padding: 0.9rem 3rem;
       display: flex;
       align-items: center;
       justify-content: space-between;
@@ -54,6 +56,8 @@
       position: sticky;
       top: 0;
       z-index: 100;
+      width: 100%;
+      box-sizing: border-box;
     }
     
     .dashboard-logo {

@@ -14,9 +14,9 @@
   <style>
     /* Profile Page Layout matching User Screenshot */
     body.profile-body {
-      background-color: #fafafa !important;
-      background-image: none !important;
-      color: #111827 !important;
+      background-color: #fafafa;
+      background-image: none;
+      color: #111827;
       display: block !important;
       min-height: 100vh;
       overflow-y: auto !important;
@@ -522,7 +522,7 @@
     </div>
 
     <div class="nav-right-actions">
-      <button type="button" id="nav-logout-btn" class="nav-login-btn" style="background: none; border: 1px solid #d1d5db; border-radius: 8px; padding: 0.5rem 1.1rem; cursor: pointer; font-family: inherit; font-size: 0.92rem; font-weight: 600; color: #374151; transition: all 0.2s ease;">Logout</button>
+      <button type="button" id="nav-logout-btn" class="nav-logout-header-btn">Logout</button>
       <button type="button" id="nav-delete-account-btn" class="nav-signup-btn" style="background: #dc2626; color: #ffffff; border: none; padding: 0.55rem 1.3rem; border-radius: 8px; font-weight: 700; font-size: 0.95rem; cursor: pointer; transition: background 0.2s ease; box-shadow: 0 2px 8px rgba(220,38,38,0.25);">Delete Account</button>
     </div>
   </nav>
@@ -1105,7 +1105,7 @@
               <div class="post-author-row">
                 <img src="${photo}" alt="${escapeHtml(name)}" class="post-author-avatar" onerror="this.src='${defaultProfilePhoto}';" />
                 <div class="post-author-meta">
-                  <span class="post-author-name">${escapeHtml(name)}</span>
+                  <span class="post-author-name" style="color: #ffffff; font-weight: 700;">${escapeHtml(name)}</span>
                   <span class="post-time-ago">Just now</span>
                 </div>
               </div>
