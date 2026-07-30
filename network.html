@@ -68,10 +68,13 @@
     }
 
     .nav-user-avatar {
-      width: 38px;
-      height: 38px;
+      width: 42px;
+      height: 42px;
       border-radius: 50%;
       object-fit: cover;
+      border: 2px solid #ffffff;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.12);
+      display: block !important;
     }
 
     .signout-link-btn {
@@ -610,14 +613,6 @@
     <a href="dashboard.html" class="dashboard-logo" aria-label="Connect Home">connect</a>
 
     <div class="nav-right-icons">
-      <button type="button" class="icon-nav-btn" title="Notifications">
-        <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-          <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"></path>
-          <path d="M13.73 21a2 2 0 0 1-3.46 0"></path>
-        </svg>
-        <span class="notification-dot"></span>
-      </button>
-
       <div class="user-profile-dropdown">
         <a href="profile.html" title="View Profile">
           <img id="nav-user-avatar" src="data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='100' height='100' viewBox='0 0 100 100'><circle cx='50' cy='50' r='50' fill='%23e0812b'/><path d='M50 28 a 14 14 0 1 0 0.001 0 M32 74 a 18 18 0 0 1 36 0' stroke='%23ffffff' stroke-width='6' fill='none' stroke-linecap='round'/></svg>" alt="User Avatar" class="nav-user-avatar" style="cursor: pointer;" />
@@ -684,14 +679,7 @@
         <span>Courses</span>
       </a>
 
-      <a href="https://insights-ai.info/AICourses" target="_blank" class="sidebar-external-btn" style="margin-top: 1rem; display: flex; align-items: center; justify-content: center; gap: 0.5rem; background: var(--gradient-btn); color: white; text-decoration: none; padding: 0.8rem; border-radius: 12px; font-weight: 600; font-size: 0.9rem; transition: opacity 0.2s ease;">
-        <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-          <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path>
-          <polyline points="15 3 21 3 21 9"></polyline>
-          <line x1="10" y1="14" x2="21" y2="3"></line>
-        </svg>
-        <span>Go To AI Courses - insights</span>
-      </a>
+
 
       <a href="#" class="sidebar-nav-link">
         <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
@@ -900,35 +888,38 @@
         if (user) {
           currentAuthUser = user;
 
-          if (user.photoURL) {
-            const p = formatImageSrc(user.photoURL);
-            if (p) navUserAvatar.src = p;
-          }
+          const updateAvatarSrc = (docData) => {
+            const rawPhoto = docData?.profilePhotoBase64 ||
+              docData?.authorPhotoBase64 ||
+              docData?.userPhotoBase64 ||
+              docData?.photoURL ||
+              docData?.photoBase64 ||
+              docData?.profilePic ||
+              docData?.avatar ||
+              docData?.photo ||
+              user.photoURL;
 
-          // Realtime user profile photo listener from database
-          try {
-            onSnapshot(doc(db, 'users', user.uid), (snap) => {
-              if (snap.exists()) {
-                currentUserDoc = snap.data();
-                const photo = formatImageSrc(
-                  currentUserDoc?.authorPhotoBase64 ||
-                  currentUserDoc?.userPhotoBase64 ||
-                  currentUserDoc?.photoURL ||
-                  currentUserDoc?.photoBase64 ||
-                  currentUserDoc?.profilePic ||
-                  currentUserDoc?.avatar ||
-                  currentUserDoc?.photo ||
-                  user.photoURL
-                );
-                if (photo) {
-                  navUserAvatar.src = photo;
+            const formatted = formatImageSrc(rawPhoto);
+            navUserAvatar.src = formatted || defaultProfilePhoto;
+          };
+
+          // Fallback initial
+          updateAvatarSrc(null);
+
+          // Realtime listeners on users, students, alumni collections
+          ['users', 'students', 'alumni'].forEach(colName => {
+            try {
+              onSnapshot(doc(db, colName, user.uid), (snap) => {
+                if (snap.exists()) {
+                  currentUserDoc = snap.data();
+                  updateAvatarSrc(currentUserDoc);
+                  renderMainView();
                 }
-              }
-              renderMainView();
-            });
-          } catch (e) {
-            console.warn('Profile realtime notice:', e);
-          }
+              });
+            } catch (e) {
+              console.warn(`Profile realtime notice (${colName}):`, e);
+            }
+          });
 
           renderMainView();
         }

@@ -126,8 +126,8 @@ body {
 }
 
 .btn-primary {
-  background: var(--gradient-btn);
-  color: var(--card-bg) !important;
+  background: linear-gradient(90deg, #ea4a36 0%, #f69d3c 100%);
+  color: #ffffff !important;
   border: none;
   padding: 0.95rem 3.2rem;
   border-radius: 999px;
@@ -135,7 +135,7 @@ body {
   font-weight: 700;
   font-family: 'Outfit', sans-serif;
   cursor: pointer;
-  box-shadow: var(--btn-glow);
+  box-shadow: 0 6px 20px rgba(234, 74, 54, 0.35);
   transition: all 0.35s cubic-bezier(0.16, 1, 0.3, 1);
   margin-bottom: 2rem;
   position: relative;
@@ -144,6 +144,7 @@ body {
   align-items: center;
   justify-content: center;
   text-decoration: none;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.15);
 }
 
 .btn-primary:hover {
@@ -207,7 +208,7 @@ body {
 .role-main-title, .login-main-title {
   font-size: 3.8rem;
   font-weight: 700;
-  color: var(--card-bg);
+  color: #ffffff !important;
   letter-spacing: -0.5px;
   line-height: 1.1;
 }
@@ -215,7 +216,7 @@ body {
 .role-main-subtitle, .login-main-subtitle {
   font-size: 2.2rem;
   font-weight: 400;
-  color: #8b9bb4;
+  color: #9ca3af !important;
   letter-spacing: 0.2px;
 }
 
@@ -227,7 +228,7 @@ body {
 }
 
 .role-card {
-  background: var(--card-bg);
+  background: #ffffff !important;
   border-radius: 28px;
   padding: 2.8rem 2.2rem;
   width: 100%;
@@ -239,7 +240,7 @@ body {
 .card-title {
   font-size: 2.1rem;
   font-weight: 700;
-  color: #111827;
+  color: #111827 !important;
   text-align: center;
   margin-bottom: 1.8rem;
   letter-spacing: -0.3px;
@@ -258,7 +259,7 @@ body {
 .form-label {
   font-size: 0.95rem;
   font-weight: 600;
-  color: #374151;
+  color: #374151 !important;
   display: block;
 }
 
@@ -271,13 +272,13 @@ input[type="password"].form-input {
   appearance: none;
   display: block;
   width: 100%;
-  background: var(--card-bg);
-  border: 1.5px solid var(--border-app-hover);
+  background: #ffffff !important;
+  border: 1.5px solid #d1d5db !important;
   border-radius: 12px;
   padding: 0.85rem 1.1rem;
   font-family: 'Outfit', -apple-system, sans-serif;
   font-size: 1.05rem;
-  color: #111827;
+  color: #111827 !important;
   outline: none;
   box-shadow: none;
   transition: border-color 0.2s ease, box-shadow 0.2s ease;
@@ -287,8 +288,8 @@ input.form-input:focus,
 input[type="text"].form-input:focus, 
 input[type="email"].form-input:focus, 
 input[type="password"].form-input:focus {
-  border-color: #f59e38;
-  box-shadow: 0 0 0 3.5px rgba(245, 158, 56, 0.25);
+  border-color: #ea4a36 !important;
+  box-shadow: 0 0 0 3.5px rgba(234, 74, 54, 0.2) !important;
 }
 
 .password-input-wrapper {
@@ -332,8 +333,8 @@ input[type="password"].form-input:focus {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  background: var(--card-bg);
-  border: 2px solid #e2e8f0;
+  background: #ffffff !important;
+  border: 2px solid #e5e7eb !important;
   border-radius: 18px;
   padding: 1rem 1.3rem;
   cursor: pointer;
@@ -343,14 +344,15 @@ input[type="password"].form-input:focus {
 }
 
 .role-option:hover {
-  border-color: #cbd5e1;
+  border-color: #cbd5e1 !important;
   transform: translateY(-2px);
   box-shadow: 0 10px 20px rgba(0, 0, 0, 0.05);
 }
 
 .role-option.selected {
-  border-color: #e5872a;
-  box-shadow: 0 0 0 2px rgba(229, 135, 42, 0.3), 0 10px 25px rgba(229, 135, 42, 0.18);
+  border-color: #ea4a36 !important;
+  background: #fffdfb !important;
+  box-shadow: 0 0 0 2px rgba(234, 74, 54, 0.2), 0 10px 25px rgba(234, 74, 54, 0.12) !important;
 }
 
 .role-icon-box {
@@ -365,7 +367,7 @@ input[type="password"].form-input:focus {
 }
 
 .alumni-bg {
-  background: linear-gradient(135deg, #ca6432 0%, #e08b35 100%);
+  background: linear-gradient(135deg, #ea4a36 0%, #f69d3c 100%);
 }
 
 .student-bg {
@@ -375,7 +377,7 @@ input[type="password"].form-input:focus {
 .role-label {
   font-size: 1.15rem;
   font-weight: 700;
-  color: var(--text-app-main);
+  color: #111827 !important;
   flex-grow: 1;
   margin-left: 1.1rem;
   text-align: left;
@@ -385,7 +387,7 @@ input[type="password"].form-input:focus {
   width: 26px;
   height: 26px;
   border-radius: 50%;
-  background: #b07028;
+  background: #ea4a36 !important;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -419,7 +421,7 @@ input[type="password"].form-input:focus {
 .login-card {
   position: relative;
   z-index: 2;
-  background: var(--card-bg);
+  background: #ffffff !important;
   border-radius: 24px;
   padding: 3rem 2.4rem;
   width: 100%;
